@@ -1,55 +1,56 @@
 <template>
     <div class="container" style="background-color: white;">
-        <form>
+        <div>
+          <h6 for="exampleFormControlSelect1">Ultima Reunião:</h6>
           <div class="form-group">
-            <label for="exampleFormControlTextarea1">Descrição</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="12" v-model="DocumentacaoDTO.descricao"></textarea>
+            <label for="exampleFormControlSelect1">Hora de Inicio</label>
+            <input type="time" id="appt" name="appt" min="09:00" max="18:00" required v-model="UltimaReuniaoDTO.horaInicio" disabled>
           </div>
           <div class="form-group">
-            <label for="exampleFormControlSelect1">Trabalho</label>
-            <select class="form-control" id="exampleFormControlSelect1" v-model="TrabalhoDTO.codigoTrabalho">
-              <option v-for="trabalho in TrabalhoDTO" :value="trabalho.codigoCurso" :key="trabalho.codigoTrabalho">
-                {{ trabalho.nomeTrabalho }}
-            </option>
-            </select>
-            </div>
-        </form>
+            <label for="exampleFormControlSelect1">Hora Fim</label>
+            <input type="time" id="appt" name="appt" min="09:00" max="18:00" required v-model="UltimaReuniaoDTO.horaFim" disabled>
+          </div>
+          <div class="form-group">
+            <label for="exampleFormControlTextarea1">Pauta</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="6" v-model="UltimaReuniaoDTO.pauta" disabled></textarea>
+          </div>
+        </div>
         <div class="modal-footer justify-content-between">
-                <input type="submit" class="btn btn-success" value="Cadastrar Documentação" @click="cadastrarDocumentacao()">
+                <input type="submit" class="btn btn-success" value="Requisitar nova Reunião" @click="requisitarReuniao()">
         </div>
     </div>
     </template>
       
     <script>
-    import { cadastrarDocumentacao, buscarTrabalhos } from "@/services/cadastrarDocumentacao.js";
+    import { requisitarReuniao, retornarUltimaReuniao } from "@/services/cadastrarReuniao.js";
     import { useToast } from "vue-toastification";
     
     const toast = useToast()
     export default {
-        name: "CadastrarDocumentacao",
+        name: "RequisitarReuniao",
         data() {
         return {
           content: "",
-          DocumentacaoDTO: {
+          ReuniaoDTO: {
             trabalho: {
                 codigoTrabalho: null,
             },
           },
-          TrabalhoDTO: {},
+          UltimaReuniaoDTO: {},
         };
       },
       mounted() {
         this.retornarTrabalhos()
       },
       methods: {
-        retornarTrabalhos() {
+        retornarUltimaReuniao() {
           let loader = this.$loading.show({
             container: this.fullPage ? null : this.$refs.formContainer,
           });
-          buscarTrabalhos((response) => {
+          retornarUltimaReuniao((response) => {
             if (response) {
               loader.hide()
-              this.TrabalhoDTO = response.data
+              this.UltimaReuniaoDTO = response.data
             }
           },
             (error) => {
@@ -59,14 +60,14 @@
             () => { }
           );
         },
-        cadastrarDocumentacao() {
+        requisitarReuniao() {
           let loader = this.$loading.show({
             container: this.fullPage ? null : this.$refs.formContainer,
           });
-          cadastrarDocumentacao(this.DocumentacaoDTO, (response) => {
+          requisitarReuniao(this.ReuniaoDTO, (response) => {
             if (response) {
               loader.hide()
-              toast.success("Documentação Cadastrado com Sucesso!");
+              toast.success("Reunião Cadastrado com Sucesso!");
             }
           },
             (error) => {

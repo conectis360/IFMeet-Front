@@ -6,6 +6,9 @@ const Profile = () => import("./components/Profile.vue")
 const BoardUser = () => import("./components/BoardUser.vue")
 const FormularioRegistrarUsuario = () => import("./components/formularios/FormularioRegistrarUsuario.vue")
 const CadastrarTrabalho = () => import("./components/orientador/CadastrarTrabalho.vue")
+const CadastrarTarefa = () => import("./components/orientador/CadastrarTarefa.vue")
+const CadastrarAta = () => import("./components/orientador/CadastrarAta.vue")
+const CadastrarDocumentacao = () => import("./components/orientador/CadastrarDocumentacao.vue")
 const Teste = () => import("./teste.vue")
 
 const routes = [
@@ -25,6 +28,18 @@ const routes = [
     {
         path: "/cadastrarTrabalho",
         component: CadastrarTrabalho,
+    },
+    {
+        path: "/cadastrarTarefa",
+        component: CadastrarTarefa,
+    },
+    {
+        path: "/cadastrarAta",
+        component: CadastrarAta,
+    },
+    {
+        path: "/cadastrarDocumentacao",
+        component: CadastrarDocumentacao,
     },
     {
         path: "/profile",

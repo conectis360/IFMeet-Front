@@ -23,15 +23,33 @@
         </router-link>
       </li>
       <li class="nav-item">
+        <router-link to="/tarefas" class="nav-link">
+          <i class="fa fa-pen"></i>
+            <p class="opcaoMenu">Tarefas</p>
+        </router-link>
+      </li>
+      <li class="nav-item">
         <router-link to="/cadastrarTrabalho" class="nav-link">
           <i class="fa fa-book"></i>
             <p class="opcaoMenu">Cadastrar Trabalho</p>
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="/tarefas" class="nav-link">
-          <i class="fa fa-pen"></i>
-            <p class="opcaoMenu">Tarefas</p>
+        <router-link to="/cadastrarTarefa" class="nav-link">
+          <i class="fa fa-book"></i>
+            <p class="opcaoMenu">Cadastrar Tarefa</p>
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link to="/cadastrarAta" class="nav-link">
+          <i class="fa fa-book"></i>
+            <p class="opcaoMenu">Cadastrar Ata</p>
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link to="/cadastrarDocumentacao" class="nav-link">
+          <i class="fa fa-book"></i>
+            <p class="opcaoMenu">Cadastrar Documentação</p>
         </router-link>
       </li>
     </ul>

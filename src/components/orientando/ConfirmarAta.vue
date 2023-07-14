@@ -2,54 +2,46 @@
     <div class="container" style="background-color: white;">
         <form>
           <div class="form-group">
-            <label for="exampleFormControlTextarea1">Descrição</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="12" v-model="DocumentacaoDTO.descricao"></textarea>
+            <label for="exampleFormControlTextarea1">Resumo</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="12" v-model="AtaDTO.pauta" disabled></textarea>
           </div>
-          <div class="form-group">
-            <label for="exampleFormControlSelect1">Trabalho</label>
-            <select class="form-control" id="exampleFormControlSelect1" v-model="TrabalhoDTO.codigoTrabalho">
-              <option v-for="trabalho in TrabalhoDTO" :value="trabalho.codigoCurso" :key="trabalho.codigoTrabalho">
-                {{ trabalho.nomeTrabalho }}
-            </option>
-            </select>
-            </div>
         </form>
         <div class="modal-footer justify-content-between">
-                <input type="submit" class="btn btn-success" value="Cadastrar Documentação" @click="cadastrarDocumentacao()">
+                <input type="submit" class="btn btn-success" value="Cadastrar Tarefa" @click="confirmarAta()">
         </div>
     </div>
     </template>
       
     <script>
-    import { cadastrarDocumentacao, buscarTrabalhos } from "@/services/cadastrarDocumentacao.js";
+    import { confirmarAta, buscarUltimaAta } from "@/services/cadastrarAta.js";
     import { useToast } from "vue-toastification";
     
     const toast = useToast()
     export default {
-        name: "CadastrarDocumentacao",
+        name: "CadastrarAta",
         data() {
         return {
           content: "",
-          DocumentacaoDTO: {
+          AtaDTO: {
             trabalho: {
                 codigoTrabalho: null,
             },
           },
-          TrabalhoDTO: {},
+          ReuniaoDTO: {},
         };
       },
       mounted() {
-        this.retornarTrabalhos()
+        this.retornarUltimaAta()
       },
       methods: {
-        retornarTrabalhos() {
+        retornarUltimaAta() {
           let loader = this.$loading.show({
             container: this.fullPage ? null : this.$refs.formContainer,
           });
-          buscarTrabalhos((response) => {
+          buscarUltimaAta((response) => {
             if (response) {
               loader.hide()
-              this.TrabalhoDTO = response.data
+              this.ReuniaoDTO = response.data
             }
           },
             (error) => {
@@ -59,14 +51,14 @@
             () => { }
           );
         },
-        cadastrarDocumentacao() {
+        confirmarAta() {
           let loader = this.$loading.show({
             container: this.fullPage ? null : this.$refs.formContainer,
           });
-          cadastrarDocumentacao(this.DocumentacaoDTO, (response) => {
+          confirmarAta(this.AtaDTO, (response) => {
             if (response) {
               loader.hide()
-              toast.success("Documentação Cadastrado com Sucesso!");
+              toast.success("Ata Confirmada com Sucesso!");
             }
           },
             (error) => {
