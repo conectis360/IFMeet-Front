@@ -21,7 +21,7 @@
     </template>
       
     <script>
-    import { cadastrarAta, buscarReunioes } from "@/services/CadastrarAta.js";
+    import { cadastrarAta, buscarReunioes } from "@/services/cadastrarAta.js";
     import { useToast } from "vue-toastification";
     
     const toast = useToast()

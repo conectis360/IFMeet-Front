@@ -2,16 +2,8 @@
     <div class="container" style="background-color: white;">
         <form>
           <div class="form-group">
-            <label for="exampleFormControlSelect1">Hora de Inicio</label>
-            <input type="time" id="appt" name="appt" min="09:00" max="18:00" required v-model="ReuniaoDTO.horaInicio">
-          </div>
-          <div class="form-group">
-            <label for="exampleFormControlSelect1">Hora Fim</label>
-            <input type="time" id="appt" name="appt" min="09:00" max="18:00" required v-model="ReuniaoDTO.horaFim">
-          </div>
-          <div class="form-group">
-            <label for="exampleFormControlTextarea1">Pauta</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="12" v-model="ReuniaoDTO.pauta"></textarea>
+            <label for="exampleFormControlTextarea1">Descrição</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="12" v-model="DocumentacaoDTO.descricao"></textarea>
           </div>
           <div class="form-group">
             <label for="exampleFormControlSelect1">Trabalho</label>
@@ -20,25 +12,25 @@
                 {{ trabalho.nomeTrabalho }}
             </option>
             </select>
-           </div>
+            </div>
         </form>
         <div class="modal-footer justify-content-between">
-                <input type="submit" class="btn btn-success" value="Cadastrar Tarefa" @click="cadastrarReuniao()">
+                <input type="submit" class="btn btn-success" value="Cadastrar Tarefa" @click="cadastrarDocumentacao()">
         </div>
     </div>
     </template>
       
     <script>
-    import { cadastrarReuniao, buscarTrabalhos } from "@/services/cadastrarReuniao.js";
+    import { cadastrarDocumentacao, buscarTrabalhos } from "@/services/cadastrarDocumentacao.js";
     import { useToast } from "vue-toastification";
     
     const toast = useToast()
     export default {
-        name: "CadastrarReuniao",
+        name: "CadastrarDocumentacao",
         data() {
         return {
           content: "",
-          ReuniaoDTO: {
+          DocumentacaoDTO: {
             trabalho: {
                 codigoTrabalho: null,
             },
@@ -67,11 +59,11 @@
             () => { }
           );
         },
-        cadastrarReuniao() {
+        cadastrarDocumentacao() {
           let loader = this.$loading.show({
             container: this.fullPage ? null : this.$refs.formContainer,
           });
-          cadastrarReuniao(this.ReuniaoDTO, (response) => {
+          cadastrarDocumentacao(this.DocumentacaoDTO, (response) => {
             if (response) {
               loader.hide()
               toast.success("Documentação Cadastrado com Sucesso!");
