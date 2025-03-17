@@ -1,4 +1,5 @@
 <template>
+  <h1>Cadastrar Ata</h1>
     <div class="container" style="background-color: white;">
         <form>
           <div class="form-group">
@@ -15,7 +16,7 @@
            </div>
         </form>
         <div class="modal-footer justify-content-between">
-                <input type="submit" class="btn btn-success" value="Cadastrar Tarefa" @click="cadastrarAta()">
+                <input type="submit" class="btn btn-success" value="Cadastrar Ata" @click="cadastrarAta()">
         </div>
     </div>
     </template>

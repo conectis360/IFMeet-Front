@@ -9,7 +9,7 @@ export const getToken = () => {
       if (timeLeft < time15min) {
         return ''
       }
-      return userData.token
+      return userData.accessToken
     } else {
       return ''
     }

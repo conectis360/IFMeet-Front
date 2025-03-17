@@ -8,6 +8,10 @@ const FormularioRegistrarUsuario = () => import("./components/formularios/Formul
 const CadastrarTrabalho = () => import("./components/orientador/CadastrarTrabalho.vue")
 const CadastrarTarefa = () => import("./components/orientador/CadastrarTarefa.vue")
 const CadastrarAta = () => import("./components/orientador/CadastrarAta.vue")
+const VisualizarReunioes = () => import("./components/orientador/VisualizarReunioes.vue")
+const VisualizarTarefas = () => import("./components/orientador/VisualizarTarefas.vue")
+const VisualizarAtas = () => import("./components/orientador/VisualizarAtas.vue")
+const CadastrarReuniao = () => import("./components/orientador/CadastrarReuniao.vue")
 const CadastrarDocumentacao = () => import("./components/orientador/CadastrarDocumentacao.vue")
 const Teste = () => import("./teste.vue")
 
@@ -32,6 +36,22 @@ const routes = [
     {
         path: "/cadastrarTarefa",
         component: CadastrarTarefa,
+    },
+    {
+        path: "/reunioes",
+        component: VisualizarReunioes,
+    },
+    {
+        path: "/tarefas",
+        component: VisualizarTarefas,
+    },
+    {
+        path: "/atas",
+        component: VisualizarAtas,
+    },
+    {
+        path: "/cadastrarReuniao",
+        component: CadastrarReuniao,
     },
     {
         path: "/cadastrarAta",

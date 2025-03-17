@@ -1,4 +1,5 @@
 <template>
+  <h1>Cadastrar Documentação</h1>
     <div class="container" style="background-color: white;">
         <form>
           <div class="form-group">
@@ -7,9 +8,9 @@
           </div>
           <div class="form-group">
             <label for="exampleFormControlSelect1">Trabalho</label>
-            <select class="form-control" id="exampleFormControlSelect1" v-model="TrabalhoDTO.codigoTrabalho">
-              <option v-for="trabalho in TrabalhoDTO" :value="trabalho.codigoCurso" :key="trabalho.codigoTrabalho">
-                {{ trabalho.nomeTrabalho }}
+            <select class="form-control" id="exampleFormControlSelect1" v-model="DocumentacaoDTO.trabalho.codigoTrabalho">
+              <option v-for="trabalho in TrabalhoDTO" :value="trabalho.codigoTrabalho" :key="trabalho.codigoTrabalho">
+                {{ trabalho.titulo }}
             </option>
             </select>
             </div>

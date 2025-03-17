@@ -10,7 +10,7 @@
         />
         <div class="col-md-8 form-group" id="formUsuario">
           <div class="mb-3 row">
-            <label class="col-sm-2 col-form-label" for="usuario"
+            <label class="col-sm-2" for="usuario"
               ><h4>Usuario</h4></label
             >
             <div class="col-sm-5">
@@ -26,7 +26,7 @@
         </div>
         <div class="col-md-8 form-group" id="formSenha">
           <div class="mb-3 row">
-            <label class="col-sm-2 col-form-label" for="password"
+            <label class="col-sm-2" for="password"
               ><h4>Senha</h4></label
             >
             <div class="col-sm-5">
@@ -120,6 +120,7 @@ export default {
         (response) => {
           localStorage.setItem("user", JSON.stringify(response.data));
           this.$router.push("/profile");
+          window.location.reload(true);
         },
         (error) => {
           this.message =

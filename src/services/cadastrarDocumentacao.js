@@ -6,5 +6,5 @@ export const cadastrarDocumentacao = (documentacaoDTO, successCallback, errorCal
 }
 
 export const buscarTrabalhos = (successCallback, errorCallback, finallyCallback) => {
-  return requestGet(apiIFMeet, '/trabalho/findAllByOrientador', successCallback, errorCallback, finallyCallback)
+  return requestGet(apiIFMeet, '/trabalho/findTrabalhoByOrientador', successCallback, errorCallback, finallyCallback)
 }

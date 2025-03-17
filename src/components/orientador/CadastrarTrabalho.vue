@@ -1,4 +1,5 @@
 <template>
+  <h1>Cadastrar Trabalho</h1>
   <div class="container" style="background-color: white;">
     <form>
       <div class="form-group">

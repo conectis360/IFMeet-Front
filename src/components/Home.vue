@@ -1,7 +1,9 @@
 <template>
   <div class="container">
     <header class="jumbotron">
-      <h3>{{ content }}</h3>
+      <h3>
+        Seja bem-vindo <strong>{{currentUser.nome}}</strong>
+      </h3>
     </header>
   </div>
 </template>
@@ -15,6 +17,11 @@ export default {
     return {
       content: "",
     };
+  },
+  computed: {
+    currentUser() {
+      return this.$store.state.auth.user;
+    }
   },
   mounted() {
     UserService.getPublicContent().then(

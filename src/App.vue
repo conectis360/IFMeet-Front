@@ -2,7 +2,7 @@
   <html>
     <body class="hold-transition sidebar-mini layout-fixed">
       <div v-if="currentUser">
-        <div class="wrapper">
+        <div class="wrapper home">
           <Preloader v-if="carregou = false"></Preloader>
           <Navbar></Navbar>
           <Sidebar></Sidebar>
@@ -30,6 +30,9 @@
     </body>
   </html>
 </template>
+<style>
+
+</style>
 
 <script>
 import $ from "jquery";

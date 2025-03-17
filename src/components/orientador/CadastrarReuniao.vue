@@ -1,20 +1,30 @@
 <template>
+  <h1>Marcar Reunião</h1>
     <div class="container" style="background-color: white;">
         <form>
           <div class="form-group">
+            <label for="exampleFormControlSelect1">Data</label>
+            <br>
+            <input type="date" id="appt" name="appt" required v-model="ReuniaoDTO.data">
+          </div>
+          <div class="form-group">
             <label for="exampleFormControlSelect1">Hora de Inicio</label>
+            <br>
             <input type="time" id="appt" name="appt" min="09:00" max="18:00" required v-model="ReuniaoDTO.horaInicio">
           </div>
           <div class="form-group">
             <label for="exampleFormControlSelect1">Hora Fim</label>
+            <br>
             <input type="time" id="appt" name="appt" min="09:00" max="18:00" required v-model="ReuniaoDTO.horaFim">
           </div>
           <div class="form-group">
             <label for="exampleFormControlTextarea1">Pauta</label>
+            <br>
             <textarea class="form-control" id="exampleFormControlTextarea1" rows="12" v-model="ReuniaoDTO.pauta"></textarea>
           </div>
           <div class="form-group">
             <label for="exampleFormControlSelect1">Trabalho</label>
+            <br>
             <select class="form-control" id="exampleFormControlSelect1" v-model="TrabalhoDTO.trabalho.codigoTrabalho">
               <option v-for="trabalho in TrabalhoDTO" :value="trabalho.codigoCurso" :key="trabalho.codigoTrabalho">
                 {{ trabalho.nomeTrabalho }}
@@ -23,7 +33,7 @@
         </div>
         </form>
         <div class="modal-footer justify-content-between">
-                <input type="submit" class="btn btn-success" value="Cadastrar Tarefa" @click="cadastrarReuniao()">
+                <input type="submit" class="btn btn-success" value="Cadastrar Reunião" @click="cadastrarReuniao()">
         </div>
     </div>
     </template>
@@ -43,7 +53,11 @@
                 codigoTrabalho: null,
             },
           },
-          TrabalhoDTO: {},
+          TrabalhoDTO: {
+            trabalho: {
+                codigoTrabalho: null,
+            },
+          },
         };
       },
       mounted() {

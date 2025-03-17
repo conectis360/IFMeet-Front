@@ -1,4 +1,5 @@
 <template>
+  <h1>Cadastrar Tarefa</h1>
 <div class="container" style="background-color: white;">
     <form>
       <div class="form-group">
@@ -29,7 +30,8 @@
 </template>
   
 <script>
-import { cadastrarTarefa, buscarTrabalhos } from "@/services/cadastrarTrabalho.js";
+import { cadastrarTarefa } from "@/services/cadastrarTrabalho.js";
+import { buscarTrabalhos } from "@/services/cadastrarReuniao.js";
 import { useToast } from "vue-toastification";
 
 const toast = useToast()
@@ -43,7 +45,11 @@ export default {
             codigoTrabalho: null,
         },
       },
-      TrabalhoDTO: {},
+      TrabalhoDTO: {
+            trabalho: {
+                codigoTrabalho: null,
+            },
+          },
     };
   },
   mounted() {
@@ -51,22 +57,22 @@ export default {
   },
   methods: {
     retornarTrabalhos() {
-      let loader = this.$loading.show({
-        container: this.fullPage ? null : this.$refs.formContainer,
-      });
-      buscarTrabalhos((response) => {
-        if (response) {
-          loader.hide()
-          this.TrabalhoDTO = response.data
-        }
-      },
-        (error) => {
-          loader.hide()
-          toast.error(error);
+          let loader = this.$loading.show({
+            container: this.fullPage ? null : this.$refs.formContainer,
+          });
+          buscarTrabalhos((response) => {
+            if (response) {
+              loader.hide()
+              this.TrabalhoDTO = response.data
+            }
+          },
+            (error) => {
+              loader.hide()
+              toast.error(error);
+            },
+            () => { }
+          );
         },
-        () => { }
-      );
-    },
     cadastrarTarefa() {
       let loader = this.$loading.show({
         container: this.fullPage ? null : this.$refs.formContainer,
