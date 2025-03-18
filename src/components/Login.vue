@@ -11,7 +11,7 @@
         <div class="col-md-8 form-group" id="formUsuario">
           <div class="mb-3 row">
             <label class="col-sm-2" for="usuario"
-              ><h4>Usuario</h4></label
+              ><h4>Usuário</h4></label
             >
             <div class="col-sm-5">
               <input
@@ -73,8 +73,8 @@ export default {
   },
   data() {
     const schema = yup.object().shape({
-      username: yup.string().required("Username is required!"),
-      password: yup.string().required("Password is required!"),
+      username: yup.string().required("O Usuário é obrigatório!"),
+      password: yup.string().required("A senha é obrigatória!"),
     });
     return {
       usuario: {
