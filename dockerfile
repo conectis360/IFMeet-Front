@@ -8,6 +8,6 @@ RUN npm run build
 
 # Usando Nginx para servir a aplicação Vue.js
 FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html/IFMeet
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
