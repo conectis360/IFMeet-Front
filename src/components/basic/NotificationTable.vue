@@ -4,28 +4,55 @@
       <table class="table table-hover">
         <thead>
           <tr>
+            <th>Tipo</th>
             <th>Autor</th>
             <th>Conteúdo</th>
             <th>Data</th>
+            <th>Visualizado</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(notification, index) in notifications" :key="index">
+          <tr
+            v-for="(notification, index) in paginatedRecords"
+            :key="index"
+            :class="{ 'registro-visualizado': notification.visualizada }"
+          >
+            <td>{{ notification.tipoNotificacao }}</td>
             <td>
               <div class="user-info">
                 <img
                   class="img-circle img-sm"
-                  :src="notification.avatar || 'default-avatar.png'"
-                  alt="User Image"
+                  :src="formatarFoto(notification.fotoUsuario)"
                 />
-                <span class="username">{{ notification.author }}</span>
+                <span class="username">{{ notification.nomeUsuario }}</span>
               </div>
             </td>
-            <td>{{ notification.content }}</td>
-            <td>{{ formatarData(notification.timestamp) }}</td>
+            <td>{{ notification.conteudoNotificacao }}</td>
+            <td>{{ formatarData(notification.dataNotificacao) }}</td>
+            <td>{{ notification.visualizada ? "SIM" : "NÃO" }}</td>
           </tr>
         </tbody>
       </table>
+
+      <!-- Controles de Paginação -->
+      <div class="pagination-controls">
+        <button
+          :disabled="tableData.pageNumber === 1"
+          @click="irParaPagina(tableData.pageNumber - 1)"
+        >
+          Anterior
+        </button>
+        <span>
+          Página {{ tableData.pageNumber }} de {{ tableData.totalPages }}
+        </span>
+        <button
+          :disabled="tableData.pageNumber === tableData.totalPages"
+          @click="irParaPagina(tableData.pageNumber + 1)"
+        >
+          Próxima
+        </button>
+        <h5>{{ "Registros: " + tableData.totalRecords }}</h5>
+      </div>
     </div>
   </div>
 </template>
@@ -37,22 +64,36 @@ export default {
   name: "NotificationTable",
   mixins: [data],
   props: {
-    notifications: {
-      type: Array,
+    tableData: {
+      type: Object,
       required: true,
-      default: () => [],
-      validator: (notifications) =>
-        notifications.every(
-          (notification) =>
-            "author" in notification &&
-            "timestamp" in notification &&
-            "content" in notification
-        ),
+      default: () => ({
+        totalPages: 1,
+        totalRecords: 0,
+        pageNumber: 1,
+        pageSize: 10,
+        records: [],
+      }),
+    },
+  },
+  computed: {
+    // Retorna os registros da página atual
+    paginatedRecords() {
+      return this.tableData.records;
     },
   },
   methods: {
     formatarData(data) {
       return this.formatarDataHelper(data);
+    },
+    formatarFoto(byteArray) {
+      return `data:image/jpeg;base64,${byteArray}`;
+    },
+    // Navega para uma página específica
+    irParaPagina(pagina) {
+      if (pagina >= 1 && pagina <= this.tableData.totalPages) {
+        this.$emit("pagina-alterada", pagina); // Emite um evento para o componente pai
+      }
     },
   },
 };
@@ -75,5 +116,33 @@ export default {
 }
 .username {
   font-weight: bold;
+}
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+.pagination-controls button {
+  margin: 0 10px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+.pagination-controls button:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+/* Estilo para registros visualizados */
+.registro-visualizado {
+  background-color: #f0f0f0; /* Cor de fundo cinza */
+  opacity: 0.8; /* Opacidade reduzida */
+}
+
+th,
+td {
+  text-align: center;
 }
 </style>

@@ -1,73 +1,68 @@
 <template>
   <div>
-    <NotificationTable :notifications="notifications" />
+    <NotificationTable
+      :tableData="tableData"
+      @pagina-alterada="carregarDados"
+    />
   </div>
 </template>
 
 <script>
 import NotificationTable from "../components/basic/NotificationTable.vue";
+import { buscarTodasNotificacoes } from "../services/notificacoes";
+import { useToast } from "vue-toastification";
 
+const toast = useToast();
 export default {
   components: {
     NotificationTable,
   },
+  mounted() {
+    this.carregarDados(1); // Carrega os dados pela primeira vez
+  },
   data() {
     return {
-      notifications: [
-        {
-          author: "Maria Gonzales",
-          timestamp: "2023-10-01T20:03:00",
-          content:
-            "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.",
-          avatar:
-            "https://i.pinimg.com/474x/47/17/ce/4717ce89b32aebad31c7c1d343550303.jpg", // URL da imagem do avatar
-        },
-        {
-          author: "Luna Stark",
-          timestamp: "2025-03-21T20:03:00",
-          content:
-            "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.",
-          avatar:
-            "https://i.pinimg.com/736x/14/64/f5/1464f5cbd3244c9d684c1e5c923cebea.jpg", // URL da imagem do avatar
-        },
-        {
-          author: "Luna Stark",
-          timestamp: "2025-03-22T20:03:00",
-          content:
-            "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.",
-          avatar:
-            "https://i.pinimg.com/736x/14/64/f5/1464f5cbd3244c9d684c1e5c923cebea.jpg", // URL da imagem do avatar
-        },
-        {
-          author: "Maria Gonzales",
-          timestamp: "2025-03-18T20:03:00",
-          content:
-            "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.",
-          avatar:
-            "https://i.pinimg.com/474x/47/17/ce/4717ce89b32aebad31c7c1d343550303.jpg", // URL da imagem do avatar
-        },
-        // Adicione mais notificações aqui
-      ],
-      estados: [
-        { value: "AL", text: "Alabama" },
-        { value: "AK", text: "Alaska" },
-        { value: "CA", text: "California" },
-        { value: "DE", text: "Delaware" },
-        { value: "TN", text: "Tennessee" },
-        { value: "TX", text: "Texas" },
-        { value: "WA", text: "Washington" },
-      ],
-      estadoSelecionado: null,
+      tableData: {
+        totalPages: 1,
+        totalRecords: 0,
+        pageNumber: 1,
+        pageSize: 10,
+        records: [],
+      },
+      page: {
+        pageSize: 10,
+        pageNumber: 1,
+      },
     };
   },
   methods: {
-    handleChange(value) {
-      this.estadoSelecionado = value;
+    carregarDados(pagina) {
+      this.page.pageNumber = pagina;
+      let loader = this.$loading.show({
+        container: this.fullPage ? null : this.$refs.formContainer,
+      });
+      buscarTodasNotificacoes(
+        this.page,
+        (response) => {
+          if (response) {
+            loader.hide();
+            this.tableData = {};
+            this.tableData = {
+              totalPages: response.data.totalPages,
+              totalRecords: response.data.totalRecords,
+              pageNumber: response.data.pageNumber,
+              pageSize: response.data.pageSize,
+              records: response.data.records,
+            };
+          }
+        },
+        (error) => {
+          loader.hide();
+          toast.error(error);
+        },
+        () => {}
+      );
     },
   },
 };
 </script>
-
-<style>
-/* Estilos globais (opcional) */
-</style>
