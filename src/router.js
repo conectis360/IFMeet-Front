@@ -5,7 +5,7 @@ import Login from "./components/Login.vue";
 const Profile = () => import("./components/Profile.vue")
 const BoardUser = () => import("./components/BoardUser.vue")
 const FormularioRegistrarUsuario = () => import("./components/formularios/FormularioRegistrarUsuario.vue")
-const CadastrarTrabalho = () => import("./components/orientador/CadastrarTrabalho.vue")
+const TrabalhoPage = () => import("./pages/TrabalhoPage.vue")
 const CadastrarTarefa = () => import("./components/orientador/CadastrarTarefa.vue")
 const CadastrarAta = () => import("./components/orientador/CadastrarAta.vue")
 const VisualizarReunioes = () => import("./components/orientador/VisualizarReunioes.vue")
@@ -36,8 +36,8 @@ const routes = [
         component: Login,
     },
     {
-        path: "/cadastrarTrabalho",
-        component: CadastrarTrabalho,
+        path: "/trabalho",
+        component: TrabalhoPage,
     },
     {
         path: "/cadastrarTarefa",
