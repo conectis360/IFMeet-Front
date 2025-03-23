@@ -19,7 +19,7 @@ const Teste = () => import("./teste.vue")
 const routes = [
     {
         path: "/notificacoes",
-        name: "notificacoes",
+        name: "Notificações",
         component: NotificacoesPage,
     },
     {
