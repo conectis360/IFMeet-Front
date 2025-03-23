@@ -4,7 +4,7 @@
       ref="select"
       class="select2"
       :multiple="multiple"
-      :placeholder="placeholder"
+      placeholder="placeholder"
       style="width: 100%"
       @change="onSelectChange"
     >
