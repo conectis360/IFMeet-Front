@@ -6,13 +6,9 @@ const Profile = () => import("./components/Profile.vue")
 const BoardUser = () => import("./components/BoardUser.vue")
 const FormularioRegistrarUsuario = () => import("./components/formularios/FormularioRegistrarUsuario.vue")
 const TrabalhoPage = () => import("./pages/TrabalhoPage.vue")
-const CadastrarTarefa = () => import("./components/orientador/CadastrarTarefa.vue")
-const CadastrarAta = () => import("./components/orientador/CadastrarAta.vue")
 const VisualizarReunioes = () => import("./components/orientador/VisualizarReunioes.vue")
 const VisualizarTarefas = () => import("./components/orientador/VisualizarTarefas.vue")
 const VisualizarAtas = () => import("./components/orientador/VisualizarAtas.vue")
-const CadastrarReuniao = () => import("./components/orientador/CadastrarReuniao.vue")
-const CadastrarDocumentacao = () => import("./components/orientador/CadastrarDocumentacao.vue")
 const NotificacoesPage = () => import("./pages/NotificationPage.vue")
 const Teste = () => import("./teste.vue")
 
@@ -36,12 +32,8 @@ const routes = [
         component: Login,
     },
     {
-        path: "/trabalho",
+        path: "/trabalhos",
         component: TrabalhoPage,
-    },
-    {
-        path: "/cadastrarTarefa",
-        component: CadastrarTarefa,
     },
     {
         path: "/reunioes",
@@ -54,18 +46,6 @@ const routes = [
     {
         path: "/atas",
         component: VisualizarAtas,
-    },
-    {
-        path: "/cadastrarReuniao",
-        component: CadastrarReuniao,
-    },
-    {
-        path: "/cadastrarAta",
-        component: CadastrarAta,
-    },
-    {
-        path: "/cadastrarDocumentacao",
-        component: CadastrarDocumentacao,
     },
     {
         path: "/profile",
