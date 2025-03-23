@@ -13,8 +13,8 @@
 
 <script>
 import { buscarAtasPorTrabalho } from "@/services/cadastrarAta.js";
-import { useToast } from "vue-toastification";
 import ComplexTable from "../basic/ComplexTable.vue";
+import { useToast } from "vue-toastification";
 
 const toast = useToast();
 export default {
