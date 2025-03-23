@@ -1,6 +1,19 @@
 export default {
     methods: {
+        formatarDataBackendHelper: function converterData(dataString) {
+            // Divide a string em partes
+            const [data, hora] = dataString.split(' ');
+            const [dia, mes, ano] = data.split('/');
+
+            // Cria uma nova string no formato ISO 8601
+            const dataISO = `${ano}-${mes}-${dia}T${hora}`;
+
+            // Retorna um objeto Date
+            return new Date(dataISO);
+        },
         formatarDataHelper: function (data) {
+            data = this.formatarDataBackendHelper(data)
+
             const hoje = new Date();
             const ontem = new Date();
             ontem.setDate(hoje.getDate() - 1);
