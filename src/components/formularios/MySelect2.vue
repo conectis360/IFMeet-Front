@@ -1,37 +1,22 @@
 <template>
-  <div class="card card-default">
-    <div class="card-header">
-      <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse">
-          <i class="fas fa-minus"></i>
-        </button>
-        <button type="button" class="btn btn-tool" data-card-widget="remove">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="form-group">
-        <label>{{ label }}</label>
-        <select
-          ref="select"
-          class="select2"
-          :multiple="multiple"
-          :data-placeholder="placeholder"
-          style="width: 100%"
-          @change="onSelectChange"
-        >
-          <option
-            v-for="option in options"
-            :key="option.value || option"
-            :value="option.value || option"
-            :disabled="isDisabled(option)"
-          >
-            {{ option.text || option }}
-          </option>
-        </select>
-      </div>
-    </div>
+  <div class="form-group">
+    <select
+      ref="select"
+      class="select2"
+      :multiple="multiple"
+      :placeholder="placeholder"
+      style="width: 100%"
+      @change="onSelectChange"
+    >
+      <option
+        v-for="option in options"
+        :key="getKey(option)"
+        :value="getKey(option)"
+        :disabled="isDisabled(option)"
+      >
+        {{ getValue(option) }}
+      </option>
+    </select>
   </div>
 </template>
 
@@ -65,6 +50,14 @@ export default {
     disabledOptions: {
       type: Array,
       default: () => [],
+    },
+    keyName: {
+      type: String,
+      default: "value", // Nome da propriedade que será usada como chave
+    },
+    valueName: {
+      type: String,
+      default: "text", // Nome da propriedade que será usada como valor
     },
   },
   mounted() {
@@ -112,10 +105,16 @@ export default {
       this.$emit("change", selectedValue); // Emite um evento "change" com o valor selecionado
     },
     isDisabled(option) {
-      if (option.value) {
-        return this.disabledOptions.includes(option.value);
-      }
-      return this.disabledOptions.includes(option);
+      const key = this.getKey(option);
+      return this.disabledOptions.includes(key);
+    },
+    getKey(option) {
+      // Retorna a chave do objeto (ou o próprio valor, se for um array de strings)
+      return typeof option === "object" ? option[this.keyName] : option;
+    },
+    getValue(option) {
+      // Retorna o valor do objeto (ou o próprio valor, se for um array de strings)
+      return typeof option === "object" ? option[this.valueName] : option;
     },
   },
   beforeUnmount() {
