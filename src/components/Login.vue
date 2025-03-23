@@ -10,9 +10,7 @@
         />
         <div class="col-md-8 form-group" id="formUsuario">
           <div class="mb-3 row">
-            <label class="col-sm-2" for="usuario"
-              ><h4>Usuário</h4></label
-            >
+            <label class="col-sm-5" for="usuario"><h4>Usuário</h4></label>
             <div class="col-sm-5">
               <input
                 class="form-control"
@@ -26,9 +24,7 @@
         </div>
         <div class="col-md-8 form-group" id="formSenha">
           <div class="mb-3 row">
-            <label class="col-sm-2" for="password"
-              ><h4>Senha</h4></label
-            >
+            <label class="col-sm-5" for="password"><h4>Senha</h4></label>
             <div class="col-sm-5">
               <input
                 class="form-control"
@@ -155,8 +151,9 @@ export default {
   justify-content: center;
   align-items: center;
 }
-#formUsuario, #formSenha {
-  padding-left:100px;
-  margin-left:70px;
+#formUsuario,
+#formSenha {
+  padding-left: 100px;
+  margin-left: 70px;
 }
 </style>

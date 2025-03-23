@@ -1,6 +1,6 @@
 <template>
   <h1>Cadastrar Trabalho</h1>
-  <div class="container" style="background-color: white;">
+  <div class="container" style="background-color: #f4f6f9;">
     <form>
       <div class="form-group">
         <label for="exampleFormControlInput1">Titulo Trabalho</label>
@@ -97,7 +97,7 @@ export default {
       buscarAlunos((response) => {
         if (response) {
           loader.hide()
-          this.AlunosDTO = response.data
+          this.AlunosDTO = response.data.records
         }
       },
         (error) => {
@@ -114,7 +114,7 @@ export default {
       buscarOrientadores((response) => {
         if (response) {
           loader.hide()
-          this.OrientadoresDTO = response.data
+          this.OrientadoresDTO = response.data.records
         }
       },
         (error) => {
