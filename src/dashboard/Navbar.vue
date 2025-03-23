@@ -50,38 +50,9 @@ export default {
     NotificationMenu,
   },
   data() {
-    return {
-      notifications: [
-        {
-          icon: "fa fa-pen",
-          message: "4 new messages",
-          time: "3 mins",
-          action: () => alert("Você tem novas mensagens!"),
-        },
-        {
-          icon: "fas fa-users",
-          message: "8 friend requests",
-          time: "12 hours",
-          action: () => alert("Você tem novas solicitações de amizade!"),
-        },
-        {
-          icon: "fas fa-file",
-          message: "3 new reports",
-          time: "2 days",
-          action: () => alert("Você tem novos relatórios!"),
-        },
-      ],
-    };
+    return {};
   },
   methods: {
-    // Ação ao clicar em uma notificação
-    handleNotificationClick(notification) {
-      console.log("Notificação clicada:", notification);
-    },
-    // Ação ao clicar em "Ver todas as notificações"
-    handleSeeAll() {
-      console.log("Ver todas as notificações");
-    },
     logOut() {
       this.$store.dispatch("auth/logout");
       this.$router.push("/login");

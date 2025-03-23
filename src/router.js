@@ -13,9 +13,15 @@ const VisualizarTarefas = () => import("./components/orientador/VisualizarTarefa
 const VisualizarAtas = () => import("./components/orientador/VisualizarAtas.vue")
 const CadastrarReuniao = () => import("./components/orientador/CadastrarReuniao.vue")
 const CadastrarDocumentacao = () => import("./components/orientador/CadastrarDocumentacao.vue")
+const NotificacoesPage = () => import("./pages/NotificationPage.vue")
 const Teste = () => import("./teste.vue")
 
 const routes = [
+    {
+        path: "/notificacoes",
+        name: "notificacoes",
+        component: NotificacoesPage,
+    },
     {
         path: "/",
         name: "home",
