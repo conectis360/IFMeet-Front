@@ -2,7 +2,7 @@ import { requestGet, requestPost } from './request'
 import { apiIFMeet } from './API'
 
 export const cadastrarTrabalho = (trabalhoDTO, successCallback, errorCallback, finallyCallback) => {
-  return requestPost(apiIFMeet, '/trabalho/cadastrarTrabalho', successCallback, errorCallback, finallyCallback, trabalhoDTO)
+  return requestPost(apiIFMeet, '/trabalho', successCallback, errorCallback, finallyCallback, trabalhoDTO)
 }
 
 export const buscarAlunos = (successCallback, errorCallback, finallyCallback) => {
@@ -15,4 +15,8 @@ export const buscarOrientadores = (successCallback, errorCallback, finallyCallba
 
 export const buscarCursos = (successCallback, errorCallback, finallyCallback) => {
   return requestGet(apiIFMeet, '/curso/findAll', successCallback, errorCallback, finallyCallback)
+}
+
+export const buscarTrabalho = (successCallback, errorCallback, finallyCallback) => {
+  return requestGet(apiIFMeet, '/trabalho/findAll', successCallback, errorCallback, finallyCallback)
 }

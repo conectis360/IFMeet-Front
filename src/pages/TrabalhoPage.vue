@@ -14,33 +14,76 @@
       <CadastrarTrabalho ref="formularioCadastro" />
     </ModalComponent>
   </div>
+  <div>
+    <ComplexTable
+      :headers="headers"
+      :tableData="trabalhosDTO"
+      :tableName="tableName"
+      @editar="handleEditar"
+      @excluir="handleExcluir"
+    />
+  </div>
 </template>
 
 <script>
-import ModalComponent from "../components/basic/ModalComponent.vue"; // Importe o modal
+import ModalComponent from "../components/basic/ModalComponent.vue";
 import CadastrarTrabalho from "../components/orientador/CadastrarTrabalho.vue";
+import ComplexTable from "../components/basic/ComplexTable.vue";
+import { buscarTrabalho } from "@/services/cadastrarTrabalho.js";
+import { useToast } from "vue-toastification";
+
+const toast = useToast();
 
 export default {
   name: "TrabalhoPage",
   components: {
     ModalComponent,
     CadastrarTrabalho,
+    ComplexTable,
   },
   data() {
     return {
-      novoTrabalho: {
-        nome: "",
-        codigo: "",
-      },
+      tableName: "Trabalhos",
+      trabalhosDTO: {},
+      headers: [
+        { text: "Titulo", value: "titulo" },
+        { text: "Aluno", value: "aluno.nome" },
+        { text: "Orientador", value: "orientador.nome" },
+        { text: "Curso", value: "curso.nomeCurso" },
+        { text: "Problema", value: "problema" },
+        { text: "Justificativa", value: "justificativa" },
+        { text: "Hipotese", value: "hipotese" },
+        { text: "Solucao", value: "solucao" },
+      ],
     };
+  },
+  mounted() {
+    this.retornarTrabalhos();
   },
   methods: {
     abrirModalCadastro() {
-      this.$refs.modalCadastro.abrirModal(); // Abre o modal
+      this.$refs.modalCadastro.abrirModal();
     },
     cadastrarTrabalho() {
-      // Acessa o componente CadastrarTrabalho e chama a função de cadastro
       this.$refs.formularioCadastro.cadastrarTrabalho();
+    },
+    retornarTrabalhos() {
+      let loader = this.$loading.show({
+        container: this.fullPage ? null : this.$refs.formContainer,
+      });
+      buscarTrabalho(
+        (response) => {
+          if (response) {
+            loader.hide();
+            this.trabalhosDTO = response.data;
+          }
+        },
+        (error) => {
+          loader.hide();
+          toast.error(error);
+        },
+        () => {}
+      );
     },
   },
 };
