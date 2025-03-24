@@ -8,8 +8,8 @@ const FormularioRegistrarUsuario = () => import("./components/formularios/Formul
 const TrabalhoPage = () => import("./pages/TrabalhoPage.vue")
 const VisualizarReunioes = () => import("./components/orientador/VisualizarReunioes.vue")
 const VisualizarTarefas = () => import("./components/orientador/VisualizarTarefas.vue")
-const VisualizarAtas = () => import("./components/orientador/VisualizarAtas.vue")
 const NotificacoesPage = () => import("./pages/NotificationPage.vue")
+const AtaPage = () => import("./pages/AtaPage.vue")
 const Teste = () => import("./teste.vue")
 
 const routes = [
@@ -45,7 +45,7 @@ const routes = [
     },
     {
         path: "/atas",
-        component: VisualizarAtas,
+        component: AtaPage,
     },
     {
         path: "/profile",
