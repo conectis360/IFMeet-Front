@@ -90,7 +90,7 @@ export default {
     iniciarAtualizacaoAutomatica() {
       this.intervalo = setInterval(() => {
         this.carregarDados();
-      }, 20000); // 20 segundos
+      }, 300000); // 5 minutos (300.000 milissegundos)
     },
     // Método para parar a atualização automática
     pararAtualizacaoAutomatica() {
