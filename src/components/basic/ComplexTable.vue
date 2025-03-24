@@ -149,7 +149,6 @@ export default {
     },
     // Ação do botão Editar
     editarItem(item) {
-      console.log(item);
       this.$emit("editar", item);
     },
     // Ação do botão Excluir
