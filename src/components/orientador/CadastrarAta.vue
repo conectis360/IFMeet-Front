@@ -1,82 +1,132 @@
 <template>
-  <h1>Cadastrar Ata</h1>
-    <div class="container" style="background-color: white;">
-        <form>
-          <div class="form-group">
-            <label for="exampleFormControlTextarea1">Resumo</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="12" v-model="AtaDTO.pauta"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="exampleFormControlSelect1">Reunião</label>
-            <select class="form-control" id="exampleFormControlSelect1" v-model="ReuniaoDTO.codigoReuniao">
-              <option v-for="reuniao in ReuniaoDTO" :value="reuniao.codigoReuniao" :key="reuniao.codigoReuniao">
-                {{ reuniao.codigoReuniao }}
-            </option>
-            </select>
-           </div>
-        </form>
-        <div class="modal-footer justify-content-between">
-                <input type="submit" class="btn btn-success" value="Cadastrar Ata" @click="cadastrarAta()">
-        </div>
-    </div>
-    </template>
-      
-    <script>
-    import { cadastrarAta, buscarReunioes } from "@/services/cadastrarAta.js";
-    import { useToast } from "vue-toastification";
-    
-    const toast = useToast()
-    export default {
-        name: "CadastrarAta",
-        data() {
-        return {
-          content: "",
-          AtaDTO: {
-            trabalho: {
-                codigoTrabalho: null,
-            },
-          },
-          ReuniaoDTO: {},
-        };
-      },
-      mounted() {
-        this.retornarReunioes()
-      },
-      methods: {
-        retornarReunioes() {
-          let loader = this.$loading.show({
-            container: this.fullPage ? null : this.$refs.formContainer,
-          });
-          buscarReunioes((response) => {
-            if (response) {
-              loader.hide()
-              this.ReuniaoDTO = response.data
-            }
-          },
-            (error) => {
-              loader.hide()
-              toast.error(error);
-            },
-            () => { }
-          );
+  <div class="container" style="background-color: #f4f6f9">
+    <form>
+      <!-- Campo para o código da reunião -->
+      <div class="form-group">
+        <label for="codigoReuniao">Código da Reunião</label>
+        <input
+          type="text"
+          class="form-control"
+          id="codigoReuniao"
+          placeholder="Código da Reunião"
+          @change="handleChangeCodigoReuniao"
+          :value="Ata.reuniao.codigoReuniao"
+        />
+      </div>
+
+      <!-- Campo para o resumo da ata -->
+      <div class="form-group">
+        <label for="resumoAta">Resumo da Ata</label>
+        <textarea
+          class="form-control"
+          id="resumoAta"
+          rows="4"
+          placeholder="Digite o resumo da ata"
+          @change="handleChangeResumo"
+          :value="Ata.resumo"
+        ></textarea>
+      </div>
+
+      <!-- Botão para cadastrar a ata -->
+      <div class="form-group">
+        <button type="button" class="btn btn-primary" @click="cadastrarAta">
+          Cadastrar Ata
+        </button>
+      </div>
+    </form>
+  </div>
+</template>
+
+<script>
+import { cadastrarAta } from "@/services/cadastrarAta.js";
+import { useToast } from "vue-toastification";
+
+const toast = useToast();
+
+export default {
+  name: "CadastrarAta",
+  props: {
+    ataProp: {
+      type: Object,
+      default: () => ({
+        id: null,
+        reuniao: {
+          codigoReuniao: null,
         },
-        cadastrarAta() {
-          let loader = this.$loading.show({
-            container: this.fullPage ? null : this.$refs.formContainer,
-          });
-          cadastrarAta(this.AtaDTO, (response) => {
-            if (response) {
-              loader.hide()
-              toast.success("Ata Cadastrado com Sucesso!");
-            }
-          },
-            (error) => {
-              loader.hide()
-              toast.error(error);
-            },
-            () => { }
-          );
+        resumo: "",
+      }),
+    },
+  },
+  data() {
+    return {
+      Ata: {
+        id: null,
+        reuniao: {
+          codigoReuniao: null,
         },
+        resumo: "",
       },
     };
-    </script>
+  },
+  mounted() {
+    // Se a prop `ataProp` for passada, atualiza o estado interno
+    if (this.ataProp?.id != null) {
+      this.Ata = this.atualizarAtaDTO(this.ataProp, this.Ata);
+    }
+  },
+  methods: {
+    // Método para atualizar o código da reunião
+    handleChangeCodigoReuniao(event) {
+      this.Ata.reuniao.codigoReuniao = event.target.value;
+    },
+
+    // Método para atualizar o resumo da ata
+    handleChangeResumo(event) {
+      this.Ata.resumo = event.target.value;
+    },
+
+    // Método para cadastrar a ata
+    async cadastrarAta() {
+      try {
+        const response = await cadastrarAta(this.Ata);
+        if (response) {
+          toast.success("Ata cadastrada com sucesso!");
+          this.limparFormulario(); // Limpa o formulário após o cadastro
+        }
+      } catch (error) {
+        toast.error("Erro ao cadastrar ata: " + error.message);
+      }
+    },
+
+    // Método para limpar o formulário
+    limparFormulario() {
+      this.Ata = {
+        id: null,
+        reuniao: {
+          codigoReuniao: null,
+        },
+        resumo: "",
+      };
+    },
+
+    // Método para atualizar o objeto Ata com base na prop
+    atualizarAtaDTO(ataProp, Ata) {
+      if (ataProp?.id != null) {
+        return {
+          ...Ata,
+          id: ataProp.id,
+          reuniao: {
+            codigoReuniao: ataProp.reuniao?.codigoReuniao ?? null,
+          },
+          resumo: ataProp.resumo,
+        };
+      }
+      return Ata;
+    },
+  },
+};
+</script>
+
+<style scoped>
+/* Estilos adicionais, se necessário */
+</style>
