@@ -135,7 +135,7 @@
 </template>
 <style></style>
 <script>
-import { registrarUsuario } from "@/services/auth.service";
+import { enviarCredenciais, registrarUsuario } from "@/services/auth.service";
 import passwordMeter from "vue-simple-password-meter";
 import { useToast } from "vue-toastification";
 
@@ -173,8 +173,24 @@ export default {
   },
   methods: {
     verificarCredenciais() {
+      let loader = this.$loading.show({
+        container: this.fullPage ? null : this.$refs.formContainer,
+      });
       let codigo = this.$route.query.codigo;
-      console.log(codigo);
+      enviarCredenciais(
+        codigo,
+        (response) => {
+          loader.hide();
+          this.conviteDTO = response.data;
+          this.liberaCadastro();
+        },
+        (error) => {
+          this.message = loader.hide();
+          toast.error(error);
+          this.bloqueiaCadastro();
+        },
+        () => {}
+      );
     },
     bloqueiaCadastro() {
       this.codigoInvalido = true;
