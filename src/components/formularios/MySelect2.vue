@@ -1,6 +1,7 @@
 <template>
   <div class="form-group">
     <select
+      :value="value"
       ref="select"
       class="select2"
       :multiple="multiple"
@@ -77,6 +78,11 @@ export default {
       },
       deep: true,
     },
+  },
+  data() {
+    return {
+      valorSelecionado: null,
+    };
   },
   methods: {
     initializeSelect2() {
