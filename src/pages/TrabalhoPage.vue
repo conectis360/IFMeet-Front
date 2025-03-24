@@ -11,7 +11,7 @@
       titulo="Cadastrar Trabalho"
       @confirmar="cadastrarTrabalho"
     >
-      <CadastrarTrabalho ref="formularioCadastro" />
+      <CadastrarTrabalho ref="formularioCadastro" :trabalhoProp="TrabalhoDTO" />
     </ModalComponent>
   </div>
   <div>
@@ -29,7 +29,10 @@
 import ModalComponent from "../components/basic/ModalComponent.vue";
 import CadastrarTrabalho from "../components/orientador/CadastrarTrabalho.vue";
 import ComplexTable from "../components/basic/ComplexTable.vue";
-import { buscarTrabalho } from "@/services/cadastrarTrabalho.js";
+import {
+  buscarTrabalho,
+  buscarTrabalhos,
+} from "@/services/cadastrarTrabalho.js";
 import { useToast } from "vue-toastification";
 
 const toast = useToast();
@@ -44,7 +47,18 @@ export default {
   data() {
     return {
       tableName: "Trabalhos",
-      trabalhosDTO: {},
+      trabalhosDTO: [],
+      TrabalhoDTO: {
+        aluno: {
+          codigoUsuario: null,
+        },
+        orientador: {
+          codigoUsuario: null,
+        },
+        curso: {
+          codigoCurso: null,
+        },
+      },
       headers: [
         { text: "Titulo", value: "titulo" },
         { text: "Aluno", value: "aluno.nome" },
@@ -61,7 +75,12 @@ export default {
     this.retornarTrabalhos();
   },
   methods: {
+    handleEditar(codigoTrabalho) {
+      this.retornarTrabalho(codigoTrabalho);
+      this.$refs.modalCadastro.abrirModal();
+    },
     abrirModalCadastro() {
+      this.TrabalhoDTO = {};
       this.$refs.modalCadastro.abrirModal();
     },
     cadastrarTrabalho() {
@@ -71,7 +90,7 @@ export default {
       let loader = this.$loading.show({
         container: this.fullPage ? null : this.$refs.formContainer,
       });
-      buscarTrabalho(
+      buscarTrabalhos(
         (response) => {
           if (response) {
             loader.hide();
@@ -84,6 +103,44 @@ export default {
         },
         () => {}
       );
+    },
+    retornarTrabalho(trabalhoDTO) {
+      let codigoTrabalho = trabalhoDTO.codigoTrabalho;
+      let loader = this.$loading.show({
+        container: this.fullPage ? null : this.$refs.formContainer,
+      });
+      buscarTrabalho(
+        codigoTrabalho,
+        (response) => {
+          if (response) {
+            loader.hide();
+            this.TrabalhoDTO = response.data?.records[0];
+          }
+        },
+        (error) => {
+          loader.hide();
+          toast.error(error);
+        },
+        () => {}
+      );
+    },
+    limparTrabalhoDTO() {
+      this.TrabalhoDTO = {
+        titulo: "",
+        problema: "",
+        justificativa: "",
+        hipotese: "",
+        solucao: "",
+        aluno: {
+          codigoUsuario: null,
+        },
+        orientador: {
+          codigoUsuario: null,
+        },
+        curso: {
+          codigoCurso: null,
+        },
+      };
     },
   },
 };

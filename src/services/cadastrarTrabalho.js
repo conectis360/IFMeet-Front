@@ -17,6 +17,10 @@ export const buscarCursos = (successCallback, errorCallback, finallyCallback) =>
   return requestGet(apiIFMeet, '/curso/findAll', successCallback, errorCallback, finallyCallback)
 }
 
-export const buscarTrabalho = (successCallback, errorCallback, finallyCallback) => {
+export const buscarTrabalhos = (successCallback, errorCallback, finallyCallback) => {
   return requestGet(apiIFMeet, '/trabalho/findAll', successCallback, errorCallback, finallyCallback)
+}
+
+export const buscarTrabalho = (codigoTrabalho, successCallback, errorCallback, finallyCallback) => {
+  return requestGet(apiIFMeet, 'trabalho/findAll?codigoTrabalho=' + codigoTrabalho, successCallback, errorCallback, finallyCallback)
 }
