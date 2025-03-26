@@ -26,13 +26,6 @@
           :value="Ata.resumo"
         ></textarea>
       </div>
-
-      <!-- Botão para cadastrar a ata -->
-      <div class="form-group">
-        <button type="button" class="btn btn-primary" @click="cadastrarAta">
-          Cadastrar Ata
-        </button>
-      </div>
     </form>
   </div>
 </template>

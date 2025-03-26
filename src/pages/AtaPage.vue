@@ -17,7 +17,7 @@
   <div>
     <ComplexTable
       :headers="headers"
-      :tableData="trabalhosDTO"
+      :tableData="atasDTO"
       :tableName="tableName"
       @editar="handleEditar"
       @excluir="handleExcluir"
@@ -35,7 +35,7 @@ import { useToast } from "vue-toastification";
 const toast = useToast();
 
 export default {
-  name: "TrabalhoPage",
+  name: "AtasPage",
   components: {
     ModalComponent,
     CadastrarAta,
@@ -47,13 +47,14 @@ export default {
       atasDTO: [],
       AtaDTO: {},
       headers: [
-        { text: "Titulo", value: "titulo" },
-        { text: "Aluno", value: "aluno.nome" },
+        { text: "Trabalho", value: "reuniao.trabalho.titulo" },
+        { text: "Aluno", value: "reuniao.orientando.nome" },
+        { text: "Resumo", value: "resumo" },
       ],
     };
   },
   mounted() {
-    //this.retornarAtas();
+    this.retornarAtas();
   },
   methods: {
     handleEditar(codigoAta) {
@@ -72,6 +73,7 @@ export default {
         container: this.fullPage ? null : this.$refs.formContainer,
       });
       buscarAtasPorTrabalho(
+        1,
         (response) => {
           if (response) {
             loader.hide();
