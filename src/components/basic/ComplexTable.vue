@@ -1,41 +1,39 @@
 <template>
   <div class="card">
+    <!-- Cabeçalho e pesquisa (mantido igual) -->
     <div class="card-header">
       <h3 class="card-title">{{ tableName }}</h3>
       <div class="card-tools">
-        <!-- Campo de pesquisa -->
         <input
           v-model="searchQuery"
           type="text"
           class="form-control"
           placeholder="Pesquisar..."
+          @input="handleSearch"
         />
       </div>
     </div>
+
+    <!-- Corpo da tabela -->
     <div class="card-body table-responsive p-0">
       <table class="table table-hover">
-        <thead>
+        <!-- Cabeçalhos (mantido igual) -->
+        <thead style="text-align: center">
           <tr>
-            <!-- Renderiza os headers dinamicamente -->
-            <th
-              v-for="(header, index) in headers"
-              :key="index"
-              style="text-align: center"
-            >
+            <th v-for="(header, index) in headers" :key="index">
               {{ header.text }}
             </th>
             <th>Ações</th>
           </tr>
         </thead>
-        <tbody>
-          <!-- Renderiza as linhas da tabela -->
-          <tr v-for="(item, index) in filteredRecords" :key="index">
-            <!-- Renderiza as colunas dinamicamente com base no "value" do header -->
+
+        <!-- Corpo da tabela - agora mostrando apenas os registros da página atual -->
+        <tbody style="text-align: center">
+          <tr v-for="(item, index) in paginatedRecords" :key="index">
             <td v-for="(header, headerIndex) in headers" :key="headerIndex">
               {{ getNestedValue(item, header.value) }}
             </td>
             <td>
-              <!-- Botões personalizados -->
               <button
                 class="btn btn-sm btn-primary"
                 @click="editarItem(item)"
@@ -51,25 +49,42 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Rodapé com paginação melhorada -->
     <div class="card-footer clearfix">
-      <!-- Paginação -->
+      <div class="float-left">
+        Mostrando {{ showingStart }} a {{ showingEnd }} de
+        {{ tableData.totalRecords }} registros
+      </div>
       <ul class="pagination pagination-sm m-0 float-right">
+        <li class="page-item" :class="{ disabled: tableData.pageNumber === 1 }">
+          <button class="page-link" @click="goToPage(1)">««</button>
+        </li>
         <li class="page-item" :class="{ disabled: tableData.pageNumber === 1 }">
           <button class="page-link" @click="previousPage">«</button>
         </li>
+
+        <!-- Limita a exibição de páginas -->
         <li
-          v-for="page in totalPages"
+          v-for="page in visiblePages"
           :key="page"
           class="page-item"
           :class="{ active: tableData.pageNumber === page }"
         >
           <button class="page-link" @click="goToPage(page)">{{ page }}</button>
         </li>
+
         <li
           class="page-item"
           :class="{ disabled: tableData.pageNumber === totalPages }"
         >
           <button class="page-link" @click="nextPage">»</button>
+        </li>
+        <li
+          class="page-item"
+          :class="{ disabled: tableData.pageNumber === totalPages }"
+        >
+          <button class="page-link" @click="goToPage(totalPages)">»»</button>
         </li>
       </ul>
     </div>
@@ -104,56 +119,97 @@ export default {
   },
   data() {
     return {
-      searchQuery: "", // Termo de pesquisa
+      searchQuery: "",
+      maxVisiblePages: 5, // Número máximo de páginas visíveis na paginação
     };
   },
   computed: {
-    // Filtra os registros com base na pesquisa
-    filteredRecords() {
+    // Registros paginados e filtrados
+    paginatedRecords() {
+      // Se não houver termo de pesquisa, retorna todos os registros da página atual
       if (!this.searchQuery) return this.tableData.records;
+
+      // Aplica o filtro de pesquisa
       return this.tableData.records.filter((item) =>
-        this.headers.some((header) =>
-          String(this.getNestedValue(item, header.value))
-            .toLowerCase()
-            .includes(this.searchQuery.toLowerCase())
-        )
+        this.headers.some((header) => {
+          const value = this.getNestedValue(item, header.value);
+          // Verifica se o valor existe e contém o termo de pesquisa
+          return (
+            value !== undefined &&
+            value !== null &&
+            String(value).toLowerCase().includes(this.searchQuery.toLowerCase())
+          );
+        })
       );
     },
-    // Total de páginas (vem diretamente do objeto tableData)
+
     totalPages() {
       return this.tableData.totalPages;
     },
+
+    showingStart() {
+      return (this.tableData.pageNumber - 1) * this.tableData.pageSize + 1;
+    },
+
+    showingEnd() {
+      const end = this.tableData.pageNumber * this.tableData.pageSize;
+      return end > this.tableData.totalRecords
+        ? this.tableData.totalRecords
+        : end;
+    },
+
+    // Calcula as páginas visíveis na paginação
+    visiblePages() {
+      const half = Math.floor(this.maxVisiblePages / 2);
+      let start = this.tableData.pageNumber - half;
+      let end = this.tableData.pageNumber + half;
+
+      if (start < 1) {
+        start = 1;
+        end = this.maxVisiblePages;
+      }
+
+      if (end > this.totalPages) {
+        end = this.totalPages;
+        start = Math.max(1, end - this.maxVisiblePages + 1);
+      }
+
+      return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    },
   },
   methods: {
-    // Função para acessar propriedades aninhadas
     getNestedValue(obj, path) {
       return path.split(".").reduce((acc, part) => acc && acc[part], obj);
     },
-    // Navega para a página anterior
+
+    handleSearch() {
+      // Quando pesquisa, volta para a primeira página
+      this.$emit("pagina-alterada", 1);
+    },
+
     previousPage() {
       if (this.tableData.pageNumber > 1) {
         this.$emit("pagina-alterada", this.tableData.pageNumber - 1);
       }
     },
-    // Navega para a próxima página
+
     nextPage() {
       if (this.tableData.pageNumber < this.totalPages) {
         this.$emit("pagina-alterada", this.tableData.pageNumber + 1);
       }
     },
-    // Vai para uma página específica
+
     goToPage(page) {
       if (page !== this.tableData.pageNumber) {
         this.$emit("pagina-alterada", page);
       }
     },
-    // Ação do botão Editar
+
     editarItem(item) {
       this.$emit("editar", item);
     },
-    // Ação do botão Excluir
+
     excluirItem(item) {
-      console.log(item);
       this.$emit("excluir", item);
     },
   },
@@ -161,7 +217,6 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos personalizados */
 .card {
   margin: 20px;
 }
