@@ -137,6 +137,14 @@ export default {
       showModal.value = true;
     };
 
+    // Geração de IDs únicos e robustos
+    const generateEventId = () => {
+      // Combina timestamp, random e performance.now() para maior unicidade
+      return `evt-${Date.now()}-${Math.floor(
+        Math.random() * 1000
+      )}-${performance.now().toString(36).slice(2, 9)}`;
+    };
+
     const saveEvent = () => {
       if (!isFormValid.value) return;
 
@@ -145,7 +153,7 @@ export default {
       const endDateTime = `${eventData.value.date}T${eventData.value.endTime}`;
 
       const newEvent = {
-        id: eventData.value.id || `event-${Date.now()}`,
+        id: eventData.value.id || generateEventId(), // Substitui o método anterior
         title: eventData.value.title,
         start: startDateTime,
         end: endDateTime,
