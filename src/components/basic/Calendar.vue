@@ -78,7 +78,6 @@ import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import axios from "axios";
 import { useToast } from "vue-toastification";
 
 export default {
@@ -96,29 +95,23 @@ export default {
     });
 
     const eventColors = [
-      "#3788d8", // azul padrão
-      "#2c3e50", // azul escuro
-      "#42b983", // verde
-      "#ff6b6b", // vermelho
-      "#feca57", // amarelo
-      "#5f27cd", // roxo
+      "#3788d8",
+      "#2c3e50",
+      "#42b983",
+      "#ff6b6b",
+      "#feca57",
+      "#5f27cd",
     ];
 
-    // Validação do formulário
     const isFormValid = computed(() => {
       return eventData.value.title.trim() !== "" && eventData.value.date !== "";
     });
 
-    const fetchEvents = async () => {
-      try {
-        const response = await axios.get("/api/events");
-        calendarEvents.value = response.data.map((event) => ({
-          ...event,
-          backgroundColor: event.color || "#3788d8",
-        }));
-      } catch (error) {
-        toast.error("Falha ao carregar eventos");
-        console.error("Erro ao buscar eventos:", error);
+    // Carrega eventos do localStorage
+    const loadEvents = () => {
+      const savedEvents = localStorage.getItem("calendarEvents");
+      if (savedEvents) {
+        calendarEvents.value = JSON.parse(savedEvents);
       }
     };
 
@@ -143,153 +136,91 @@ export default {
       };
       showModal.value = true;
     };
-    // Função para carregar eventos do localStorage
-    const loadEvents = () => {
-      const savedEvents = localStorage.getItem("calendarEvents");
-      if (savedEvents) {
-        calendarEvents.value = JSON.parse(savedEvents).map((event) => ({
-          ...event,
-          // Garante que os eventos tenham a estrutura esperada pelo FullCalendar
-          id: event.id,
-          title: event.title,
-          start: event.start,
-          end: event.end,
-          description: event.description,
-          color: event.color,
-          backgroundColor: event.color,
-          allDay: true, // Se for um evento de dia inteiro
-        }));
-      }
-    };
 
-    // Função saveEvent corrigida
     const saveEvent = () => {
       if (!isFormValid.value) return;
 
-      try {
-        const newEvent = {
-          id: eventData.value.id || `event-${Date.now()}`, // ID único
-          title: eventData.value.title,
-          start: eventData.value.date, // Data no formato YYYY-MM-DD
-          description: eventData.value.description,
-          color: eventData.value.color,
-          backgroundColor: eventData.value.color,
-          allDay: true, // Evento de dia inteiro
-        };
+      const newEvent = {
+        id: eventData.value.id || `event-${Date.now()}`,
+        title: eventData.value.title,
+        start: eventData.value.date,
+        description: eventData.value.description,
+        color: eventData.value.color,
+        backgroundColor: eventData.value.color,
+        allDay: true,
+      };
 
-        if (eventData.value.id) {
-          // Atualiza evento existente
-          const index = calendarEvents.value.findIndex(
-            (e) => e.id === eventData.value.id
-          );
-          if (index !== -1) {
-            calendarEvents.value.splice(index, 1, newEvent);
-          }
-        } else {
-          // Adiciona novo evento
-          calendarEvents.value.push(newEvent);
+      if (eventData.value.id) {
+        const index = calendarEvents.value.findIndex(
+          (e) => e.id === eventData.value.id
+        );
+        if (index !== -1) {
+          calendarEvents.value.splice(index, 1, newEvent);
         }
-
-        // Salva no localStorage
-        localStorage.setItem(
-          "calendarEvents",
-          JSON.stringify(calendarEvents.value)
-        );
-
-        // Atualiza a exibição do calendário
-        calendarOptions.events = [...calendarEvents.value];
-
-        toast.success(
-          eventData.value.id ? "Evento atualizado!" : "Evento adicionado!"
-        );
-        closeModal();
-      } catch (error) {
-        toast.error("Erro ao salvar evento");
-        console.error("Erro:", error);
+      } else {
+        calendarEvents.value.push(newEvent);
       }
+
+      localStorage.setItem(
+        "calendarEvents",
+        JSON.stringify(calendarEvents.value)
+      );
+      closeModal();
+      toast.success(
+        eventData.value.id ? "Evento atualizado!" : "Evento adicionado!"
+      );
     };
 
-    // Configuração do FullCalendar
-    const calendarOptions = {
-      plugins: [dayGridPlugin, interactionPlugin],
-      initialView: "dayGridMonth",
-      events: calendarEvents.value, // Vincula os eventos diretamente
-      // ... outras opções
-    };
-
-    // Carrega os eventos quando o componente é montado
-    onMounted(() => {
-      loadEvents();
-    });
-
-    const deleteEvent = async () => {
+    const deleteEvent = () => {
       if (!confirm("Tem certeza que deseja excluir este evento?")) return;
 
-      try {
-        await axios.delete(`/api/events/${eventData.value.id}`);
-        toast.success("Evento excluído com sucesso!");
-        closeModal();
-        await fetchEvents();
-      } catch (error) {
-        toast.error("Erro ao excluir evento");
-        console.error("Erro ao excluir evento:", error);
-      }
+      // Atualiza a lista de eventos de forma reativa
+      calendarEvents.value = calendarEvents.value.filter(
+        (e) => e.id !== eventData.value.id
+      );
+
+      // Atualiza o localStorage
+      localStorage.setItem(
+        "calendarEvents",
+        JSON.stringify(calendarEvents.value)
+      );
+
+      // Força a atualização do calendário
+      calendarOptions.value.events = [...calendarEvents.value];
+
+      closeModal();
+      toast.success("Evento excluído com sucesso!");
     };
 
     const closeModal = () => {
       showModal.value = false;
     };
 
+    // Configuração do FullCalendar
+    const calendarOptions = ref({
+      plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+      initialView: "dayGridMonth",
+      headerToolbar: {
+        left: "prev,next today",
+        center: "title",
+        right: "dayGridMonth,timeGridWeek,timeGridDay",
+      },
+      events: calendarEvents.value,
+      dateClick: handleDateClick,
+      eventClick: handleEventClick,
+      editable: true,
+      eventDisplay: "block",
+    });
+
+    // Carrega os eventos quando o componente é montado
     onMounted(() => {
-      const savedEvents = localStorage.getItem("calendarEvents");
-      if (savedEvents) {
-        calendarEvents.value = JSON.parse(savedEvents);
-      }
+      loadEvents();
+      // Atualiza a referência dos eventos no FullCalendar
+      calendarOptions.value.events = calendarEvents.value;
     });
 
     return {
-      calendarOptions: {
-        plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-        initialView: "dayGridMonth",
-        headerToolbar: {
-          left: "prev,next today",
-          center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay",
-        },
-        events: calendarEvents,
-        dateClick: handleDateClick,
-        eventClick: handleEventClick,
-        editable: true,
-        eventDrop: async (info) => {
-          try {
-            await axios.put(`/api/events/${info.event.id}`, {
-              start: info.event.startStr,
-            });
-            toast.success("Evento movido com sucesso!");
-          } catch (error) {
-            toast.error("Erro ao mover evento");
-            info.revert();
-          }
-        },
-        eventResize: async (info) => {
-          try {
-            await axios.put(`/api/events/${info.event.id}`, {
-              start: info.event.startStr,
-              end: info.event.endStr,
-            });
-            toast.success("Evento atualizado com sucesso!");
-          } catch (error) {
-            toast.error("Erro ao atualizar evento");
-            info.revert();
-          }
-        },
-        eventDisplay: "block",
-        eventTimeFormat: {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        },
-      },
+      calendarOptions,
       showModal,
       eventData,
       eventColors,
