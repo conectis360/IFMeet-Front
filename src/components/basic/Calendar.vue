@@ -106,12 +106,12 @@ export default {
     });
 
     const eventColors = [
-      "#3788d8",
-      "#2c3e50",
-      "#42b983",
-      "#ff6b6b",
-      "#feca57",
-      "#5f27cd",
+      "#a8c6fa",
+      "#889aa4",
+      "#a7e0c5",
+      "#ffb3b3",
+      "#fff5b3",
+      "#b9a2e8",
     ];
 
     const isFormValid = computed(() => {
@@ -205,6 +205,14 @@ export default {
         left: "prev,next today",
         center: "title",
         right: "dayGridMonth,timeGridWeek,timeGridDay",
+      },
+      titleFormat: { year: "numeric", month: "long" },
+      buttonText: {
+        today: "Hoje",
+        month: "Mês",
+        week: "Semana",
+        day: "Dia",
+        list: "Lista",
       },
       events: [],
       dateClick: handleDateClick,
