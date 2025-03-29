@@ -45,4 +45,21 @@ export default {
 .fc .fc-button-primary:disabled {
   background-color: #317b3c;
 }
+
+.fc-toolbar-title {
+  text-transform: uppercase;
+}
+
+.fc-h-event .fc-event-main {
+  color: #000;
+}
+
+.fc-v-event .fc-event-title {
+  color: #000;
+}
+
+.fc-timegrid-event .fc-event-time {
+  font-weight: bold;
+  color: #000;
+}
 </style>
