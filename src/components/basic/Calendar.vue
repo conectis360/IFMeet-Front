@@ -143,33 +143,84 @@ export default {
       };
       showModal.value = true;
     };
+    // Função para carregar eventos do localStorage
+    const loadEvents = () => {
+      const savedEvents = localStorage.getItem("calendarEvents");
+      if (savedEvents) {
+        calendarEvents.value = JSON.parse(savedEvents).map((event) => ({
+          ...event,
+          // Garante que os eventos tenham a estrutura esperada pelo FullCalendar
+          id: event.id,
+          title: event.title,
+          start: event.start,
+          end: event.end,
+          description: event.description,
+          color: event.color,
+          backgroundColor: event.color,
+          allDay: true, // Se for um evento de dia inteiro
+        }));
+      }
+    };
 
-    const saveEvent = async () => {
+    // Função saveEvent corrigida
+    const saveEvent = () => {
       if (!isFormValid.value) return;
 
       try {
-        const payload = {
+        const newEvent = {
+          id: eventData.value.id || `event-${Date.now()}`, // ID único
           title: eventData.value.title,
-          start: eventData.value.date,
+          start: eventData.value.date, // Data no formato YYYY-MM-DD
           description: eventData.value.description,
           color: eventData.value.color,
+          backgroundColor: eventData.value.color,
+          allDay: true, // Evento de dia inteiro
         };
 
         if (eventData.value.id) {
-          await axios.put(`/api/events/${eventData.value.id}`, payload);
-          toast.success("Evento atualizado com sucesso!");
+          // Atualiza evento existente
+          const index = calendarEvents.value.findIndex(
+            (e) => e.id === eventData.value.id
+          );
+          if (index !== -1) {
+            calendarEvents.value.splice(index, 1, newEvent);
+          }
         } else {
-          await axios.post("/api/events", payload);
-          toast.success("Evento criado com sucesso!");
+          // Adiciona novo evento
+          calendarEvents.value.push(newEvent);
         }
 
+        // Salva no localStorage
+        localStorage.setItem(
+          "calendarEvents",
+          JSON.stringify(calendarEvents.value)
+        );
+
+        // Atualiza a exibição do calendário
+        calendarOptions.events = [...calendarEvents.value];
+
+        toast.success(
+          eventData.value.id ? "Evento atualizado!" : "Evento adicionado!"
+        );
         closeModal();
-        await fetchEvents();
       } catch (error) {
         toast.error("Erro ao salvar evento");
-        console.error("Erro ao salvar evento:", error);
+        console.error("Erro:", error);
       }
     };
+
+    // Configuração do FullCalendar
+    const calendarOptions = {
+      plugins: [dayGridPlugin, interactionPlugin],
+      initialView: "dayGridMonth",
+      events: calendarEvents.value, // Vincula os eventos diretamente
+      // ... outras opções
+    };
+
+    // Carrega os eventos quando o componente é montado
+    onMounted(() => {
+      loadEvents();
+    });
 
     const deleteEvent = async () => {
       if (!confirm("Tem certeza que deseja excluir este evento?")) return;
@@ -189,7 +240,12 @@ export default {
       showModal.value = false;
     };
 
-    onMounted(fetchEvents);
+    onMounted(() => {
+      const savedEvents = localStorage.getItem("calendarEvents");
+      if (savedEvents) {
+        calendarEvents.value = JSON.parse(savedEvents);
+      }
+    });
 
     return {
       calendarOptions: {
