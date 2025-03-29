@@ -25,6 +25,17 @@
           <input v-model="eventData.date" type="date" class="form-input" />
         </div>
 
+        <!-- Adicione estes novos campos no formulário do modal -->
+        <div class="form-group">
+          <label>Hora de Início</label>
+          <input v-model="eventData.startTime" type="time" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label>Hora de Término</label>
+          <input v-model="eventData.endTime" type="time" class="form-input" />
+        </div>
+
         <div class="form-group">
           <label>Descrição</label>
           <textarea
@@ -126,28 +137,22 @@ export default {
       showModal.value = true;
     };
 
-    const handleEventClick = (info) => {
-      eventData.value = {
-        id: info.event.id,
-        title: info.event.title,
-        date: info.event.startStr.split("T")[0],
-        description: info.event.extendedProps?.description || "",
-        color: info.event.backgroundColor || "#3788d8",
-      };
-      showModal.value = true;
-    };
-
     const saveEvent = () => {
       if (!isFormValid.value) return;
+
+      // Combina data com horário
+      const startDateTime = `${eventData.value.date}T${eventData.value.startTime}`;
+      const endDateTime = `${eventData.value.date}T${eventData.value.endTime}`;
 
       const newEvent = {
         id: eventData.value.id || `event-${Date.now()}`,
         title: eventData.value.title,
-        start: eventData.value.date,
+        start: startDateTime,
+        end: endDateTime,
         description: eventData.value.description,
         color: eventData.value.color,
         backgroundColor: eventData.value.color,
-        allDay: true,
+        allDay: false, // Agora são eventos com horário específico
       };
 
       if (eventData.value.id) {
@@ -165,11 +170,75 @@ export default {
         "calendarEvents",
         JSON.stringify(calendarEvents.value)
       );
+      calendarOptions.value.events = [...calendarEvents.value];
       closeModal();
       toast.success(
         eventData.value.id ? "Evento atualizado!" : "Evento adicionado!"
       );
     };
+
+    const handleEventClick = (info) => {
+      const startStr = info.event.startStr;
+      const endStr = info.event.endStr;
+
+      eventData.value = {
+        id: info.event.id,
+        title: info.event.title,
+        date: startStr.split("T")[0],
+        startTime: startStr.includes("T")
+          ? startStr.split("T")[1].substring(0, 5)
+          : "09:00",
+        endTime: endStr.includes("T")
+          ? endStr.split("T")[1].substring(0, 5)
+          : "10:00",
+        description: info.event.extendedProps?.description || "",
+        color: info.event.backgroundColor || "#3788d8",
+      };
+      showModal.value = true;
+    };
+
+    const calendarOptions = ref({
+      locale: "pt-br",
+      plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+      initialView: "dayGridMonth",
+      headerToolbar: {
+        left: "prev,next today",
+        center: "title",
+        right: "dayGridMonth,timeGridWeek,timeGridDay",
+      },
+      events: [],
+      dateClick: handleDateClick,
+      eventClick: handleEventClick,
+      editable: true,
+      eventDisplay: "block",
+      nowIndicator: true,
+      slotMinTime: "08:00:00",
+      slotMaxTime: "24:00:00",
+      allDaySlot: true,
+      views: {
+        dayGridMonth: {
+          eventTimeFormat: {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          },
+        },
+        timeGridWeek: {
+          eventTimeFormat: {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          },
+        },
+        timeGridDay: {
+          eventTimeFormat: {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          },
+        },
+      },
+    });
 
     const deleteEvent = () => {
       if (!confirm("Tem certeza que deseja excluir este evento?")) return;
@@ -195,22 +264,6 @@ export default {
     const closeModal = () => {
       showModal.value = false;
     };
-
-    // Configuração do FullCalendar
-    const calendarOptions = ref({
-      plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-      initialView: "dayGridMonth",
-      headerToolbar: {
-        left: "prev,next today",
-        center: "title",
-        right: "dayGridMonth,timeGridWeek,timeGridDay",
-      },
-      events: calendarEvents.value,
-      dateClick: handleDateClick,
-      eventClick: handleEventClick,
-      editable: true,
-      eventDisplay: "block",
-    });
 
     // Carrega os eventos quando o componente é montado
     onMounted(() => {
