@@ -40,15 +40,15 @@ body.dark-mode {
   --secondary-color: #317d3d; /* Usando o verde escuro como cor secundária */
 
   /* Cores do calendário para o tema escuro */
-  --calendar-day-number-color: #dcdcdc;
-  --calendar-header-color: #8ec543; /* Destaque com o verde claro */
+  --calendar-day-number-color: #1e201e;
+  --calendar-header-color: #1e201e; /* Destaque com o verde claro */
   --calendar-button-bg: #317d3d; /* Verde escuro para botões */
   --calendar-button-active-bg: #8ec543; /* Verde claro para botão ativo */
-  --calendar-title-color: #8ec543; /* Título com o verde claro */
+  --calendar-title-color: #1e201e; /* Título com o verde claro */
   --calendar-button-disabled-bg: #555; /* Um tom de cinza para desabilitado */
-  --calendar-event-text-color: #fff;
-  --calendar-time-text-color: #fff;
-  --calendar-bg-color: #2d3436; /* Cor de fundo do calendário igual ao conteúdo */
+  --calendar-event-text-color: #1e201e;
+  --calendar-time-text-color: #1e201e;
+  --calendar-bg-color: #ecdfcc; /* Cor de fundo do calendário igual ao conteúdo */
 
   --navbar-bg-color: #255f38;
   --navbar-text-color: #ffffff;
@@ -61,6 +61,11 @@ body.dark-mode {
   --sidebar-nav-color: #255f38;
   --item-menu-bg: #255f38;
   --item-menu-color: #ffffff;
+}
+
+.custom-calendar {
+  background-color: var(--calendar-bg-color) !important;
+  color: var(--calendar-time-text-color);
 }
 
 .dark-mode {
