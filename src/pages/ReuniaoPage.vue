@@ -14,22 +14,24 @@ export default {
 };
 </script>
 <style>
+/* Dentro do componente MeuCalendario.vue (ou em um arquivo CSS global) */
+
 .fc .fc-daygrid-day-number {
-  color: #317b3c;
+  color: var(--calendar-day-number-color);
 }
 
 .fc .fc-col-header-cell-cushion {
-  color: #317b3c;
+  color: var(--calendar-header-color);
 }
 
 .fc-direction-ltr .fc-button-group > .fc-button:not(:first-child) {
-  background-color: #8dc643;
+  background-color: var(--calendar-button-bg);
   font-weight: bold;
 }
 
 .fc-direction-ltr .fc-button-group > .fc-button:not(:last-child) {
   font-weight: bold;
-  background-color: #8dc643;
+  background-color: var(--calendar-button-bg);
 }
 
 .fc .fc-button-group > .fc-button.fc-button-active,
@@ -37,16 +39,16 @@ export default {
 .fc .fc-button-group > .fc-button:focus,
 .fc .fc-button-group > .fc-button:hover {
   font-weight: bold;
-  background-color: #317b3c;
+  background-color: var(--calendar-button-active-bg);
 }
 
 .fc-toolbar-title {
-  color: #317b3c;
+  color: var(--calendar-title-color);
 }
 
 .fc .fc-button-primary:disabled {
   font-weight: bold;
-  background-color: #317b3c;
+  background-color: var(--calendar-button-disabled-bg);
 }
 
 .fc-toolbar-title {
@@ -54,19 +56,19 @@ export default {
 }
 
 .fc-h-event .fc-event-main {
-  color: #000;
+  color: var(--calendar-event-text-color);
 }
 
 .fc-v-event .fc-event-title {
-  color: #000;
+  color: var(--calendar-event-text-color);
 }
 
 .fc-timegrid-event .fc-event-time {
   font-weight: bold;
-  color: #000;
+  color: var(--calendar-time-text-color);
 }
 
 .custom-calendar {
-  background-color: #f0fff0;
+  background-color: var(--calendar-bg-color);
 }
 </style>

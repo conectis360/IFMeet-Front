@@ -3,7 +3,7 @@
     <body class="hold-transition sidebar-mini layout-fixed">
       <div v-if="currentUser">
         <div class="wrapper home">
-          <Preloader v-if="carregou = false"></Preloader>
+          <Preloader v-if="(carregou = false)"></Preloader>
           <Navbar></Navbar>
           <Sidebar></Sidebar>
 
@@ -31,7 +31,7 @@
   </html>
 </template>
 <style>
-
+@import "./assets/css/theme.css"; /* Importe seu arquivo CSS aqui */
 </style>
 
 <script>
@@ -75,10 +75,10 @@ export default {
     },
   },
   data() {
-        return {
-            carregou: false,
-            loading: false,
-        };
+    return {
+      carregou: false,
+      loading: false,
+    };
   },
   methods: {
     initializeSelect2() {
@@ -91,7 +91,7 @@ export default {
       });
     },
     carregouPagina() {
-      this.carregou = true
+      this.carregou = true;
     },
   },
   mounted() {

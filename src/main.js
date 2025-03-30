@@ -2,17 +2,19 @@ import { createApp } from 'vue'
 import App from './App.vue'
 window.$ = window.jQuery = require("jquery");
 
+import './assets/css/theme.css'; // Importe seu arquivo CSS aqui
+
 import router from "./router";
 import store from "./store";
 
 import { faHatWizard } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import {dom, library} from '@fortawesome/fontawesome-svg-core';
+import { dom, library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
-import {faLock, faEnvelope} from '@fortawesome/free-solid-svg-icons';
-import {faFacebook, faGooglePlus} from '@fortawesome/free-brands-svg-icons';
+import { faLock, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faFacebook, faGooglePlus } from '@fortawesome/free-brands-svg-icons';
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 
@@ -55,7 +57,7 @@ import "../node_modules/admin-lte/plugins/bootstrap4-duallistbox/bootstrap-duall
 import "../node_modules/admin-lte/plugins/bs-stepper/css/bs-stepper.min.css"
 import "../node_modules/admin-lte/plugins/dropzone/min/dropzone.min.css"
 
-import {LoadingPlugin} from 'vue-loading-overlay';
+import { LoadingPlugin } from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/css/index.css';
 
 

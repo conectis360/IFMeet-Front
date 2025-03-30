@@ -52,11 +52,13 @@ export default {
         backgroundColor: "#8ec543",
         justifyContent: "flex-start",
         paddingLeft: "2px",
+        paddingBottom: "2px",
       },
       darkSliderStyle: {
-        backgroundColor: "#317d3d",
+        backgroundColor: "#a8d5ad",
         justifyContent: "flex-end",
         paddingRight: "2px",
+        paddingBottom: "2px",
       },
     };
   },

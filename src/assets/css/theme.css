@@ -1,22 +1,119 @@
 /* theme.css */
 
 :root {
-  /* Tema Claro (Padrão) */
+  /* Tema Claro (Padrão) - Mantendo as cores originais */
   --body-bg: #f4f6f9;
   --content-bg: #ffffff;
   --text-color: #333;
-  --primary-color: #007bff; /* Cor primária do AdminLTE */
-  --secondary-color: #6c757d; /* Cor secundária do AdminLTE */
-  /* Adicione outras cores que você precisa tematizar */
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  /* Cores do calendário para o tema claro */
+  --calendar-day-number-color: #317b3c;
+  --calendar-header-color: #317b3c;
+  --calendar-button-bg: #8dc643;
+  --calendar-button-active-bg: #317b3c;
+  --calendar-title-color: #317b3c;
+  --calendar-button-disabled-bg: #317b3c;
+  --calendar-event-text-color: #000;
+  --calendar-time-text-color: #000;
+  --calendar-bg-color: #f0fff0;
+
+  --navbar-bg-color: #d1edb7;
+  --navbar-text-color: #777777;
+  --navbar-link-text-color: #777777;
 }
 
-/* Tema Escuro */
 body.dark-mode {
-  --body-bg: #343a40; /* Cor de fundo escura */
-  --content-bg: #212529; /* Cor de fundo do conteúdo escura */
-  --text-color: #f8f9fa; /* Cor do texto clara */
-  /* Manter as cores primária e secundária do AdminLTE ou ajustá-las */
-  /* --primary-color: #17a2b8; */
-  /* --secondary-color: #495057; */
-  /* Sobrescreva outras cores para o tema escuro */
+  /* Tema Escuro Futurista */
+  --body-bg: #1e272c; /* Fundo mais escuro */
+  --content-bg: #2d3436; /* Fundo do conteúdo um pouco mais claro que o body */
+  --text-color: #dcdcdc; /* Texto em tons de cinza claro */
+  --primary-color: #8ec543; /* Usando o verde claro como destaque */
+  --secondary-color: #317d3d; /* Usando o verde escuro como cor secundária */
+
+  /* Cores do calendário para o tema escuro */
+  --calendar-day-number-color: #dcdcdc;
+  --calendar-header-color: #8ec543; /* Destaque com o verde claro */
+  --calendar-button-bg: #317d3d; /* Verde escuro para botões */
+  --calendar-button-active-bg: #8ec543; /* Verde claro para botão ativo */
+  --calendar-title-color: #8ec543; /* Título com o verde claro */
+  --calendar-button-disabled-bg: #555; /* Um tom de cinza para desabilitado */
+  --calendar-event-text-color: #fff;
+  --calendar-time-text-color: #fff;
+  --calendar-bg-color: #2d3436; /* Cor de fundo do calendário igual ao conteúdo */
+
+  --navbar-bg-color: #317d3d;
+  --navbar-text-color: #ffffff;
+  --navbar-link-text-color: #ffffff;
+}
+
+.navbar-white {
+  background-color: var(--navbar-bg-color) !important;
+  color: var(--navbar-text-color) !important;
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: var(--navbar-link-text-color) !important;
+}
+
+.dark-theme-active .fc .fc-daygrid-day-number {
+  color: var(--calendar-day-number-color) !important;
+}
+
+.dark-theme-active .fc .fc-col-header-cell-cushion {
+  color: var(--calendar-header-color) !important;
+}
+
+.dark-theme-active
+  .fc-direction-ltr
+  .fc-button-group
+  > .fc-button:not(:first-child) {
+  background-color: var(--calendar-button-bg) !important;
+  font-weight: bold !important;
+}
+
+.dark-theme-active
+  .fc-direction-ltr
+  .fc-button-group
+  > .fc-button:not(:last-child) {
+  font-weight: bold !important;
+  background-color: var(--calendar-button-bg) !important;
+}
+
+.dark-theme-active .fc .fc-button-group > .fc-button.fc-button-active,
+.dark-theme-active .fc .fc-button-group > .fc-button:active,
+.dark-theme-active .fc .fc-button-group > .fc-button:focus,
+.dark-theme-active .fc .fc-button-group > .fc-button:hover {
+  font-weight: bold !important;
+  background-color: var(--calendar-button-active-bg) !important;
+}
+
+.dark-theme-active .fc-toolbar-title {
+  color: var(--calendar-title-color) !important;
+}
+
+.dark-theme-active .fc .fc-button-primary:disabled {
+  font-weight: bold !important;
+  background-color: var(--calendar-button-disabled-bg) !important;
+}
+
+.dark-theme-active .fc-toolbar-title {
+  text-transform: uppercase !important;
+}
+
+.dark-theme-active .fc-h-event .fc-event-main {
+  color: var(--calendar-event-text-color) !important;
+}
+
+.dark-theme-active .fc-v-event .fc-event-title {
+  color: var(--calendar-event-text-color) !important;
+}
+
+.dark-theme-active .fc-timegrid-event .fc-event-time {
+  font-weight: bold !important;
+  color: var(--calendar-time-text-color) !important;
+}
+
+.dark-theme-active .custom-calendar {
+  background-color: var(--calendar-bg-color) !important;
 }
