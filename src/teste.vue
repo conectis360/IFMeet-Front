@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>Meu Calendário</h1>
     <CalendarComponent />
   </div>
 </template>
@@ -25,9 +24,11 @@ export default {
 
 .fc-direction-ltr .fc-button-group > .fc-button:not(:first-child) {
   background-color: #8dc643;
+  font-weight: bold;
 }
 
 .fc-direction-ltr .fc-button-group > .fc-button:not(:last-child) {
+  font-weight: bold;
   background-color: #8dc643;
 }
 
@@ -35,6 +36,7 @@ export default {
 .fc .fc-button-group > .fc-button:active,
 .fc .fc-button-group > .fc-button:focus,
 .fc .fc-button-group > .fc-button:hover {
+  font-weight: bold;
   background-color: #317b3c;
 }
 
@@ -43,6 +45,7 @@ export default {
 }
 
 .fc .fc-button-primary:disabled {
+  font-weight: bold;
   background-color: #317b3c;
 }
 
@@ -61,5 +64,9 @@ export default {
 .fc-timegrid-event .fc-event-time {
   font-weight: bold;
   color: #000;
+}
+
+.custom-calendar {
+  background-color: #f0fff0;
 }
 </style>
