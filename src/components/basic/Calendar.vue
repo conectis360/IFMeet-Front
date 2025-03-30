@@ -90,6 +90,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useToast } from "vue-toastification";
+import { buscarEventosCalendario } from "@/services/calendarService";
 
 export default {
   components: { FullCalendar },
@@ -118,13 +119,35 @@ export default {
       return eventData.value.title.trim() !== "" && eventData.value.date !== "";
     });
 
-    // Carrega eventos do localStorage
-    const loadEvents = () => {
-      const savedEvents = localStorage.getItem("calendarEvents");
-      if (savedEvents) {
-        calendarEvents.value = JSON.parse(savedEvents);
+    // Busca usuário logado
+    const getUsuarioLogado = () => {
+      const usuario = localStorage.getItem("user");
+      return usuario ? JSON.parse(usuario) : null;
+    };
+
+    // Busca eventos do calendário
+    const retornaEventosCalendario = async () => {
+      const usuario = getUsuarioLogado();
+      if (!usuario?.id) {
+        toast.error("Usuário não autenticado");
+        return;
+      }
+      try {
+        const response = await buscarEventosCalendario(usuario.id);
+
+        if (response?.data) {
+          console.log(response.data);
+          calendarOptions.value.events = [...response.data?.records];
+        }
+      } catch (error) {
+        toast.error(error.message || "Erro ao carregar eventos");
       }
     };
+
+    // Dispara ao montar o componente
+    onMounted(() => {
+      retornaEventosCalendario();
+    });
 
     const handleDateClick = (info) => {
       eventData.value = {
@@ -280,13 +303,6 @@ export default {
     const closeModal = () => {
       showModal.value = false;
     };
-
-    // Carrega os eventos quando o componente é montado
-    onMounted(() => {
-      loadEvents();
-      // Atualiza a referência dos eventos no FullCalendar
-      calendarOptions.value.events = calendarEvents.value;
-    });
 
     return {
       calendarOptions,

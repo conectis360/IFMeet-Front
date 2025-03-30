@@ -2,120 +2,150 @@ import { getToken } from './authUtils'
 const mensagemErroPadrao = 'Erro ao fazer a requisição, tente novamente mais tarde.'
 
 export const requestGet = (requestInstance, url, successCallback, errorCallback, finallyCallback, params = '', responseType = 'json') => {
-    return requestInstance.get(url, {
-        headers: {
-            Authorization: 'Bearer ' + getToken(),
-        },
-        responseType: responseType,
-        params: params,
-    }).then((response) => {
-        successCallback(response)
-      })
-        .catch(error => {
-          var errorMessage = mensagemErroPadrao
-          if (error.response) {
-            if (error.response.data && error.response.data.mensagens) {
-                errorMessage = error.response.data.mensagens.join(', ')
-            }
-          }
-          errorCallback(errorMessage, error.response)
-        })
-        .finally(() => {
-          finallyCallback()
-        })
+  return requestInstance.get(url, {
+    headers: {
+      Authorization: 'Bearer ' + getToken(),
+    },
+    responseType: responseType,
+    params: params,
+  }).then((response) => {
+    successCallback(response)
+  })
+    .catch(error => {
+      var errorMessage = mensagemErroPadrao
+      if (error.response) {
+        if (error.response.data && error.response.data.mensagens) {
+          errorMessage = error.response.data.mensagens.join(', ')
+        }
+      }
+      errorCallback(errorMessage, error.response)
+    })
+    .finally(() => {
+      finallyCallback()
+    })
 }
+
+export const requestGetComposition = async (
+  requestInstance,
+  url,
+  params = {},
+  responseType = 'json'
+) => {
+  try {
+    const response = await requestInstance.get(url, {
+      headers: {
+        Authorization: 'Bearer ' + getToken(),
+      },
+      responseType,
+      params
+    });
+    return response; // Padroniza retorno
+
+  } catch (error) {
+    let errorMessage = mensagemErroPadrao;
+
+    if (error.response?.data?.mensagens) {
+      errorMessage = error.response.data.mensagens.join(', ');
+    }
+
+    throw {
+      message: errorMessage,
+      response: error.response
+    }; // Uniformiza erros
+  }
+};
 
 export const requestGetSemAutorizacao = (requestInstance, url, successCallback, errorCallback, finallyCallback, params = '', responseType = 'json') => {
   return requestInstance.get(url, {
-      headers: {
-      },
-      responseType: responseType,
-      params: params,
+    headers: {
+    },
+    responseType: responseType,
+    params: params,
   }).then((response) => {
-      successCallback(response)
-    })
-      .catch(error => {
-        var errorMessage = mensagemErroPadrao
-        if (error.response) {
-          if (error.response.data && error.response.data.mensagens) {
-              errorMessage = error.response.data.mensagens.join(', ')
-          }
+    successCallback(response)
+  })
+    .catch(error => {
+      var errorMessage = mensagemErroPadrao
+      if (error.response) {
+        if (error.response.data && error.response.data.mensagens) {
+          errorMessage = error.response.data.mensagens.join(', ')
         }
-        errorCallback(errorMessage, error.response)
-      })
-      .finally(() => {
-        finallyCallback()
-      })
+      }
+      errorCallback(errorMessage, error.response)
+    })
+    .finally(() => {
+      finallyCallback()
+    })
 }
 
 export const requestPost = (requestInstance, url, successCallback, errorCallback, finallyCallback, data = {}, responseType = 'json', contentType = 'application/json') => {
-    return requestInstance.post(url, data, {
-        headers: {
-            Authorization: 'Bearer ' + getToken(),
-            'Content-Type': contentType,
-        },
-        responseType: responseType,
-    }).then((response) => {
-          successCallback(response)
-        })
-          .catch(error => {
-            var errorMessage = mensagemErroPadrao
-            if (error.response) {
-              if (error.response.data && error.response.data.mensagens) {
-                errorMessage = error.response.data.mensagens.join(', ')
-              }
-            }
-            errorCallback(errorMessage, error)
-          })
-          .finally(() => {
-            finallyCallback()
-          })
+  return requestInstance.post(url, data, {
+    headers: {
+      Authorization: 'Bearer ' + getToken(),
+      'Content-Type': contentType,
+    },
+    responseType: responseType,
+  }).then((response) => {
+    successCallback(response)
+  })
+    .catch(error => {
+      var errorMessage = mensagemErroPadrao
+      if (error.response) {
+        if (error.response.data && error.response.data.mensagens) {
+          errorMessage = error.response.data.mensagens.join(', ')
+        }
+      }
+      errorCallback(errorMessage, error)
+    })
+    .finally(() => {
+      finallyCallback()
+    })
 }
 
 export const requestPut = (requestInstance, url, successCallback, errorCallback, finallyCallback, data = {}, responseType = 'json') => {
   return requestInstance.put(url, data, {
-      headers: {
-          Authorization: 'Bearer ' + getToken(),
-      },
-      responseType: responseType,
+    headers: {
+      Authorization: 'Bearer ' + getToken(),
+    },
+    responseType: responseType,
   }).then((response) => {
-        successCallback(response)
-      })
-        .catch(error => {
-          var errorMessage = mensagemErroPadrao
-          if (error.response) {
-            if (error.response.data && error.response.data.mensagens) {
-              errorMessage = error.response.data.mensagens.join(', ')
-            }
-          }
-          errorCallback(errorMessage, error)
-        })
-        .finally(() => {
-          finallyCallback()
-        })
+    successCallback(response)
+  })
+    .catch(error => {
+      var errorMessage = mensagemErroPadrao
+      if (error.response) {
+        if (error.response.data && error.response.data.mensagens) {
+          errorMessage = error.response.data.mensagens.join(', ')
+        }
+      }
+      errorCallback(errorMessage, error)
+    })
+    .finally(() => {
+      finallyCallback()
+    })
 }
 
 export const requestDelete = (requestInstance, url, successCallback, errorCallback, finallyCallback, responseType = 'json') => {
   return requestInstance.delete(url, {
-      headers: {
-          Authorization: 'Bearer ' + getToken(),
-      },
-      responseType: responseType,
+    headers: {
+      Authorization: 'Bearer ' + getToken(),
+    },
+    responseType: responseType,
   }).then((response) => {
-      successCallback(response)
-    })
-      .catch(error => {
-        var errorMessage = mensagemErroPadrao
-        if (error.response) {
-          if (error.response.data && error.response.data.mensagens) {
-              errorMessage = error.response.data.mensagens.join(', ')
-          }
+    successCallback(response)
+  })
+    .catch(error => {
+      var errorMessage = mensagemErroPadrao
+      if (error.response) {
+        if (error.response.data && error.response.data.mensagens) {
+          errorMessage = error.response.data.mensagens.join(', ')
         }
-        errorCallback(errorMessage, error.response)
-      })
-      .finally(() => {
-        finallyCallback()
-      })
+      }
+      errorCallback(errorMessage, error.response)
+    })
+    .finally(() => {
+      finallyCallback()
+    })
 }
 
 export const getArrayBuffer = (api, url, successCallback, errorCallback, finallyCallback = {}) => {
