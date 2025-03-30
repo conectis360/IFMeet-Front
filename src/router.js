@@ -14,65 +14,71 @@ const Teste = () => import("./teste.vue")
 
 const routes = [
     {
-        path: "/notificacoes",
+        path: "/IFMeet/notificacoes",
         name: "Notificações",
         component: NotificacoesPage,
     },
     {
-        path: "/",
+        path: "/IFMeet/",
         name: "home",
         component: Home,
     },
     {
-        path: "/home",
+        path: "/IFMeet/home",
+        name: "Home",
         component: Home,
     },
     {
-        path: "/login",
+        path: "/IFMeet/login",
+        name: "Login",
         component: Login,
     },
     {
-        path: "/trabalhos",
+        path: "/IFMeet/trabalhos",
+        name: "Trabalhos",
         component: TrabalhoPage,
     },
     {
-        path: "/reunioes",
+        path: "/IFMeet/reunioes",
+        name: "Reunioes",
         component: ReuniaoPage,
     },
     {
-        path: "/tarefas",
+        path: "/IFMeet/tarefas",
+        name: "Tarefas",
         component: VisualizarTarefas,
     },
     {
-        path: "/atas",
+        path: "/IFMeet/atas",
+        name: "Atas",
         component: AtaPage,
     },
     {
-        path: "/profile",
+        path: "/IFMeet/profile",
         name: "Profile",
         // lazy-loaded
         component: Profile,
     },
     {
-        path: "/user",
+        path: "/IFMeet/user",
         name: "user",
         // lazy-loaded
         component: BoardUser,
     },
     {
-        path: "/registrar",
+        path: "/IFMeet/registrar",
         name: "registrar",
         // lazy-loaded
         component: FormularioRegistrarUsuario,
     },
     {
-        path: "/teste",
+        path: "/IFMeet/teste",
         name: "teste",
         // lazy-loaded
         component: Teste,
     },
     {
-        path: "/paleta",
+        path: "/IFMeet/paleta",
         name: "paleta",
         component: PaletasCores,
     },
@@ -84,14 +90,14 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    const publicPages = ['/login', '/register', '/home', '/registrar', '/teste'];
+    const publicPages = ['/IFMeet/login', '/IFMeet/register', '/IFMeet/home', '/IFMeet/registrar', '/IFMeet/teste'];
     const authRequired = !publicPages.includes(to.path);
     const loggedIn = localStorage.getItem('user');
 
     // caso tente logar numa página sem login
     // vai direcionar para login
     if (authRequired && !loggedIn) {
-        next('/login');
+        next('/IFMeet/login');
     } else {
         next();
     }

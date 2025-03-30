@@ -21,12 +21,20 @@
   --navbar-bg-color: #d1edb7;
   --navbar-text-color: #777777;
   --navbar-link-text-color: #777777;
+
+  --sidebar-bg-color: #d1edb7; /* Exemplo de cor de fundo clara */
+  --sidebar-color: #333; /* Exemplo de cor do texto clara */
+  --usuario-color: #333;
+
+  --sidebar-nav-color: #d1edb7;
+  --item-menu-bg: #d1edb7;
+  --item-menu-color: #333;
 }
 
 body.dark-mode {
   /* Tema Escuro Futurista */
-  --body-bg: #1e272c; /* Fundo mais escuro */
-  --content-bg: #2d3436; /* Fundo do conteúdo um pouco mais claro que o body */
+  --body-bg: #18230f; /* Fundo mais escuro */
+  --content-bg: #18230f; /* Fundo do conteúdo um pouco mais claro que o body */
   --text-color: #dcdcdc; /* Texto em tons de cinza claro */
   --primary-color: #8ec543; /* Usando o verde claro como destaque */
   --secondary-color: #317d3d; /* Usando o verde escuro como cor secundária */
@@ -42,12 +50,59 @@ body.dark-mode {
   --calendar-time-text-color: #fff;
   --calendar-bg-color: #2d3436; /* Cor de fundo do calendário igual ao conteúdo */
 
-  --navbar-bg-color: #317d3d;
+  --navbar-bg-color: #255f38;
   --navbar-text-color: #ffffff;
   --navbar-link-text-color: #ffffff;
+
+  --sidebar-bg-color: #255f38; /* Exemplo de cor de fundo clara */
+  --sidebar-color: #333; /* Exemplo de cor do texto clara */
+  --usuario-color: #ffffff;
+
+  --sidebar-nav-color: #255f38;
+  --item-menu-bg: #255f38;
+  --item-menu-color: #ffffff;
+}
+
+.dark-mode {
+  background-color: var(--body-bg) !important;
+}
+
+.light-mode {
+  background-color: var(--body-bg) !important;
+}
+
+.content-wrapper {
+  background-color: var(--body-bg) !important;
+}
+
+.nav-link {
+  color: var(--item-menu-color) !important;
+}
+
+.menu-item {
+  background-color: var(--item-menu-bg) !important;
+  color: var(--item-menu-color) !important;
+}
+
+.nav-sidebar > .nav-item {
+  background-color: var(--sidebar-nav-color);
+}
+
+#nomeUsuarioSideBar {
+  color: var(--usuario-color);
+}
+
+.main-sidebar.sidebar-dark-primary {
+  background-color: var(--sidebar-bg-color);
+  color: var(--sidebar-color);
 }
 
 .navbar-white {
+  background-color: var(--navbar-bg-color) !important;
+  color: var(--navbar-text-color) !important;
+}
+
+.main-footer {
   background-color: var(--navbar-bg-color) !important;
   color: var(--navbar-text-color) !important;
 }

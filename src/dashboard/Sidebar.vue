@@ -32,15 +32,24 @@
           role="menu"
           data-accordion="false"
         >
-        <li v-if="this.currentUser['roles'].includes('ROLE_ADMIN')" class="nav-item menu">
-          <MenuAdmin></MenuAdmin>
-        </li>
-        <li v-if="this.currentUser['roles'].includes('ROLE_ORIENTADOR')" class="nav-item menu">
-          <MenuOrietandor></MenuOrietandor>
-        </li>
-        <li v-if="this.currentUser['roles'].includes('ROLE_ALUNO')" class="nav-item menu">
-          <MenuAluno></MenuAluno>
-        </li>
+          <li
+            v-if="this.currentUser['roles'].includes('ROLE_ADMIN')"
+            class="nav-item menu"
+          >
+            <MenuAdmin></MenuAdmin>
+          </li>
+          <li
+            v-if="this.currentUser['roles'].includes('ROLE_ORIENTADOR')"
+            class="nav-item menu"
+          >
+            <MenuOrietandor></MenuOrietandor>
+          </li>
+          <li
+            v-if="this.currentUser['roles'].includes('ROLE_ALUNO')"
+            class="nav-item menu"
+          >
+            <MenuAluno></MenuAluno>
+          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
@@ -49,9 +58,9 @@
   </aside>
 </template>
 <style>
-  .opcaoMenu {
-    padding-left: 13px;
-  }
+.opcaoMenu {
+  padding-left: 13px;
+}
 </style>
 <script>
 import MenuOrietandor from "./MenuOrientador.vue";
@@ -63,7 +72,7 @@ export default {
   components: {
     MenuOrietandor,
     MenuAluno,
-    MenuAdmin
+    MenuAdmin,
   },
   computed: {
     currentUser() {

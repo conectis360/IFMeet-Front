@@ -89,7 +89,7 @@ export default {
   },
   created() {
     if (this.loggedIn) {
-      this.$router.push("/profile");
+      this.$router.push("IFMeet/profile");
     }
   },
   methods: {
@@ -97,7 +97,7 @@ export default {
       this.loading = true;
       this.$store.dispatch("auth/login", user).then(
         () => {
-          this.$router.push("/profile");
+          this.$router.push("IFMeet/profile");
         },
         (error) => {
           this.loading = false;
@@ -115,7 +115,7 @@ export default {
         this.usuario,
         (response) => {
           localStorage.setItem("user", JSON.stringify(response.data));
-          this.$router.push("/profile");
+          this.$router.push("IFMeet/profile");
           window.location.reload(true);
         },
         (error) => {
