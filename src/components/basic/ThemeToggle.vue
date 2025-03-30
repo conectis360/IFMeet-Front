@@ -2,49 +2,68 @@
   <div class="theme-toggle">
     <label class="switch">
       <input type="checkbox" :checked="isDarkMode" @change="toggleTheme" />
-      <span class="slider round"></span>
+      <span
+        class="slider round"
+        :style="isDarkMode ? darkSliderStyle : lightSliderStyle"
+      >
+        <span class="emoji" :style="{ opacity: isDarkMode ? 1 : 0 }">💻</span>
+        <span class="emoji" :style="{ opacity: isDarkMode ? 0 : 1 }">🍅</span>
+      </span>
     </label>
   </div>
 </template>
 
 <script>
+import { ref } from "vue";
+
 export default {
   name: "ThemeToggle",
-  data() {
-    return {
-      isDarkMode: false,
+  setup() {
+    const isDarkMode = ref(false);
+
+    const toggleTheme = () => {
+      isDarkMode.value = !isDarkMode.value;
+      if (isDarkMode.value) {
+        setDarkMode();
+      } else {
+        setLightMode();
+      }
+      localStorage.setItem("theme", isDarkMode.value ? "dark" : "light");
     };
-  },
-  mounted() {
-    // Verificar o tema salvo no localStorage (opcional)
+
+    const setDarkMode = () => {
+      document.body.classList.add("dark-mode");
+    };
+
+    const setLightMode = () => {
+      document.body.classList.remove("dark-mode");
+    };
+
     const storedTheme = localStorage.getItem("theme");
     if (storedTheme === "dark") {
-      this.setDarkMode();
+      isDarkMode.value = true;
+      setDarkMode();
     }
-  },
-  methods: {
-    toggleTheme() {
-      this.isDarkMode = !this.isDarkMode;
-      if (this.isDarkMode) {
-        this.setDarkMode();
-      } else {
-        this.setLightMode();
-      }
-      // Salvar a preferência no localStorage (opcional)
-      localStorage.setItem("theme", this.isDarkMode ? "dark" : "light");
-    },
-    setDarkMode() {
-      document.body.classList.add("dark-mode");
-    },
-    setLightMode() {
-      document.body.classList.remove("dark-mode");
-    },
+
+    return {
+      isDarkMode,
+      toggleTheme,
+      lightSliderStyle: {
+        backgroundColor: "#8ec543",
+        justifyContent: "flex-start",
+        paddingLeft: "2px",
+      },
+      darkSliderStyle: {
+        backgroundColor: "#317d3d",
+        justifyContent: "flex-end",
+        paddingRight: "2px",
+      },
+    };
   },
 };
 </script>
 
 <style scoped>
-/* Estilos para o toggle switch (adapte conforme necessário) */
 .theme-toggle {
   display: flex;
   align-items: center;
@@ -52,9 +71,10 @@ export default {
 
 .switch {
   position: relative;
+  margin-top: 15%;
   display: inline-block;
   width: 60px;
-  height: 34px;
+  height: 20px;
 }
 
 .switch input {
@@ -70,38 +90,18 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
   transition: 0.4s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  transition: 0.4s;
-}
-
-input:checked + .slider {
-  background-color: #2196f3;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196f3;
-}
-
-input:checked + .slider:before {
-  transform: translateX(26px);
+  border-radius: 34px;
+  display: flex;
+  align-items: center;
 }
 
 .slider.round {
   border-radius: 34px;
 }
 
-.slider.round:before {
-  border-radius: 50%;
+.emoji {
+  font-size: 1.4em;
+  transition: opacity 0.4s;
 }
 </style>

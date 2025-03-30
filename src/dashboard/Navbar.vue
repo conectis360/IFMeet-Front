@@ -19,6 +19,9 @@
     <ul class="navbar-nav ml-auto">
       <!-- Itens do lado direito -->
       <li class="nav-item">
+        <ThemeToggle />
+      </li>
+      <li class="nav-item">
         <ul class="navbar-nav ml-auto">
           <NotificationMenu
             :notifications="notifications"
@@ -44,10 +47,12 @@
 
 <script>
 import NotificationMenu from "../components/basic/NotificationMenu.vue";
+import ThemeToggle from "../components/basic/ThemeToggle.vue";
 
 export default {
   components: {
     NotificationMenu,
+    ThemeToggle,
   },
   data() {
     return {};
