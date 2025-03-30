@@ -1,0 +1,22 @@
+/* theme.css */
+
+:root {
+  /* Tema Claro (Padrão) */
+  --body-bg: #f4f6f9;
+  --content-bg: #ffffff;
+  --text-color: #333;
+  --primary-color: #007bff; /* Cor primária do AdminLTE */
+  --secondary-color: #6c757d; /* Cor secundária do AdminLTE */
+  /* Adicione outras cores que você precisa tematizar */
+}
+
+/* Tema Escuro */
+body.dark-mode {
+  --body-bg: #343a40; /* Cor de fundo escura */
+  --content-bg: #212529; /* Cor de fundo do conteúdo escura */
+  --text-color: #f8f9fa; /* Cor do texto clara */
+  /* Manter as cores primária e secundária do AdminLTE ou ajustá-las */
+  /* --primary-color: #17a2b8; */
+  /* --secondary-color: #495057; */
+  /* Sobrescreva outras cores para o tema escuro */
+}

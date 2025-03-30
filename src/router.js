@@ -1,12 +1,12 @@
 import { createWebHistory, createRouter } from "vue-router";
-import Home from "./components/Home.vue";
-import Login from "./components/Login.vue";
-// lazy-loaded
+const Home = () => import("./components/Home.vue");
+const Login = () => import("./components/Login.vue");
+const PaletasCores = () => import("./paletasCores.vue");
+const ReuniaoPage = () => import("./pages/ReuniaoPage.vue");
 const Profile = () => import("./components/Profile.vue")
 const BoardUser = () => import("./components/BoardUser.vue")
 const FormularioRegistrarUsuario = () => import("./components/formularios/FormularioRegistrarUsuario.vue")
 const TrabalhoPage = () => import("./pages/TrabalhoPage.vue")
-const VisualizarReunioes = () => import("./components/orientador/VisualizarReunioes.vue")
 const VisualizarTarefas = () => import("./components/orientador/VisualizarTarefas.vue")
 const NotificacoesPage = () => import("./pages/NotificationPage.vue")
 const AtaPage = () => import("./pages/AtaPage.vue")
@@ -37,7 +37,7 @@ const routes = [
     },
     {
         path: "/reunioes",
-        component: VisualizarReunioes,
+        component: ReuniaoPage,
     },
     {
         path: "/tarefas",
@@ -70,6 +70,11 @@ const routes = [
         name: "teste",
         // lazy-loaded
         component: Teste,
+    },
+    {
+        path: "/paleta",
+        name: "paleta",
+        component: PaletasCores,
     },
 ];
 
