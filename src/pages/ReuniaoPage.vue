@@ -1,21 +1,171 @@
 <template>
   <div>
-    <CalendarComponent />
+    <div class="availability-controls">
+      <h3>Selecione os dias disponíveis:</h3>
+      <div class="days-checkbox">
+        <label v-for="day in daysOfWeek" :key="day.value">
+          <input
+            type="checkbox"
+            v-model="availableDays"
+            :value="day.value"
+            @change="updateCalendar"
+          />
+          {{ day.label }}
+        </label>
+      </div>
+    </div>
+
+    <CalendarComponent ref="calendar" />
   </div>
 </template>
 
 <script>
-import CalendarComponent from "@/components/basic/Calendar.vue"; // Caminho do componente
+import CalendarComponent from "@/components/basic/Calendar.vue";
+import { ref, onMounted } from "vue";
 
 export default {
   components: {
     CalendarComponent,
   },
+  setup() {
+    const availableDays = ref([]); // Garantindo que começa como array vazio
+    const calendar = ref(null);
+    const daysOfWeek = [
+      { value: 0, label: "Domingo" },
+      { value: 1, label: "Segunda" },
+      { value: 2, label: "Terça" },
+      { value: 3, label: "Quarta" },
+      { value: 4, label: "Quinta" },
+      { value: 5, label: "Sexta" },
+      { value: 6, label: "Sábado" },
+    ];
+
+    const updateCalendar = () => {
+      // Garante que availableDays.value é um array
+      if (!Array.isArray(availableDays.value)) {
+        availableDays.value = [];
+      }
+
+      // Salva no localStorage
+      localStorage.setItem(
+        "availableDays",
+        JSON.stringify(availableDays.value)
+      );
+
+      // Remove todas as marcações anteriores
+      const days = document.querySelectorAll(".fc-day");
+      if (!days) return;
+
+      days.forEach((day) => {
+        day.classList.remove("day-available");
+      });
+
+      // Adiciona a classe aos dias selecionados
+      days.forEach((day) => {
+        const dateStr = day.getAttribute("data-date");
+        if (!dateStr) return;
+
+        try {
+          const date = new Date(dateStr);
+          if (availableDays.value.includes(date.getDay())) {
+            day.classList.add("day-available");
+          }
+        } catch (e) {
+          console.error("Erro ao processar data:", e);
+        }
+      });
+    };
+
+    onMounted(() => {
+      // Carrega dias salvos com verificação
+      try {
+        const savedDays = localStorage.getItem("availableDays");
+        if (savedDays) {
+          const parsed = JSON.parse(savedDays);
+          availableDays.value = Array.isArray(parsed) ? parsed : [];
+        }
+      } catch (e) {
+        console.error("Erro ao carregar dias:", e);
+        availableDays.value = [];
+      }
+
+      // Atualiza o calendário
+      setTimeout(updateCalendar, 100);
+
+      // Observa mudanças de mês/visualização
+      if (calendar.value?.calendar) {
+        calendar.value.calendar.on("datesSet", updateCalendar);
+      }
+    });
+
+    return {
+      availableDays,
+      daysOfWeek,
+      calendar,
+      updateCalendar,
+    };
+  },
 };
 </script>
-<style>
-/* Dentro do componente MeuCalendario.vue (ou em um arquivo CSS global) */
 
+<style>
+/* Estilos permanecem exatamente os mesmos do arquivo anterior */
+.fc-day.day-available {
+  background-color: rgba(56, 142, 60, 0.15) !important;
+}
+
+.fc-day.day-available .fc-daygrid-day-number {
+  color: #388e3c !important;
+  font-weight: bold;
+}
+
+.fc-day.day-available:hover {
+  background-color: rgba(56, 142, 60, 0.25) !important;
+}
+
+.availability-controls {
+  padding: 15px;
+  background: #f8f9fa;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.availability-controls h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.days-checkbox {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.days-checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 6px 10px;
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  transition: all 0.2s;
+}
+
+.days-checkbox label:hover {
+  background: #f0f0f0;
+}
+
+.days-checkbox input {
+  cursor: pointer;
+  accent-color: #388e3c;
+}
+
+/* Mantém os estilos originais do calendário */
 .fc .fc-daygrid-day-number {
   color: var(--calendar-day-number-color);
 }
