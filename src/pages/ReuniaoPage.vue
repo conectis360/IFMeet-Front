@@ -7,7 +7,7 @@
           <input
             type="checkbox"
             v-model="availableDays"
-            :value="day.value"
+            :value="day.value === 0 ? 6 : day.value - 1"
             @change="updateCalendar"
           />
           {{ day.label }}
@@ -28,8 +28,10 @@ export default {
     CalendarComponent,
   },
   setup() {
-    const availableDays = ref([]); // Garantindo que começa como array vazio
+    const availableDays = ref([]);
     const calendar = ref(null);
+
+    // Dias da semana com valores corretos (0=Domingo, 1=Segunda,...,6=Sábado)
     const daysOfWeek = [
       { value: 0, label: "Domingo" },
       { value: 1, label: "Segunda" },
@@ -41,33 +43,31 @@ export default {
     ];
 
     const updateCalendar = () => {
-      // Garante que availableDays.value é um array
+      console.log(availableDays.value);
       if (!Array.isArray(availableDays.value)) {
         availableDays.value = [];
       }
 
-      // Salva no localStorage
       localStorage.setItem(
         "availableDays",
         JSON.stringify(availableDays.value)
       );
 
-      // Remove todas as marcações anteriores
       const days = document.querySelectorAll(".fc-day");
       if (!days) return;
 
       days.forEach((day) => {
         day.classList.remove("day-available");
-      });
-
-      // Adiciona a classe aos dias selecionados
-      days.forEach((day) => {
         const dateStr = day.getAttribute("data-date");
         if (!dateStr) return;
 
         try {
           const date = new Date(dateStr);
-          if (availableDays.value.includes(date.getDay())) {
+          // getDay() retorna 0-6 (0=Domingo, 1=Segunda,...,6=Sábado)
+          const dayOfWeek = date.getDay();
+
+          // Verifica se o dia da semana está na lista de disponíveis
+          if (availableDays.value.includes(dayOfWeek)) {
             day.classList.add("day-available");
           }
         } catch (e) {
@@ -77,7 +77,6 @@ export default {
     };
 
     onMounted(() => {
-      // Carrega dias salvos com verificação
       try {
         const savedDays = localStorage.getItem("availableDays");
         if (savedDays) {
@@ -89,10 +88,8 @@ export default {
         availableDays.value = [];
       }
 
-      // Atualiza o calendário
       setTimeout(updateCalendar, 100);
 
-      // Observa mudanças de mês/visualização
       if (calendar.value?.calendar) {
         calendar.value.calendar.on("datesSet", updateCalendar);
       }
@@ -109,7 +106,7 @@ export default {
 </script>
 
 <style>
-/* Estilos permanecem exatamente os mesmos do arquivo anterior */
+/* Estilos dos dias disponíveis */
 .fc-day.day-available {
   background-color: rgba(56, 142, 60, 0.15) !important;
 }
@@ -123,6 +120,7 @@ export default {
   background-color: rgba(56, 142, 60, 0.25) !important;
 }
 
+/* Estilos dos controles */
 .availability-controls {
   padding: 15px;
   background: #f8f9fa;
