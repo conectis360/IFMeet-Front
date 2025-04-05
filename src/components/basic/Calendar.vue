@@ -1,476 +1,193 @@
 <template>
   <div class="calendar-container">
+    <!-- Controles de disponibilidade -->
+    <div class="availability-controls">
+      <h3>Selecione os dias disponíveis:</h3>
+      <div class="days-checkbox">
+        <label v-for="day in daysOfWeek" :key="day.value">
+          <input
+            type="checkbox"
+            v-model="availableDays"
+            :value="day.value - 1"
+            @change="updateCalendar"
+          />
+          {{ day.label }}
+        </label>
+      </div>
+    </div>
+
+    <!-- Calendário -->
     <FullCalendar :options="calendarOptions" class="custom-calendar" />
 
-    <!-- Modal melhorado -->
+    <!-- Modal de agendamento -->
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
-        <div class="modal-header">
-          <h3>{{ eventData.id ? "Editar Evento" : "Novo Evento" }}</h3>
-          <button class="close-btn" @click="closeModal">&times;</button>
-        </div>
-
-        <div class="form-group">
-          <label>Título</label>
-          <input
-            v-model="eventData.title"
-            placeholder="Digite o título do evento"
-            class="form-input"
-            @keyup.enter="saveEvent"
-          />
-        </div>
-
-        <div class="form-group">
-          <label>Data</label>
-          <input v-model="eventData.date" type="date" class="form-input" />
-        </div>
-
-        <!-- Adicione estes novos campos no formulário do modal -->
-        <div class="form-group">
-          <label>Hora de Início</label>
-          <input v-model="eventData.startTime" type="time" class="form-input" />
-        </div>
-
-        <div class="form-group">
-          <label>Hora de Término</label>
-          <input v-model="eventData.endTime" type="time" class="form-input" />
-        </div>
-
-        <div class="form-group">
-          <label>Descrição</label>
-          <textarea
-            v-model="eventData.description"
-            placeholder="Descrição do evento (opcional)"
-            class="form-textarea"
-          ></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Cor do Evento</label>
-          <div class="color-picker">
-            <div
-              v-for="color in eventColors"
-              :key="color"
-              :style="{ backgroundColor: color }"
-              class="color-option"
-              :class="{ selected: eventData.color === color }"
-              @click="eventData.color = color"
-            ></div>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button
-            v-if="eventData.id"
-            class="btn btn-danger"
-            @click="deleteEvent"
-          >
-            Excluir
-          </button>
-          <button class="btn btn-secondary" @click="closeModal">
-            Cancelar
-          </button>
-          <button
-            class="btn btn-primary"
-            @click="saveEvent"
-            :disabled="!isFormValid"
-          >
-            Salvar
-          </button>
-        </div>
+        <!-- Conteúdo do modal -->
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, computed, onMounted } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useToast } from "vue-toastification";
-import { buscarEventosCalendario } from "@/services/calendarService";
 
 export default {
   components: { FullCalendar },
   setup() {
     const toast = useToast();
-    const calendarEvents = ref([]);
     const showModal = ref(false);
+    const availableDays = ref([]);
+
+    // Dados do evento
     const eventData = ref({
-      id: null,
       title: "",
       date: "",
-      description: "",
-      color: "#3788d8",
+      startTime: "09:00",
+      endTime: "10:00",
     });
 
-    const eventColors = [
-      "#a8c6fa",
-      "#889aa4",
-      "#a7e0c5",
-      "#ffb3b3",
-      "#fff5b3",
-      "#b9a2e8",
+    // Dias da semana
+    const daysOfWeek = [
+      { value: 0, label: "Domingo" },
+      { value: 1, label: "Segunda" },
+      { value: 2, label: "Terça" },
+      { value: 3, label: "Quarta" },
+      { value: 4, label: "Quinta" },
+      { value: 5, label: "Sexta" },
+      { value: 6, label: "Sábado" },
     ];
 
-    const isFormValid = computed(() => {
-      return eventData.value.title.trim() !== "" && eventData.value.date !== "";
-    });
+    // Atualiza os estilos do calendário
+    const updateCalendar = async () => {
+      await nextTick();
+      const days = document.querySelectorAll(".fc-day");
 
-    // Busca usuário logado
-    const getUsuarioLogado = () => {
-      const usuario = localStorage.getItem("user");
-      return usuario ? JSON.parse(usuario) : null;
+      days?.forEach((day) => {
+        const dateStr = day.getAttribute("data-date");
+        if (!dateStr) return;
+
+        try {
+          const date = new Date(dateStr);
+          const dayOfWeek = date.getDay(); // Pega o dia padrão JS (0=Dom, ..., 6=Sáb)
+
+          day.classList.remove("day-available", "day-blocked");
+
+          if (availableDays.value.includes(dayOfWeek)) {
+            day.classList.add("day-available");
+          } else {
+            day.classList.add("day-blocked");
+          }
+        } catch (e) {
+          console.error("Erro ao processar data:", dateStr, e);
+        }
+      });
     };
 
-    // Busca eventos do calendário
-    const retornaEventosCalendario = async () => {
-      const usuario = getUsuarioLogado();
-      if (!usuario?.id) {
-        toast.error("Usuário não autenticado");
+    // Manipulador de clique em data - CORREÇÃO AQUI
+    const handleDateClick = (info) => {
+      console.log(info);
+      const date = new Date(info.date);
+      const dayOfWeek = date.getDay();
+
+      if (!availableDays.value.includes(dayOfWeek)) {
+        toast.error("Este dia não está disponível para agendamento");
         return;
       }
-      try {
-        const response = await buscarEventosCalendario(usuario.id);
 
-        if (response?.data) {
-          console.log(response.data);
-          calendarOptions.value.events = [...response.data?.records];
-        }
-      } catch (error) {
-        toast.error(error.message || "Erro ao carregar eventos");
-      }
-    };
-
-    // Dispara ao montar o componente
-    onMounted(() => {
-      retornaEventosCalendario();
-    });
-
-    const handleDateClick = (info) => {
+      // Preenche os dados do modal
       eventData.value = {
-        id: null,
+        ...eventData.value,
+        date: info.dateStr.split("T")[0],
         title: "",
-        date: info.dateStr,
-        description: "",
-        color: "#3788d8",
       };
       showModal.value = true;
     };
 
-    // Geração de IDs únicos e robustos
-    const generateEventId = () => {
-      // Combina timestamp, random e performance.now() para maior unicidade
-      return `evt-${Date.now()}-${Math.floor(
-        Math.random() * 1000
-      )}-${performance.now().toString(36).slice(2, 9)}`;
-    };
-
-    const saveEvent = () => {
-      if (!isFormValid.value) return;
-
-      // Combina data com horário
-      const startDateTime = `${eventData.value.date}T${eventData.value.startTime}`;
-      const endDateTime = `${eventData.value.date}T${eventData.value.endTime}`;
-
-      const newEvent = {
-        id: eventData.value.id || generateEventId(), // Substitui o método anterior
-        title: eventData.value.title,
-        start: startDateTime,
-        end: endDateTime,
-        description: eventData.value.description,
-        color: eventData.value.color,
-        backgroundColor: eventData.value.color,
-        allDay: false, // Agora são eventos com horário específico
-      };
-
-      if (eventData.value.id) {
-        const index = calendarEvents.value.findIndex(
-          (e) => e.id === eventData.value.id
-        );
-        if (index !== -1) {
-          calendarEvents.value.splice(index, 1, newEvent);
-        }
-      } else {
-        calendarEvents.value.push(newEvent);
-      }
-
-      localStorage.setItem(
-        "calendarEvents",
-        JSON.stringify(calendarEvents.value)
-      );
-      calendarOptions.value.events = [...calendarEvents.value];
-      closeModal();
-      toast.success(
-        eventData.value.id ? "Evento atualizado!" : "Evento adicionado!"
-      );
-    };
-
-    const handleEventClick = (info) => {
-      const startStr = info.event.startStr;
-      const endStr = info.event.endStr;
-
-      eventData.value = {
-        id: info.event.id,
-        title: info.event.title,
-        date: startStr.split("T")[0],
-        startTime: startStr.includes("T")
-          ? startStr.split("T")[1].substring(0, 5)
-          : "09:00",
-        endTime: endStr.includes("T")
-          ? endStr.split("T")[1].substring(0, 5)
-          : "10:00",
-        description: info.event.extendedProps?.description || "",
-        color: info.event.backgroundColor || "#3788d8",
-      };
-      showModal.value = true;
-    };
-
+    // Configurações do FullCalendar
     const calendarOptions = ref({
-      locale: "pt-br",
       plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
       initialView: "dayGridMonth",
+      selectable: false, // Desativamos a seleção por arrasto
+      dateClick: handleDateClick,
+      locale: "pt-br",
       headerToolbar: {
         left: "prev,next today",
         center: "title",
         right: "dayGridMonth,timeGridWeek,timeGridDay",
       },
-      titleFormat: { year: "numeric", month: "long" },
-      buttonText: {
-        today: "Hoje",
-        month: "Mês",
-        week: "Semana",
-        day: "Dia",
-        list: "Lista",
-      },
       events: [],
-      dateClick: handleDateClick,
-      eventClick: handleEventClick,
-      editable: true,
-      eventDisplay: "block",
-      nowIndicator: true,
-      slotMinTime: "08:00:00",
-      slotMaxTime: "24:00:00",
-      allDaySlot: true,
-      views: {
-        dayGridMonth: {
-          eventTimeFormat: {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          },
-        },
-        timeGridWeek: {
-          eventTimeFormat: {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          },
-        },
-        timeGridDay: {
-          eventTimeFormat: {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          },
-        },
-      },
     });
 
-    const deleteEvent = () => {
-      if (!confirm("Tem certeza que deseja excluir este evento?")) return;
-
-      // Atualiza a lista de eventos de forma reativa
-      calendarEvents.value = calendarEvents.value.filter(
-        (e) => e.id !== eventData.value.id
-      );
-
-      // Atualiza o localStorage
-      localStorage.setItem(
-        "calendarEvents",
-        JSON.stringify(calendarEvents.value)
-      );
-
-      // Força a atualização do calendário
-      calendarOptions.value.events = [...calendarEvents.value];
-
-      closeModal();
-      toast.success("Evento excluído com sucesso!");
-    };
-
-    const closeModal = () => {
-      showModal.value = false;
-    };
+    // Carrega dados salvos
+    onMounted(() => {
+      const savedDays = localStorage.getItem("availableDays");
+      if (savedDays) {
+        availableDays.value = JSON.parse(savedDays);
+      }
+      updateCalendar();
+    });
 
     return {
-      calendarOptions,
       showModal,
       eventData,
-      eventColors,
-      isFormValid,
-      saveEvent,
-      deleteEvent,
-      closeModal,
+      availableDays,
+      daysOfWeek,
+      calendarOptions,
+      updateCalendar,
+      closeModal: () => {
+        showModal.value = false;
+      },
     };
   },
 };
 </script>
 
 <style scoped>
+/* Estilos do calendário */
 .calendar-container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
 }
 
-.custom-calendar {
-  background: white;
+.availability-controls {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #f5f5f5;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+.days-checkbox {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-}
-
-.modal-header {
-  padding: 20px;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-header h3 {
-  margin: 0;
-  color: #2c3e50;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #777;
-}
-
-.form-group {
-  padding: 0 20px 15px;
-  text-align: left;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #2c3e50;
-}
-
-.form-input,
-.form-textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-.form-input:focus,
-.form-textarea:focus {
-  border-color: #3788d8;
-  outline: none;
-}
-
-.form-textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-
-.color-picker {
-  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
-.color-option {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-}
-
-.color-option.selected {
-  border-color: #2c3e50;
-}
-
-.modal-footer {
-  padding: 15px 20px;
-  border-top: 1px solid #eee;
+.days-checkbox label {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.btn {
-  padding: 8px 16px;
-  border-radius: 4px;
-  border: none;
+  align-items: center;
+  gap: 5px;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
 }
 
-.btn-primary {
-  background-color: #3788d8;
-  color: white;
+/* Estilos para os dias do calendário */
+:deep(.fc-day) {
+  transition: background-color 0.3s;
 }
 
-.btn-primary:hover {
-  background-color: #2a6fc7;
+:deep(.day-available) {
+  background-color: #e8f5e9 !important; /* Verde claro para dias disponíveis */
+  cursor: pointer;
 }
 
-.btn-primary:disabled {
-  background-color: #a0c4f3;
-  cursor: not-allowed;
-}
-
-.btn-secondary {
-  background-color: #f1f1f1;
-  color: #333;
-}
-
-.btn-secondary:hover {
-  background-color: #e0e0e0;
-}
-
-.btn-danger {
-  background-color: #ff6b6b;
-  color: white;
-  margin-right: auto;
-}
-
-.btn-danger:hover {
-  background-color: #e74c3c;
+:deep(.day-blocked) {
+  background-color: #ffebee !important; /* Vermelho claro para dias indisponíveis */
+  opacity: 0.7;
 }
 </style>
