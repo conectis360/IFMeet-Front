@@ -8,7 +8,7 @@
           <input
             type="checkbox"
             v-model="availableDays"
-            :value="day.value - 1"
+            :value="day.value"
             @change="updateCalendar"
           />
           {{ day.label }}
@@ -22,7 +22,9 @@
     <!-- Modal de agendamento -->
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
-        <!-- Conteúdo do modal -->
+        <h2>Modal de Teste</h2>
+        <p>O modal está funcionando!</p>
+        <button @click="closeModal">Fechar</button>
       </div>
     </div>
   </div>
@@ -62,7 +64,6 @@ export default {
       { value: 6, label: "Sábado" },
     ];
 
-    // Atualiza os estilos do calendário
     const updateCalendar = async () => {
       await nextTick();
       const days = document.querySelectorAll(".fc-day");
@@ -72,8 +73,10 @@ export default {
         if (!dateStr) return;
 
         try {
-          const date = new Date(dateStr);
-          const dayOfWeek = date.getDay(); // Pega o dia padrão JS (0=Dom, ..., 6=Sáb)
+          // Corrigindo a forma de criar a data
+          const dateParts = dateStr.split("-");
+          const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+          const dayOfWeek = date.getDay(); // 0 (Domingo) a 6 (Sábado)
 
           day.classList.remove("day-available", "day-blocked");
 
@@ -90,11 +93,13 @@ export default {
 
     // Manipulador de clique em data - CORREÇÃO AQUI
     const handleDateClick = (info) => {
-      console.log(info);
       const date = new Date(info.date);
-      const dayOfWeek = date.getDay();
+      const dayOfWeek = date.getDay(); // 0 (Domingo) a 6 (Sábado)
 
-      if (!availableDays.value.includes(dayOfWeek)) {
+      // Verifica se o dia da semana está nos disponíveis
+      const isAvailable = availableDays.value.includes(dayOfWeek);
+
+      if (!isAvailable) {
         toast.error("Este dia não está disponível para agendamento");
         return;
       }
@@ -189,5 +194,26 @@ export default {
 :deep(.day-blocked) {
   background-color: #ffebee !important; /* Vermelho claro para dias indisponíveis */
   opacity: 0.7;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
 }
 </style>
