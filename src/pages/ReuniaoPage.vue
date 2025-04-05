@@ -9,6 +9,7 @@
             v-model="availableDays"
             :value="day.value === 0 ? 6 : day.value - 1"
             @change="updateCalendar"
+            @dateClick="handleDateClick"
           />
           {{ day.label }}
         </label>
@@ -22,6 +23,8 @@
 <script>
 import CalendarComponent from "@/components/basic/Calendar.vue";
 import { ref, onMounted } from "vue";
+import { useToast } from "vue-toastification";
+const toast = useToast();
 
 export default {
   components: {
@@ -42,8 +45,21 @@ export default {
       { value: 6, label: "Sábado" },
     ];
 
+    const handleDateClick = (info) => {
+      const date = new Date(info.date);
+      const dayOfWeek = date.getDay();
+
+      if (!availableDays.value.includes(dayOfWeek)) {
+        toast.warning("Este dia não está disponível para agendamento");
+        info.dayEl.style.pointerEvents = "none";
+        return false; // Impede a abertura do modal
+      }
+
+      // Permite a abertura do modal para dias disponíveis
+      return true;
+    };
+
     const updateCalendar = () => {
-      console.log(availableDays.value);
       if (!Array.isArray(availableDays.value)) {
         availableDays.value = [];
       }
@@ -57,18 +73,19 @@ export default {
       if (!days) return;
 
       days.forEach((day) => {
-        day.classList.remove("day-available");
+        day.classList.remove("day-available", "day-blocked");
         const dateStr = day.getAttribute("data-date");
         if (!dateStr) return;
 
         try {
           const date = new Date(dateStr);
-          // getDay() retorna 0-6 (0=Domingo, 1=Segunda,...,6=Sábado)
           const dayOfWeek = date.getDay();
 
-          // Verifica se o dia da semana está na lista de disponíveis
           if (availableDays.value.includes(dayOfWeek)) {
             day.classList.add("day-available");
+          } else {
+            day.classList.add("day-blocked");
+            day.style.pointerEvents = "none";
           }
         } catch (e) {
           console.error("Erro ao processar data:", e);
@@ -80,8 +97,7 @@ export default {
       try {
         const savedDays = localStorage.getItem("availableDays");
         if (savedDays) {
-          const parsed = JSON.parse(savedDays);
-          availableDays.value = Array.isArray(parsed) ? parsed : [];
+          availableDays.value = JSON.parse(savedDays);
         }
       } catch (e) {
         console.error("Erro ao carregar dias:", e);
@@ -89,17 +105,25 @@ export default {
       }
 
       setTimeout(updateCalendar, 100);
-
-      if (calendar.value?.calendar) {
-        calendar.value.calendar.on("datesSet", updateCalendar);
-      }
     });
+
+    if (calendar.value?.$el) {
+      const observer = new MutationObserver(() => {
+        updateCalendar();
+      });
+
+      observer.observe(calendar.value.$el, {
+        childList: true,
+        subtree: true,
+      });
+    }
 
     return {
       availableDays,
       daysOfWeek,
       calendar,
       updateCalendar,
+      handleDateClick,
     };
   },
 };
@@ -218,5 +242,25 @@ export default {
 
 .custom-calendar {
   background-color: var(--calendar-bg-color);
+}
+
+/* Estilos para dias bloqueados */
+.fc-day.day-blocked {
+  background-color: rgba(200, 200, 200, 0.3) !important;
+  cursor: not-allowed !important;
+}
+
+.fc-day.day-blocked .fc-daygrid-day-number {
+  color: #999 !important;
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.fc-day.day-blocked a,
+.fc-day.day-blocked button,
+.fc-day.day-blocked [role="button"] {
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+  opacity: 0.5;
 }
 </style>
