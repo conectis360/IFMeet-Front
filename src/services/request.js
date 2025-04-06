@@ -25,6 +25,62 @@ export const requestGet = (requestInstance, url, successCallback, errorCallback,
     })
 }
 
+/**
+ * Função genérica para requisições HTTP
+ * @param {Object} requestInstance - Instância do axios/HTTP client
+ * @param {string} method - Método HTTP (get, post, put, delete, etc.)
+ * @param {string} url - Endpoint da API
+ * @param {Object} [data=null] - Corpo da requisição (para POST, PUT, PATCH)
+ * @param {Object} [params={}] - Parâmetros de query (para GET)
+ * @param {string} [responseType='json'] - Tipo de resposta esperada
+ * @returns {Promise} - Retorna a resposta da API ou lança um erro tratado
+ */
+export const apiRequest = async (
+  requestInstance,
+  method,
+  url,
+  data = null,
+  params = {},
+  responseType = 'json'
+) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: 'Bearer ' + getToken(),
+        'Content-Type': 'application/json'
+      },
+      responseType,
+      params
+    };
+
+    // Usa o método dinâmico do axios
+    const response = await requestInstance[method](url, data, config);
+    return response;
+
+  } catch (error) {
+    let errorMessage = mensagemErroPadrao;
+    const errorData = error.response?.data;
+
+    // Tratamento de diferentes formatos de erro
+    if (errorData) {
+      if (Array.isArray(errorData.mensagens)) {
+        errorMessage = errorData.mensagens.join(', ');
+      } else if (errorData.message) {
+        errorMessage = errorData.message;
+      } else if (typeof errorData === 'string') {
+        errorMessage = errorData;
+      }
+    }
+
+    throw {
+      message: errorMessage,
+      response: error.response,
+      status: error.response?.status,
+      code: error.code
+    };
+  }
+};
+
 export const requestGetComposition = async (
   requestInstance,
   url,
