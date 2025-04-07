@@ -20,7 +20,6 @@
     <FullCalendar :options="calendarOptions" class="custom-calendar" />
 
     <!-- Modal de agendamento -->
-    <!-- Modal melhorado -->
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
         <div class="modal-header">
@@ -42,7 +41,6 @@
           <input v-model="eventData.date" type="date" class="form-input" />
         </div>
 
-        <!-- Adicione estes novos campos no formulário do modal -->
         <div class="form-group">
           <label>Hora de Início</label>
           <input v-model="eventData.startTime" type="time" class="form-input" />
@@ -111,7 +109,6 @@ import {
 export default {
   components: { FullCalendar },
   setup() {
-    //const calendarEvents = ref([]);
     const toast = useToast();
     const showModal = ref(false);
     const availableDays = ref([]);
@@ -189,7 +186,7 @@ export default {
       });
     };
 
-    // Manipulador de clique em data - CORREÇÃO AQUI
+    // Manipulador de clique em data
     const handleDateClick = (info) => {
       const date = new Date(info.date);
       const dayOfWeek = date.getDay(); // 0 (Domingo) a 6 (Sábado)
@@ -354,232 +351,12 @@ export default {
 };
 </script>
 
-<style scoped>
-/* Estilos do calendário */
+<style>
+/* Importa o arquivo de tema externo */
+@import "@/assets/css/calendar-theme.css";
 
+/* Estilos específicos do componente que não estão no tema */
 :deep(.fc-h-event) {
   border: none !important;
-}
-
-.calendar-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.availability-controls {
-  margin-bottom: 20px;
-  padding: 15px;
-  background: #f5f5f5;
-  border-radius: 8px;
-}
-
-.days-checkbox {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.days-checkbox label {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-}
-
-/* Estilos para os dias do calendário */
-:deep(.fc-day) {
-  transition: background-color 0.3s;
-}
-
-:deep(.fc-event) {
-  cursor: pointer;
-}
-
-:deep(.day-available) {
-  background-color: #e8f5e9 !important; /* Verde claro para dias disponíveis */
-  cursor: pointer;
-}
-
-:deep(.day-blocked) {
-  background-color: #ffebee !important; /* Vermelho claro para dias indisponíveis */
-  opacity: 0.7;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 500px;
-  width: 100%;
-}
-
-.calendar-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.custom-calendar {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-}
-
-.modal-header {
-  padding: 20px;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-header h3 {
-  margin: 0;
-  color: #2c3e50;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #777;
-}
-
-.form-group {
-  padding: 0 20px 15px;
-  text-align: left;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #2c3e50;
-}
-
-.form-input,
-.form-textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-.form-input:focus,
-.form-textarea:focus {
-  border-color: #3788d8;
-  outline: none;
-}
-
-.form-textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-
-.color-picker {
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.color-option {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-}
-
-.color-option.selected {
-  border-color: #2c3e50;
-}
-
-.modal-footer {
-  padding: 15px 20px;
-  border-top: 1px solid #eee;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.btn {
-  padding: 8px 16px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.btn-primary {
-  background-color: #3788d8;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #2a6fc7;
-}
-
-.btn-primary:disabled {
-  background-color: #a0c4f3;
-  cursor: not-allowed;
-}
-
-.btn-secondary {
-  background-color: #f1f1f1;
-  color: #333;
-}
-
-.btn-secondary:hover {
-  background-color: #e0e0e0;
-}
-
-.btn-danger {
-  background-color: #ff6b6b;
-  color: white;
-  margin-right: auto;
-}
-
-.btn-danger:hover {
-  background-color: #e74c3c;
 }
 </style>

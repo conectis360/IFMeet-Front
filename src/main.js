@@ -2,7 +2,8 @@ import { createApp } from 'vue'
 import App from './App.vue'
 window.$ = window.jQuery = require("jquery");
 
-import './assets/css/theme.css'; // Importe seu arquivo CSS aqui
+import './assets/css/theme.css';
+import '@/assets/css/calendar-theme.css'; //tema do calendário
 
 import router from "./router";
 import store from "./store";

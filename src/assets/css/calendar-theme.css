@@ -1,0 +1,422 @@
+/* unified-theme.css */
+
+:root {
+  /* Tema Claro (Padrão) - Cores do sistema */
+  --body-bg: #f4f6f9;
+  --content-bg: #ffff;
+  --text-color: #333;
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+
+  /* Cores de navegação */
+  --navbar-bg-color: #d1edb7;
+  --navbar-text-color: #7777;
+  --navbar-link-text-color: #7777;
+  --sidebar-bg-color: #d1edb7;
+  --sidebar-color: #333;
+  --usuario-color: #333;
+  --sidebar-nav-color: #d1edb7;
+  --item-menu-bg: #d1edb7;
+  --item-menu-color: #333;
+
+  /* Cores do calendário - Tema Claro */
+  --calendar-bg-color: #f0fff0;
+  --calendar-controls-bg: #f5f5f5;
+  --calendar-day-available-bg: #e8f5e9;
+  --calendar-day-blocked-bg: #ffebee;
+  --calendar-modal-overlay-bg: rgba(0, 0, 0, 0.5);
+
+  /* Cores de texto do calendário */
+  --calendar-text-color: #2c3e50;
+  --calendar-text-secondary: #777;
+  --calendar-day-number-color: #317b3c;
+  --calendar-header-color: #317b3c;
+  --calendar-title-color: #317b3c;
+  --calendar-event-text-color: #000;
+  --calendar-time-text-color: #000;
+
+  /* Cores de botões do calendário */
+  --calendar-primary-color: #3788d8;
+  --calendar-primary-hover: #2a6fc7;
+  --calendar-primary-disabled: #a0c4f3;
+  --calendar-button-bg: #8dc643;
+  --calendar-button-active-bg: #317b3c;
+  --calendar-button-disabled-bg: #317b3c;
+  --calendar-btn-secondary-bg: #f1f1f1;
+  --calendar-btn-secondary-hover: #e0e0e0;
+  --calendar-btn-secondary-text: #333;
+  --calendar-btn-danger-bg: #ff6b6b;
+  --calendar-btn-danger-hover: #e74c3c;
+
+  /* Cores de borda */
+  --calendar-border-color: #eee;
+  --calendar-input-border: #ddd;
+  --calendar-input-focus-border: #3788d8;
+
+  /* Espaçamento */
+  --calendar-spacing-xs: 5px;
+  --calendar-spacing-sm: 8px;
+  --calendar-spacing-md: 10px;
+  --calendar-spacing-lg: 15px;
+  --calendar-spacing-xl: 20px;
+
+  /* Bordas */
+  --calendar-border-radius: 8px;
+  --calendar-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --calendar-modal-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Tema Escuro */
+body.dark-mode {
+  /* Tema Escuro Futurista - Cores do sistema */
+  --body-bg: #18230f;
+  --content-bg: #18230f;
+  --text-color: #dcdcdc;
+  --primary-color: #8ec543;
+  --secondary-color: #317d3d;
+
+  /* Cores de navegação */
+  --navbar-bg-color: #255f38;
+  --navbar-text-color: #ffff;
+  --navbar-link-text-color: #ffff;
+  --sidebar-bg-color: #255f38;
+  --sidebar-color: #333;
+  --usuario-color: #ffff;
+  --sidebar-nav-color: #255f38;
+  --item-menu-bg: #255f38;
+  --item-menu-color: #ffff;
+
+  /* Cores do calendário - Tema Escuro */
+  --calendar-bg-color: #ecdfcc;
+  --calendar-controls-bg: #2d2d2d;
+  --calendar-day-available-bg: rgba(76, 175, 80, 0.2);
+  --calendar-day-blocked-bg: rgba(244, 67, 54, 0.2);
+  --calendar-modal-overlay-bg: rgba(0, 0, 0, 0.7);
+
+  /* Cores de texto do calendário */
+  --calendar-text-color: #e0e0e0;
+  --calendar-text-secondary: #aaa;
+  --calendar-day-number-color: #1e201e;
+  --calendar-header-color: #1e201e;
+  --calendar-title-color: #1e201e;
+  --calendar-event-text-color: #1e201e;
+  --calendar-time-text-color: #1e201e;
+
+  /* Cores de botões do calendário */
+  --calendar-primary-color: #5c9ce6;
+  --calendar-primary-hover: #4a7eb8;
+  --calendar-primary-disabled: #3a5a80;
+  --calendar-button-bg: #317d3d;
+  --calendar-button-active-bg: #8ec543;
+  --calendar-button-disabled-bg: #555;
+  --calendar-btn-secondary-bg: #3a3a3a;
+  --calendar-btn-secondary-hover: #444;
+  --calendar-btn-secondary-text: #ddd;
+  --calendar-btn-danger-bg: #c53030;
+  --calendar-btn-danger-hover: #a52a2a;
+
+  /* Cores de borda */
+  --calendar-border-color: #444;
+  --calendar-input-border: #555;
+  --calendar-input-focus-border: #5c9ce6;
+}
+
+/* Estilos do calendário */
+.calendar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--calendar-spacing-xl);
+}
+
+.custom-calendar {
+  background: var(--calendar-bg-color);
+  border-radius: var(--calendar-border-radius);
+  box-shadow: var(--calendar-box-shadow);
+}
+
+/* Estilos dos controles de disponibilidade */
+.availability-controls {
+  margin-bottom: var(--calendar-spacing-xl);
+  padding: var(--calendar-spacing-lg);
+  background: var(--calendar-controls-bg);
+  border-radius: var(--calendar-border-radius);
+}
+
+.days-checkbox {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--calendar-spacing-md);
+  margin-top: var(--calendar-spacing-md);
+}
+
+.days-checkbox label {
+  display: flex;
+  align-items: center;
+  gap: var(--calendar-spacing-xs);
+  cursor: pointer;
+}
+
+/* Estilos para os dias do calendário */
+.fc-day {
+  transition: background-color 0.3s;
+}
+
+.fc-event {
+  cursor: pointer;
+  border: none !important;
+}
+
+.day-available {
+  background-color: var(--calendar-day-available-bg) !important;
+  cursor: pointer;
+}
+
+.day-blocked {
+  background-color: var(--calendar-day-blocked-bg) !important;
+  opacity: 0.7;
+}
+
+/* Estilos do modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--calendar-modal-overlay-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--content-bg);
+  border-radius: var(--calendar-border-radius);
+  width: 100%;
+  max-width: 500px;
+  box-shadow: var(--calendar-modal-shadow);
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: var(--calendar-spacing-xl);
+  border-bottom: 1px solid var(--calendar-border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: var(--calendar-text-color);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--calendar-text-secondary);
+}
+
+/* Estilos do formulário */
+.form-group {
+  padding: 0 var(--calendar-spacing-xl) var(--calendar-spacing-lg);
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--calendar-spacing-sm);
+  font-weight: 500;
+  color: var(--calendar-text-color);
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: var(--calendar-spacing-md);
+  border: 1px solid var(--calendar-input-border);
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: var(--content-bg);
+  color: var(--text-color);
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--calendar-input-focus-border);
+  outline: none;
+}
+
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Seletor de cores */
+.color-picker {
+  display: flex;
+  gap: var(--calendar-spacing-md);
+  margin-top: var(--calendar-spacing-sm);
+}
+
+.color-option {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.color-option.selected {
+  border-color: var(--calendar-text-color);
+}
+
+/* Estilos do rodapé do modal */
+.modal-footer {
+  padding: var(--calendar-spacing-lg) var(--calendar-spacing-xl);
+  border-top: 1px solid var(--calendar-border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--calendar-spacing-md);
+}
+
+/* Estilos dos botões */
+.btn {
+  padding: var(--calendar-spacing-sm) var(--calendar-spacing-xl);
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-primary {
+  background-color: var(--calendar-primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--calendar-primary-hover);
+}
+
+.btn-primary:disabled {
+  background-color: var(--calendar-primary-disabled);
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: var(--calendar-btn-secondary-bg);
+  color: var(--calendar-btn-secondary-text);
+}
+
+.btn-secondary:hover {
+  background-color: var(--calendar-btn-secondary-hover);
+}
+
+.btn-danger {
+  background-color: var(--calendar-btn-danger-bg);
+  color: white;
+  margin-right: auto;
+}
+
+.btn-danger:hover {
+  background-color: var(--calendar-btn-danger-hover);
+}
+
+/* Estilos específicos do FullCalendar */
+.fc .fc-daygrid-day-number {
+  color: var(--calendar-day-number-color);
+}
+
+.fc .fc-col-header-cell-cushion {
+  color: var(--calendar-header-color);
+}
+
+.fc-direction-ltr .fc-button-group > .fc-button:not(:first-child),
+.fc-direction-ltr .fc-button-group > .fc-button:not(:last-child) {
+  background-color: var(--calendar-button-bg);
+  font-weight: bold;
+}
+
+.fc .fc-button-group > .fc-button.fc-button-active,
+.fc .fc-button-group > .fc-button:active,
+.fc .fc-button-group > .fc-button:focus,
+.fc .fc-button-group > .fc-button:hover {
+  font-weight: bold;
+  background-color: var(--calendar-button-active-bg);
+}
+
+.fc-toolbar-title {
+  color: var(--calendar-title-color);
+  text-transform: uppercase;
+}
+
+.fc .fc-button-primary:disabled {
+  font-weight: bold;
+  background-color: var(--calendar-button-disabled-bg);
+}
+
+.fc-h-event .fc-event-main {
+  color: var(--calendar-event-text-color);
+}
+
+.fc-v-event .fc-event-title {
+  color: var(--calendar-event-text-color);
+}
+
+.fc-timegrid-event .fc-event-time {
+  font-weight: bold;
+  color: var(--calendar-time-text-color);
+}
+
+/* Estilos gerais do sistema */
+.dark-mode {
+  background-color: var(--body-bg) !important;
+}
+
+.light-mode {
+  background-color: var(--body-bg) !important;
+}
+
+.content-wrapper {
+  background-color: var(--body-bg) !important;
+}
+
+.nav-link {
+  color: var(--item-menu-color) !important;
+}
+
+.menu-item {
+  background-color: var(--item-menu-bg) !important;
+  color: var(--item-menu-color) !important;
+}
+
+.nav-sidebar > .nav-item {
+  background-color: var(--sidebar-nav-color);
+}
+
+#nomeUsuarioSideBar {
+  color: var(--usuario-color);
+}
+
+.main-sidebar.sidebar-dark-primary {
+  background-color: var(--sidebar-bg-color);
+  color: var(--sidebar-color);
+}
+
+.navbar-white {
+  background-color: var(--navbar-bg-color) !important;
+  color: var(--navbar-text-color) !important;
+}
+
+.main-footer {
+  background-color: var(--navbar-bg-color) !important;
+  color: var(--navbar-text-color) !important;
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: var(--navbar-link-text-color) !important;
+}
