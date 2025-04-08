@@ -1,18 +1,20 @@
 <template>
   <div class="calendar-container">
-    <!-- Controles de disponibilidade -->
-    <div class="availability-controls">
-      <h3>Selecione os dias disponíveis:</h3>
-      <div class="days-checkbox">
-        <label v-for="day in daysOfWeek" :key="day.value">
-          <input
-            type="checkbox"
-            v-model="availableDays"
-            :value="day.value"
-            @change="updateCalendar"
-          />
-          {{ day.label }}
-        </label>
+    <!-- Informação sobre disponibilidade -->
+    <div class="availability-info" v-if="availabilityConfig.length > 0">
+      <h3>Dias e horários disponíveis:</h3>
+      <div class="availability-list">
+        <div
+          v-for="(config, index) in availabilityConfig"
+          :key="index"
+          class="availability-item"
+        >
+          <span class="day-name">{{ getDayName(config.dayOfWeek) }}:</span>
+          <span class="time-range"
+            >{{ formatTime(config.startTime) }} -
+            {{ formatTime(config.endTime) }}</span
+          >
+        </div>
       </div>
     </div>
 
@@ -38,17 +40,38 @@
 
         <div class="form-group">
           <label>Data</label>
-          <input v-model="eventData.date" type="date" class="form-input" />
+          <input
+            v-model="eventData.date"
+            type="date"
+            class="form-input"
+            readonly
+          />
         </div>
 
         <div class="form-group">
           <label>Hora de Início</label>
-          <input v-model="eventData.startTime" type="time" class="form-input" />
+          <select
+            v-model="eventData.startTime"
+            class="form-input"
+            @change="updateEndTimeOptions"
+          >
+            <option
+              v-for="time in availableStartTimes"
+              :key="time"
+              :value="time"
+            >
+              {{ time }}
+            </option>
+          </select>
         </div>
 
         <div class="form-group">
           <label>Hora de Término</label>
-          <input v-model="eventData.endTime" type="time" class="form-input" />
+          <select v-model="eventData.endTime" class="form-input">
+            <option v-for="time in availableEndTimes" :key="time" :value="time">
+              {{ time }}
+            </option>
+          </select>
         </div>
 
         <div class="form-group">
@@ -104,6 +127,7 @@ import {
   saveEventoCalendario,
   updateEventoCalendario,
   deleteEventoCalendario,
+  buscarConfiguracoesDisponibilidade, // Novo serviço a ser implementado
 } from "@/services/calendarService";
 
 export default {
@@ -112,13 +136,18 @@ export default {
     const toast = useToast();
     const showModal = ref(false);
     const availableDays = ref([]);
+    const availabilityConfig = ref([]);
+    const availableStartTimes = ref([]);
+    const availableEndTimes = ref([]);
 
     // Dados do evento
     const eventData = ref({
       title: "",
       date: "",
-      startTime: "09:00",
-      endTime: "10:00",
+      startTime: "",
+      endTime: "",
+      description: "",
+      color: "#3788d8",
     });
 
     // Dias da semana
@@ -141,6 +170,83 @@ export default {
       "#b9a2e8",
     ];
 
+    // Função para obter o nome do dia a partir do valor
+    const getDayName = (dayValue) => {
+      const day = daysOfWeek.find((d) => d.value === dayValue);
+      return day ? day.label : "";
+    };
+
+    // Função para formatar hora
+    const formatTime = (timeStr) => {
+      return timeStr;
+    };
+
+    // Função para gerar opções de horário em intervalos de 30 minutos
+    const generateTimeOptions = (startTime, endTime) => {
+      const times = [];
+      const start = new Date(`2000-01-01T${startTime}`);
+      const end = new Date(`2000-01-01T${endTime}`);
+
+      // Subtrai 30 minutos do final para garantir que o evento tenha pelo menos 30 min
+      end.setMinutes(end.getMinutes() - 30);
+
+      const current = new Date(start);
+
+      while (current <= end) {
+        const hours = current.getHours().toString().padStart(2, "0");
+        const minutes = current.getMinutes().toString().padStart(2, "0");
+        times.push(`${hours}:${minutes}`);
+
+        // Avança 30 minutos
+        current.setMinutes(current.getMinutes() + 30);
+      }
+
+      return times;
+    };
+
+    // Atualiza as opções de horário de término com base no horário de início selecionado
+    const updateEndTimeOptions = () => {
+      if (!eventData.value.date) return;
+
+      const date = new Date(eventData.value.date);
+      const dayOfWeek = date.getDay();
+
+      // Encontra a configuração para o dia da semana
+      const dayConfig = availabilityConfig.value.find(
+        (config) => config.dayOfWeek === dayOfWeek
+      );
+
+      if (!dayConfig) return;
+
+      // Gera opções de horário de término a partir do horário de início selecionado
+      const startTime = eventData.value.startTime;
+      const endTimeOptions = [];
+
+      // Começa 30 minutos após o horário de início
+      const start = new Date(`2000-01-01T${startTime}`);
+      start.setMinutes(start.getMinutes() + 30);
+
+      const end = new Date(`2000-01-01T${dayConfig.endTime}`);
+
+      const current = new Date(start);
+
+      while (current <= end) {
+        const hours = current.getHours().toString().padStart(2, "0");
+        const minutes = current.getMinutes().toString().padStart(2, "0");
+        endTimeOptions.push(`${hours}:${minutes}`);
+
+        // Avança 30 minutos
+        current.setMinutes(current.getMinutes() + 30);
+      }
+
+      availableEndTimes.value = endTimeOptions;
+
+      // Define o primeiro horário disponível como padrão
+      if (endTimeOptions.length > 0) {
+        eventData.value.endTime = endTimeOptions[0];
+      }
+    };
+
     const handleEventClick = (info) => {
       // Preenche os dados do modal com as informações do evento clicado
       const event = info.event;
@@ -155,6 +261,9 @@ export default {
         color: event.backgroundColor || "#3788d8",
       };
 
+      // Atualiza as opções de horário disponíveis para o dia selecionado
+      updateTimeOptions(new Date(eventData.value.date));
+
       showModal.value = true;
       info.jsEvent.preventDefault(); // Previne comportamento padrão
     };
@@ -168,14 +277,18 @@ export default {
         if (!dateStr) return;
 
         try {
-          // Corrigindo a forma de criar a data
           const dateParts = dateStr.split("-");
           const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
           const dayOfWeek = date.getDay(); // 0 (Domingo) a 6 (Sábado)
 
           day.classList.remove("day-available", "day-blocked");
 
-          if (availableDays.value.includes(dayOfWeek)) {
+          // Verifica se o dia da semana está configurado como disponível
+          const isDayAvailable = availabilityConfig.value.some(
+            (config) => config.dayOfWeek === dayOfWeek
+          );
+
+          if (isDayAvailable) {
             day.classList.add("day-available");
           } else {
             day.classList.add("day-blocked");
@@ -186,15 +299,45 @@ export default {
       });
     };
 
+    // Atualiza as opções de horário disponíveis para o dia selecionado
+    const updateTimeOptions = (date) => {
+      const dayOfWeek = date.getDay();
+
+      // Encontra a configuração para o dia da semana
+      const dayConfig = availabilityConfig.value.find(
+        (config) => config.dayOfWeek === dayOfWeek
+      );
+
+      if (!dayConfig) {
+        availableStartTimes.value = [];
+        availableEndTimes.value = [];
+        return;
+      }
+
+      // Gera opções de horário de início
+      availableStartTimes.value = generateTimeOptions(
+        dayConfig.startTime,
+        dayConfig.endTime
+      );
+
+      // Define o primeiro horário disponível como padrão
+      if (availableStartTimes.value.length > 0) {
+        eventData.value.startTime = availableStartTimes.value[0];
+        updateEndTimeOptions();
+      }
+    };
+
     // Manipulador de clique em data
     const handleDateClick = (info) => {
       const date = new Date(info.date);
-      const dayOfWeek = date.getDay(); // 0 (Domingo) a 6 (Sábado)
+      const dayOfWeek = date.getDay();
 
-      // Verifica se o dia da semana está nos disponíveis
-      const isAvailable = availableDays.value.includes(dayOfWeek);
+      // Verifica se o dia da semana está configurado como disponível
+      const dayConfig = availabilityConfig.value.find(
+        (config) => config.dayOfWeek === dayOfWeek
+      );
 
-      if (!isAvailable) {
+      if (!dayConfig) {
         toast.error("Este dia não está disponível para agendamento");
         return;
       }
@@ -206,15 +349,25 @@ export default {
         description: "",
         color: "#3788d8",
       };
+
+      // Atualiza as opções de horário disponíveis para o dia selecionado
+      updateTimeOptions(date);
+
       showModal.value = true;
     };
 
     const saveEvent = async () => {
       try {
+        // Validação básica
+        if (!eventData.value.title.trim()) {
+          toast.error("O título do evento é obrigatório");
+          return;
+        }
+
         const eventoPayload = {
           title: eventData.value.title,
-          start: `${eventData.value.date}T${eventData.value.startTime}:00`, // Mantém os segundos
-          end: `${eventData.value.date}T${eventData.value.endTime}:00`, // Mantém os segundos
+          start: `${eventData.value.date}T${eventData.value.startTime}:00`,
+          end: `${eventData.value.date}T${eventData.value.endTime}:00`,
           description: eventData.value.description,
           backgroundColor: eventData.value.color,
           allDay: false,
@@ -237,9 +390,14 @@ export default {
     };
 
     async function deleteEvent(id) {
-      await deleteEventoCalendario(id);
-      await retornaEventosCalendario();
-      closeModal();
+      try {
+        await deleteEventoCalendario(id);
+        toast.success("Evento excluído com sucesso!");
+        await retornaEventosCalendario();
+        closeModal();
+      } catch (error) {
+        toast.error(error.message || "Erro ao excluir evento");
+      }
     }
 
     const closeModal = () => {
@@ -303,10 +461,37 @@ export default {
       return usuario ? JSON.parse(usuario) : null;
     };
 
+    // Busca configurações de disponibilidade
+    const buscarConfiguracoes = async () => {
+      try {
+        const usuario = getUsuarioLogado();
+        if (!usuario?.id) {
+          toast.error("Usuário não autenticado");
+          return;
+        }
+
+        const response = await buscarConfiguracoesDisponibilidade(usuario.id);
+
+        if (response?.data) {
+          availabilityConfig.value = response.data;
+
+          // Extrai os dias da semana disponíveis
+          availableDays.value = availabilityConfig.value.map(
+            (config) => config.dayOfWeek
+          );
+
+          // Atualiza o calendário com os dias disponíveis
+          updateCalendar();
+        }
+      } catch (error) {
+        toast.error("Erro ao carregar configurações de disponibilidade");
+        console.error(error);
+      }
+    };
+
     // Busca eventos do calendário
     const retornaEventosCalendario = async () => {
       const usuario = getUsuarioLogado();
-      console.log(usuario);
       if (!usuario?.id) {
         toast.error("Usuário não autenticado");
         return;
@@ -315,7 +500,6 @@ export default {
         const response = await buscarEventosCalendario(usuario.id);
 
         if (response?.data) {
-          console.log(response.data);
           calendarOptions.value.events = [...response.data?.records];
         }
       } catch (error) {
@@ -323,14 +507,13 @@ export default {
       }
     };
 
-    // Carrega dados salvos
-    onMounted(() => {
-      retornaEventosCalendario();
-      const savedDays = localStorage.getItem("availableDays");
-      if (savedDays) {
-        availableDays.value = JSON.parse(savedDays);
-      }
-      updateCalendar();
+    // Carrega dados
+    onMounted(async () => {
+      // Busca configurações de disponibilidade do back-end
+      await buscarConfiguracoes();
+
+      // Busca eventos do calendário
+      await retornaEventosCalendario();
     });
 
     return {
@@ -339,10 +522,16 @@ export default {
       availableDays,
       daysOfWeek,
       calendarOptions,
+      availabilityConfig,
+      availableStartTimes,
+      availableEndTimes,
       updateCalendar,
       deleteEvent,
       saveEvent,
       eventColors,
+      getDayName,
+      formatTime,
+      updateEndTimeOptions,
       closeModal: () => {
         showModal.value = false;
       },
@@ -358,5 +547,36 @@ export default {
 /* Estilos específicos do componente que não estão no tema */
 :deep(.fc-h-event) {
   border: none !important;
+}
+
+.availability-info {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: var(--calendar-controls-bg);
+  border-radius: var(--calendar-border-radius);
+}
+
+.availability-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.availability-item {
+  background: var(--content-bg);
+  padding: 8px 12px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.day-name {
+  font-weight: bold;
+  margin-right: 8px;
+  color: var(--calendar-primary-color);
+}
+
+.time-range {
+  color: var(--text-color);
 }
 </style>
