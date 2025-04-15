@@ -19,7 +19,11 @@
     </div>
 
     <!-- Calendário -->
-    <FullCalendar :options="calendarOptions" class="custom-calendar" />
+    <FullCalendar
+      :options="calendarOptions"
+      class="custom-calendar"
+      ref="calendarRef"
+    />
 
     <!-- Modal de agendamento -->
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
@@ -134,6 +138,7 @@ export default {
   components: { FullCalendar },
   setup() {
     const toast = useToast();
+    const calendarRef = ref(null);
     const showModal = ref(false);
     const availableDays = ref([]);
     const availabilityConfig = ref([]);
@@ -213,7 +218,7 @@ export default {
 
       // Encontra a configuração para o dia da semana
       const dayConfig = availabilityConfig.value.find(
-        (config) => config.dayOfWeek === dayOfWeek
+        (config) => config.diaSemana === dayOfWeek
       );
 
       if (!dayConfig) return;
@@ -268,35 +273,35 @@ export default {
       info.jsEvent.preventDefault(); // Previne comportamento padrão
     };
 
-    const updateCalendar = async () => {
-      await nextTick();
-      const days = document.querySelectorAll(".fc-day");
+    const updateCalendar = () => {
+      if (!calendarRef.value) return;
 
-      days?.forEach((day) => {
-        const dateStr = day.getAttribute("data-date");
-        if (!dateStr) return;
+      const calendarApi = calendarRef.value.getApi();
+      const availableDays = availabilityConfig.value.map(
+        (config) => config.diaSemana
+      );
 
-        try {
-          const dateParts = dateStr.split("-");
-          const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-          const dayOfWeek = date.getDay(); // 0 (Domingo) a 6 (Sábado)
+      // Obtém o range de datas visíveis
+      const { activeStart, activeEnd } = calendarApi.view;
+      const current = new Date(activeStart);
 
-          day.classList.remove("day-available", "day-blocked");
+      while (current <= activeEnd) {
+        const dateStr = current.toISOString().split("T")[0];
+        const dayEls = document.querySelectorAll(
+          `.fc-day[data-date="${dateStr}"]`
+        );
 
-          // Verifica se o dia da semana está configurado como disponível
-          const isDayAvailable = availabilityConfig.value.some(
-            (config) => config.dayOfWeek === dayOfWeek
-          );
+        const dayOfWeek = current.getDay();
+        const isAvailable = availableDays.includes(dayOfWeek);
 
-          if (isDayAvailable) {
-            day.classList.add("day-available");
-          } else {
-            day.classList.add("day-blocked");
-          }
-        } catch (e) {
-          console.error("Erro ao processar data:", dateStr, e);
-        }
-      });
+        dayEls.forEach((el) => {
+          el.classList.toggle("day-blocked", !isAvailable);
+          el.classList.toggle("day-available", isAvailable);
+          el.style.pointerEvents = isAvailable ? "" : "none";
+        });
+
+        current.setDate(current.getDate() + 1);
+      }
     };
 
     // Atualiza as opções de horário disponíveis para o dia selecionado
@@ -329,12 +334,24 @@ export default {
 
     // Manipulador de clique em data
     const handleDateClick = (info) => {
+      console.log("Dias configurados:", availabilityConfig.value);
+      console.log("Dia clicado:", info.date.getDay());
       const date = new Date(info.date);
-      const dayOfWeek = date.getDay();
+      const dayOfWeek = info.date.getDay();
+      console.log(dayOfWeek);
+
+      const isAvailable = availabilityConfig.value.some(
+        (config) => config.diaSemana === dayOfWeek
+      );
+
+      if (!isAvailable) {
+        toast.error("Este dia não está disponível para agendamento");
+        return false; // Adicione este return false
+      }
 
       // Verifica se o dia da semana está configurado como disponível
       const dayConfig = availabilityConfig.value.find(
-        (config) => config.dayOfWeek === dayOfWeek
+        (config) => config.diaSemana === dayOfWeek
       );
 
       if (!dayConfig) {
@@ -422,6 +439,15 @@ export default {
         list: "Lista",
       },
       events: [],
+      datesSet: updateCalendar,
+      dayCellClassNames: ({ date }) => {
+        const dayOfWeek = date.getDay();
+        const isAvailable = availabilityConfig.value.some(
+          (config) => config.diaSemana === dayOfWeek
+        );
+        return isAvailable ? "day-available" : "day-blocked";
+      },
+      eventDidMount: updateCalendar,
       eventClick: handleEventClick,
       dateClick: handleDateClick,
       editable: true,
@@ -473,14 +499,11 @@ export default {
         const response = await buscarConfiguracoesDisponibilidade(usuario.id);
 
         if (response?.data) {
+          // Extrai apenas o array de records do Pageable
           availabilityConfig.value = response.data.records;
 
-          // Extrai os dias da semana disponíveis
-          availableDays.value = availabilityConfig.value.map(
-            (config) => config.dayOfWeek
-          );
-
-          // Atualiza o calendário com os dias disponíveis
+          // Atualiza o calendário após carregar as configurações
+          await nextTick();
           updateCalendar();
         }
       } catch (error) {
@@ -507,18 +530,18 @@ export default {
       }
     };
 
-    // Carrega dados
     onMounted(async () => {
-      // Busca configurações de disponibilidade do back-end
       await buscarConfiguracoes();
-
-      // Busca eventos do calendário
       await retornaEventosCalendario();
+
+      // Força atualização após pequeno delay
+      setTimeout(updateCalendar, 100);
     });
 
     return {
       showModal,
       eventData,
+      calendarRef,
       availableDays,
       daysOfWeek,
       calendarOptions,
@@ -547,6 +570,27 @@ export default {
 /* Estilos específicos do componente que não estão no tema */
 :deep(.fc-h-event) {
   border: none !important;
+}
+
+:deep(.day-blocked) {
+  background: repeating-linear-gradient(
+    45deg,
+    #f8f9fa,
+    #f8f9fa 10px,
+    #e9ecef 10px,
+    #e9ecef 20px
+  ) !important;
+  opacity: 0.6;
+}
+
+:deep(.day-blocked .fc-daygrid-day-number) {
+  color: #adb5bd !important;
+}
+
+/* REMOVA o pointer-events: none do CSS */
+
+:deep(.day-blocked .fc-daygrid-day-frame) {
+  background-color: rgba(248, 249, 250, 0.5) !important;
 }
 
 .availability-info {
