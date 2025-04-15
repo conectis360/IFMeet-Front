@@ -11,6 +11,15 @@ export const buscarEventosCalendario = async (codigoUsuario) => {
     }
 };
 
+export const buscarConfiguracoesDisponibilidade = async (codigoUsuario) => {
+    try {
+        const response = await requestGetComposition(apiIFMeet, '/disponibilidade/findAll?codigoUsuario=' + codigoUsuario + '&pageSize=999999');
+        return response;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || "Erro ao buscar disponibilidade");
+    }
+};
+
 export const saveEventoCalendario = async (evento) => {
     // Formata corretamente para o padrão ISO-8601 que o Java espera
     const eventoFormatado = {

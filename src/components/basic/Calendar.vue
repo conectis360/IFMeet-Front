@@ -9,10 +9,10 @@
           :key="index"
           class="availability-item"
         >
-          <span class="day-name">{{ getDayName(config.dayOfWeek) }}:</span>
+          <span class="day-name">{{ getDayName(config.diaSemana) }}:</span>
           <span class="time-range"
-            >{{ formatTime(config.startTime) }} -
-            {{ formatTime(config.endTime) }}</span
+            >{{ formatTime(config.horaInicio) }} -
+            {{ formatTime(config.horaFim) }}</span
           >
         </div>
       </div>
@@ -473,7 +473,7 @@ export default {
         const response = await buscarConfiguracoesDisponibilidade(usuario.id);
 
         if (response?.data) {
-          availabilityConfig.value = response.data;
+          availabilityConfig.value = response.data.records;
 
           // Extrai os dias da semana disponíveis
           availableDays.value = availabilityConfig.value.map(
