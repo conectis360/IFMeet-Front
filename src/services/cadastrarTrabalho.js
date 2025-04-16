@@ -1,4 +1,5 @@
 import { requestGet, requestPost } from './request'
+import { requestGetComposition } from './request'
 import { apiIFMeet } from './API'
 
 export const cadastrarTrabalho = (trabalhoDTO, successCallback, errorCallback, finallyCallback) => {
@@ -24,3 +25,12 @@ export const buscarTrabalhos = (successCallback, errorCallback, finallyCallback)
 export const buscarTrabalho = (codigoTrabalho, successCallback, errorCallback, finallyCallback) => {
   return requestGet(apiIFMeet, 'trabalho/findAll?codigoTrabalho=' + codigoTrabalho, successCallback, errorCallback, finallyCallback)
 }
+
+export const buscarTrabalhosPorUsuario = async (codigoUsuario) => {
+  try {
+    const response = await requestGetComposition(apiIFMeet, 'trabalho/findAll?codigoUsuario=' + codigoUsuario + '&pageSize=999999');
+    return response;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Erro ao buscar eventos");
+  }
+};

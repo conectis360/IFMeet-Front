@@ -43,6 +43,24 @@
         </div>
 
         <div class="form-group">
+          <label>Trabalho</label>
+          <select
+            v-model="eventData.trabalhoId"
+            class="form-input"
+            :disabled="!!eventData.id"
+          >
+            <option :value="null">Selecione um trabalho</option>
+            <option
+              v-for="trabalho in trabalhos"
+              :key="trabalho.codigoTrabalho"
+              :value="trabalho.codigoTrabalho"
+            >
+              {{ trabalho.titulo }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
           <label>Data</label>
           <input
             :value="formatDateToBrazilian(eventData.date)"
@@ -66,6 +84,19 @@
               :value="time"
             >
               {{ time }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group" v-if="eventData.id">
+          <label>Status</label>
+          <select v-model="eventData.status" class="form-input">
+            <option
+              v-for="status in statusOptions"
+              :key="status.value"
+              :value="status.value"
+            >
+              {{ status.label }}
             </option>
           </select>
         </div>
@@ -123,8 +154,9 @@ import {
   saveEventoCalendario,
   updateEventoCalendario,
   deleteEventoCalendario,
-  buscarConfiguracoesDisponibilidade, // Novo serviço a ser implementado
+  buscarConfiguracoesDisponibilidade,
 } from "@/services/calendarService";
+import { buscarTrabalhosPorUsuario } from "@/services/cadastrarTrabalho.js";
 
 export default {
   components: { FullCalendar },
@@ -136,6 +168,13 @@ export default {
     const availabilityConfig = ref([]);
     const availableStartTimes = ref([]);
     const availableEndTimes = ref([]);
+    const trabalhos = ref([]); // Será preenchida com dados do back-end
+
+    const statusOptions = [
+      { value: "pendente", label: "Pendente" },
+      { value: "confirmado", label: "Confirmado" },
+      { value: "recusado", label: "Recusado" },
+    ];
 
     // Dados do evento
     const eventData = ref({
@@ -145,6 +184,8 @@ export default {
       endTime: "",
       description: "",
       color: "#3788d8",
+      trabalhoId: null,
+      status: "pendente",
     });
 
     // Dias da semana
@@ -262,6 +303,8 @@ export default {
         endTime: event.endStr.split("T")[1]?.substring(0, 5) || "10:00",
         description: event.extendedProps?.description || "",
         color: event.backgroundColor || "#3788d8",
+        trabalhoId: event.extendedProps.trabalhoId,
+        status: event.extendedProps.status || "pendente",
       };
 
       // Atualiza as opções de horário disponíveis para o dia selecionado
@@ -418,6 +461,12 @@ export default {
 
     const saveEvent = async () => {
       try {
+        // Validações
+        if (!eventData.value.trabalhoId) {
+          toast.error("Selecione um trabalho");
+          return;
+        }
+
         // Converte a data de volta para o formato ISO (YYYY-MM-DD) se necessário
         const isoDate = eventData.value.date.includes("/")
           ? parseBrazilianDate(eventData.value.date)
@@ -448,6 +497,8 @@ export default {
           end: `${isoDate}T${eventData.value.endTime}:00`,
           description: eventData.value.description,
           backgroundColor: eventData.value.color,
+          trabalhoId: eventData.value.trabalhoId,
+          status: eventData.value.status,
           allDay: false,
         };
 
@@ -499,6 +550,10 @@ export default {
         day: "Dia",
         list: "Lista",
       },
+      eventDidMount: (info) => {
+        const status = info.event.extendedProps.status || "pendente";
+        info.el.classList.add(status);
+      },
       events: [],
       datesSet: updateCalendar,
       dayCellClassNames: ({ date }) => {
@@ -508,7 +563,6 @@ export default {
         );
         return isAvailable ? "day-available" : "day-blocked";
       },
-      eventDidMount: updateCalendar,
       eventClick: handleEventClick,
       dateClick: handleDateClick,
       editable: true,
@@ -573,6 +627,19 @@ export default {
       }
     };
 
+    const buscarTrabalhos = async () => {
+      try {
+        const usuario = getUsuarioLogado();
+        if (!usuario?.id) return;
+
+        const response = await buscarTrabalhosPorUsuario(usuario.id);
+        trabalhos.value = response.data?.records || [];
+      } catch (error) {
+        toast.error("Erro ao carregar trabalhos");
+        console.error(error);
+      }
+    };
+
     // Busca eventos do calendário
     const retornaEventosCalendario = async () => {
       const usuario = getUsuarioLogado();
@@ -594,6 +661,7 @@ export default {
     onMounted(async () => {
       await buscarConfiguracoes();
       await retornaEventosCalendario();
+      await buscarTrabalhos();
 
       // Força atualização após pequeno delay
       setTimeout(updateCalendar, 100);
@@ -615,6 +683,8 @@ export default {
       eventColors,
       getDayName,
       formatTime,
+      trabalhos,
+      statusOptions,
       formatDateToBrazilian,
       parseBrazilianDate,
       handleDateInput,
@@ -630,7 +700,23 @@ export default {
 <style>
 /* Importa o arquivo de tema externo */
 @import "@/assets/css/calendar-theme.css";
+/* Adicione ao CSS */
+:deep(.fc-event.confirmado) {
+  background-color: #4caf50 !important;
+  border-color: #4caf50 !important;
+}
 
+:deep(.fc-event.pendente) {
+  background-color: #ffc107 !important;
+  border-color: #ffc107 !important;
+}
+
+:deep(.fc-event.recusado) {
+  background-color: #f44336 !important;
+  border-color: #f44336 !important;
+  text-decoration: line-through;
+  opacity: 0.7;
+}
 /* Estilos específicos do componente que não estão no tema */
 :deep(.fc-h-event) {
   border: none !important;
