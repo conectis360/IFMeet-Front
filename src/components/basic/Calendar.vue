@@ -70,15 +70,6 @@
         </div>
 
         <div class="form-group">
-          <label>Hora de Término</label>
-          <select v-model="eventData.endTime" class="form-input">
-            <option v-for="time in availableEndTimes" :key="time" :value="time">
-              {{ time }}
-            </option>
-          </select>
-        </div>
-
-        <div class="form-group">
           <label>Descrição</label>
           <textarea
             v-model="eventData.description"
@@ -211,48 +202,50 @@ export default {
 
     // Atualiza as opções de horário de término com base no horário de início selecionado
     const updateEndTimeOptions = () => {
-      if (!eventData.value.date) return;
+      if (!eventData.value.startTime) return;
 
-      const date = new Date(eventData.value.date);
-      const dayOfWeek = date.getDay();
+      // Calcula automaticamente o horário final (início + 30min)
+      eventData.value.endTime = calculateEndTime(eventData.value.startTime);
 
-      // Encontra a configuração para o dia da semana
+      // Verifica se ultrapassa o horário máximo permitido
+      const dayOfWeek = new Date(eventData.value.date).getDay();
       const dayConfig = availabilityConfig.value.find(
         (config) => config.diaSemana === dayOfWeek
       );
 
-      if (!dayConfig) return;
+      if (dayConfig) {
+        const endTimeDate = new Date(`2000-01-01T${eventData.value.endTime}`);
+        const maxEndTimeDate = new Date(`2000-01-01T${dayConfig.horaFim}`);
 
-      // Gera opções de horário de término a partir do horário de início selecionado
-      const startTime = eventData.value.startTime;
-      const endTimeOptions = [];
-
-      // Começa 30 minutos após o horário de início
-      const start = new Date(`2000-01-01T${startTime}`);
-      start.setMinutes(start.getMinutes() + 30);
-
-      const end = new Date(`2000-01-01T${dayConfig.endTime}`);
-
-      const current = new Date(start);
-
-      while (current <= end) {
-        const hours = current.getHours().toString().padStart(2, "0");
-        const minutes = current.getMinutes().toString().padStart(2, "0");
-        endTimeOptions.push(`${hours}:${minutes}`);
-
-        // Avança 30 minutos
-        current.setMinutes(current.getMinutes() + 30);
-      }
-
-      availableEndTimes.value = endTimeOptions;
-
-      // Define o primeiro horário disponível como padrão
-      if (endTimeOptions.length > 0) {
-        eventData.value.endTime = endTimeOptions[0];
+        if (endTimeDate > maxEndTimeDate) {
+          // Ajusta para o horário máximo permitido
+          eventData.value.endTime = dayConfig.horaFim;
+          // Ajusta o horário inicial para garantir 30min de duração
+          const [hours, minutes] = dayConfig.horaFim.split(":").map(Number);
+          const adjustedStart = new Date();
+          adjustedStart.setHours(hours, minutes - 30, 0, 0);
+          eventData.value.startTime = `${adjustedStart
+            .getHours()
+            .toString()
+            .padStart(2, "0")}:${adjustedStart
+            .getMinutes()
+            .toString()
+            .padStart(2, "0")}`;
+        }
       }
     };
 
     const handleEventClick = (info) => {
+      const eventDate = new Date(info.event.startStr);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Verifica se o evento está no passado (para edição)
+      if (eventDate < today) {
+        toast.error("Não é possível editar eventos no passado.");
+        return;
+      }
+
       // Preenche os dados do modal com as informações do evento clicado
       const event = info.event;
 
@@ -307,38 +300,62 @@ export default {
     // Atualiza as opções de horário disponíveis para o dia selecionado
     const updateTimeOptions = (date) => {
       const dayOfWeek = date.getDay();
-
-      // Encontra a configuração para o dia da semana
       const dayConfig = availabilityConfig.value.find(
-        (config) => config.dayOfWeek === dayOfWeek
+        (config) => config.diaSemana === dayOfWeek
       );
 
       if (!dayConfig) {
         availableStartTimes.value = [];
-        availableEndTimes.value = [];
         return;
       }
 
-      // Gera opções de horário de início
+      // Gera opções de horário de início até 30min antes do fim
       availableStartTimes.value = generateTimeOptions(
-        dayConfig.startTime,
-        dayConfig.endTime
-      );
+        dayConfig.horaInicio,
+        dayConfig.horaFim
+      ).filter((time) => {
+        const timeDate = new Date(`2000-01-01T${time}`);
+        const endDate = new Date(`2000-01-01T${dayConfig.horaFim}`);
+        endDate.setMinutes(endDate.getMinutes() - 30); // Remove 30min do final
+        return timeDate <= endDate;
+      });
 
       // Define o primeiro horário disponível como padrão
       if (availableStartTimes.value.length > 0) {
         eventData.value.startTime = availableStartTimes.value[0];
-        updateEndTimeOptions();
+        // Calcula automaticamente o horário final (início + 30min)
+        eventData.value.endTime = calculateEndTime(eventData.value.startTime);
       }
+    };
+
+    //Calcula o horário final
+    const calculateEndTime = (startTime) => {
+      const [hours, minutes] = startTime.split(":").map(Number);
+      const endTime = new Date();
+      endTime.setHours(hours, minutes + 30, 0, 0);
+
+      // Formata para HH:MM
+      return `${endTime.getHours().toString().padStart(2, "0")}:${endTime
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}`;
     };
 
     // Manipulador de clique em data
     const handleDateClick = (info) => {
+      const selectedDate = new Date(info.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Remove a parte de horas para comparar apenas a data
+
+      // Verifica se a data é anterior à atual
+      if (selectedDate < today) {
+        toast.error("Não há como marcar uma reunião no passado.");
+        return false;
+      }
+
       console.log("Dias configurados:", availabilityConfig.value);
       console.log("Dia clicado:", info.date.getDay());
-      const date = new Date(info.date);
       const dayOfWeek = info.date.getDay();
-      console.log(dayOfWeek);
 
       const isAvailable = availabilityConfig.value.some(
         (config) => config.diaSemana === dayOfWeek
@@ -346,7 +363,7 @@ export default {
 
       if (!isAvailable) {
         toast.error("Este dia não está disponível para agendamento");
-        return false; // Adicione este return false
+        return false;
       }
 
       // Verifica se o dia da semana está configurado como disponível
@@ -363,22 +380,38 @@ export default {
         id: null,
         title: "",
         date: info.dateStr,
+        startTime: "",
+        endTime: "",
         description: "",
         color: "#3788d8",
       };
 
       // Atualiza as opções de horário disponíveis para o dia selecionado
-      updateTimeOptions(date);
+      updateTimeOptions(new Date(eventData.value.date));
 
       showModal.value = true;
     };
 
     const saveEvent = async () => {
       try {
-        // Validação básica
+        // Verifica se a data do evento é no passado
+        const eventDate = new Date(eventData.value.date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (eventDate < today) {
+          toast.error("Não é possível agendar eventos no passado.");
+          return;
+        }
+
         if (!eventData.value.title.trim()) {
           toast.error("O título do evento é obrigatório");
           return;
+        }
+
+        // Garante que o horário final está calculado
+        if (!eventData.value.endTime) {
+          eventData.value.endTime = calculateEndTime(eventData.value.startTime);
         }
 
         const eventoPayload = {
@@ -570,6 +603,17 @@ export default {
 /* Estilos específicos do componente que não estão no tema */
 :deep(.fc-h-event) {
   border: none !important;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
 :deep(.day-blocked) {
