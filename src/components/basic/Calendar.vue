@@ -45,8 +45,9 @@
         <div class="form-group">
           <label>Data</label>
           <input
-            v-model="eventData.date"
-            type="date"
+            :value="formatDateToBrazilian(eventData.date)"
+            @input="handleDateInput($event)"
+            placeholder="DD/MM/AAAA"
             class="form-input"
             readonly
           />
@@ -177,6 +178,12 @@ export default {
       return timeStr;
     };
 
+    // Ajusta para o fuso horário local
+    const getToday = () => {
+      const now = new Date();
+      return new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    };
+
     // Função para gerar opções de horário em intervalos de 30 minutos
     const generateTimeOptions = (startTime, endTime) => {
       const times = [];
@@ -237,22 +244,20 @@ export default {
 
     const handleEventClick = (info) => {
       const eventDate = new Date(info.event.startStr);
-      const today = new Date();
+      const today = getToday();
       today.setHours(0, 0, 0, 0);
 
-      // Verifica se o evento está no passado (para edição)
       if (eventDate < today) {
         toast.error("Não é possível editar eventos no passado.");
         return;
       }
 
-      // Preenche os dados do modal com as informações do evento clicado
       const event = info.event;
 
       eventData.value = {
         id: event.id,
         title: event.title,
-        date: event.startStr.split("T")[0],
+        date: event.startStr.split("T")[0], // Mantém no formato YYYY-MM-DD
         startTime: event.startStr.split("T")[1]?.substring(0, 5) || "09:00",
         endTime: event.endStr.split("T")[1]?.substring(0, 5) || "10:00",
         description: event.extendedProps?.description || "",
@@ -343,8 +348,9 @@ export default {
 
     // Manipulador de clique em data
     const handleDateClick = (info) => {
+      console.log(info);
       const selectedDate = new Date(info.date);
-      const today = new Date();
+      const today = getToday();
       today.setHours(0, 0, 0, 0); // Remove a parte de horas para comparar apenas a data
 
       // Verifica se a data é anterior à atual
@@ -392,11 +398,33 @@ export default {
       showModal.value = true;
     };
 
+    // formata a data para pt-br
+    const formatDateToBrazilian = (dateStr) => {
+      if (!dateStr) return "";
+      const [year, month, day] = dateStr.split("-");
+      return `${day}/${month}/${year}`;
+    };
+
+    // Função para converter de DD/MM/YYYY para YYYY-MM-DD
+    const parseBrazilianDate = (dateStr) => {
+      if (!dateStr) return "";
+      const [day, month, year] = dateStr.split("/");
+      return `${year}-${month}-${day}`;
+    };
+
+    const handleDateInput = (event) => {
+      console.log(event);
+    };
+
     const saveEvent = async () => {
       try {
-        // Verifica se a data do evento é no passado
-        const eventDate = new Date(eventData.value.date);
-        const today = new Date();
+        // Converte a data de volta para o formato ISO (YYYY-MM-DD) se necessário
+        const isoDate = eventData.value.date.includes("/")
+          ? parseBrazilianDate(eventData.value.date)
+          : eventData.value.date;
+
+        const eventDate = new Date(isoDate);
+        const today = getToday();
         today.setHours(0, 0, 0, 0);
 
         if (eventDate < today) {
@@ -416,8 +444,8 @@ export default {
 
         const eventoPayload = {
           title: eventData.value.title,
-          start: `${eventData.value.date}T${eventData.value.startTime}:00`,
-          end: `${eventData.value.date}T${eventData.value.endTime}:00`,
+          start: `${isoDate}T${eventData.value.startTime}:00`,
+          end: `${isoDate}T${eventData.value.endTime}:00`,
           description: eventData.value.description,
           backgroundColor: eventData.value.color,
           allDay: false,
@@ -587,6 +615,9 @@ export default {
       eventColors,
       getDayName,
       formatTime,
+      formatDateToBrazilian,
+      parseBrazilianDate,
+      handleDateInput,
       updateEndTimeOptions,
       closeModal: () => {
         showModal.value = false;
