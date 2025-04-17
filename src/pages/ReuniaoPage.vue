@@ -1,39 +1,82 @@
 <template>
   <div>
+    <!-- Seu conteúdo existente -->
+
+    <button @click="abrirModalDisponibilidade">
+      Gerenciar Disponibilidades
+    </button>
+
+    <DisponibilidadeModal
+      :show="showDisponibilidadeModal"
+      :disponibilidade-editando="disponibilidadeEditando"
+      @close="fecharModalDisponibilidade"
+      @refresh="carregarDisponibilidades"
+    />
+  </div>
+  <div>
     <CalendarComponent ref="calendar" :available-days="availableDays" />
   </div>
 </template>
 
 <script>
 import CalendarComponent from "@/components/basic/Calendar.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import DisponibilidadeModal from "@/components/basic/Disponibilidade.vue";
 
 export default {
   components: {
+    DisponibilidadeModal,
     CalendarComponent,
   },
-  setup() {
-    const availableDays = ref([]);
-    const calendar = ref(null);
 
-    const daysOfWeek = [
-      { value: 0, label: "Domingo" },
-      { value: 1, label: "Segunda" },
-      { value: 2, label: "Terça" },
-      { value: 3, label: "Quarta" },
-      { value: 4, label: "Quinta" },
-      { value: 5, label: "Sexta" },
-      { value: 6, label: "Sábado" },
+  setup() {
+    const showDisponibilidadeModal = ref(false);
+    const disponibilidadeEditando = ref(null);
+    const disponibilidades = ref([]);
+
+    const diasSemana = [
+      "Domingo",
+      "Segunda-feira",
+      "Terça-feira",
+      "Quarta-feira",
+      "Quinta-feira",
+      "Sexta-feira",
+      "Sábado",
     ];
 
+    const getDiaSemana = (dia) => diasSemana[dia];
+
+    const abrirModalDisponibilidade = () => {
+      disponibilidadeEditando.value = null;
+      showDisponibilidadeModal.value = true;
+    };
+
+    const fecharModalDisponibilidade = () => {
+      showDisponibilidadeModal.value = false;
+    };
+
+    onMounted(() => {});
+
     return {
-      availableDays,
-      daysOfWeek,
-      calendar,
+      showDisponibilidadeModal,
+      disponibilidadeEditando,
+      disponibilidades,
+      abrirModalDisponibilidade,
+      fecharModalDisponibilidade,
+      getDiaSemana,
     };
   },
 };
 </script>
+
+<style scoped>
+.disponibilidade-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+</style>
 
 <style>
 .availability-controls {
