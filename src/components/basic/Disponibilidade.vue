@@ -14,50 +14,59 @@
     </div>
 
     <div class="card-body" v-show="expandido">
-      <div class="d-flex align-items-end gap-2">
-        <!-- Dia da Semana -->
-        <div class="flex-grow-1 pe-2">
-          <!-- padding-right -->
-          <label class="form-label">Dia da Semana</label>
-          <select v-model="disponibilidade.diaSemana" class="form-control">
-            <option
-              v-for="dia in diasSemana"
-              :key="dia.value"
-              :value="dia.value"
+      <div class="table-container mt-3">
+        <div class="d-flex align-items-end gap-2">
+          <!-- Dia da Semana -->
+          <div class="flex-grow-1 pe-2 col-sm-3">
+            <!-- padding-right -->
+            <label class="form-label">Dia da Semana</label>
+            <select v-model="disponibilidade.diaSemana" class="form-control">
+              <option
+                v-for="dia in diasSemana"
+                :key="dia.value"
+                :value="dia.value"
+              >
+                {{ dia.label }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Hora Início -->
+          <div class="flex-grow-1 pe-2 col-sm-3">
+            <!-- padding-right -->
+            <label class="form-label">Hora Início</label>
+            <input
+              type="time"
+              v-model="disponibilidade.horaInicio"
+              class="form-control"
+              step="1800"
+            />
+          </div>
+
+          <!-- Hora Fim -->
+          <div class="flex-grow-1 pe-2 col-sm-3">
+            <!-- padding-right -->
+            <label class="form-label">Hora Fim</label>
+            <input
+              type="time"
+              v-model="disponibilidade.horaFim"
+              class="form-control"
+              step="1800"
+            />
+          </div>
+          <!-- Hora Fim -->
+          <div class="flex-grow-1 pe-2 col-sm-3">
+            <button class="btn btn-primary" @click="salvarDisponibilidade">
+              {{ editando ? "Atualizar" : "Adicionar" }}
+            </button>
+            <button
+              class="btn btn-danger"
+              @click="limparFormulario"
+              style="margin: 1%"
             >
-              {{ dia.label }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Hora Início -->
-        <div class="flex-grow-1 pe-2">
-          <!-- padding-right -->
-          <label class="form-label">Hora Início</label>
-          <input
-            type="time"
-            v-model="disponibilidade.horaInicio"
-            class="form-control"
-            step="1800"
-          />
-        </div>
-
-        <!-- Hora Fim -->
-        <div class="flex-grow-1 pe-2">
-          <!-- padding-right -->
-          <label class="form-label">Hora Fim</label>
-          <input
-            type="time"
-            v-model="disponibilidade.horaFim"
-            class="form-control"
-            step="1800"
-          />
-        </div>
-        <!-- Hora Fim -->
-        <div class="">
-          <button class="btn btn-primary" @click="salvarDisponibilidade">
-            {{ editando ? "Atualizar" : "Adicionar" }}
-          </button>
+              Limpar
+            </button>
+          </div>
         </div>
       </div>
       <!-- Tabela de disponibilidades existentes -->
@@ -166,6 +175,16 @@ export default {
       carregarDisponibilidades();
     });
 
+    const limparFormulario = () => {
+      disponibilidade.value = {
+        diaSemana: 1,
+        horaInicio: "08:00",
+        horaFim: "17:00",
+        id: undefined,
+      };
+      editando.value = false;
+    };
+
     // Quando receber uma disponibilidade para editar
     if (props.disponibilidadeEditando) {
       disponibilidade.value = { ...props.disponibilidadeEditando };
@@ -245,6 +264,7 @@ export default {
       editarDisponibilidadeTabela,
       confirmarRemocao,
       carregarDisponibilidades,
+      limparFormulario,
     };
   },
 };
@@ -283,7 +303,7 @@ export default {
 }
 
 .btn-primary {
-  background-color: #3788d8;
+  background-color: #317b3c;
   color: white;
   border: none;
 }

@@ -1,0 +1,118 @@
+/* Adicione estas regras ao final do seu theme.css */
+
+/* Estilos base para a ComplexTable (tema claro) */
+.complex-table {
+  --table-bg: #ffffff;
+  --table-header-bg: #f8f9fa;
+  --table-header-color: #495057;
+  --table-row-bg: #ffffff;
+  --table-row-hover-bg: #f1f1f1;
+  --table-border-color: #dee2e6;
+  --table-text-color: #212529;
+  --pagination-bg: #ffffff;
+  --pagination-active-bg: #007bff;
+  --pagination-active-color: #ffffff;
+  --pagination-disabled-bg: #e9ecef;
+  --search-input-bg: #ffffff;
+  --search-input-color: #495057;
+  --search-input-border: #ced4da;
+  --action-btn-edit: #007bff;
+  --action-btn-delete: #dc3545;
+}
+
+/* Estilos para o tema escuro */
+.dark-mode .complex-table {
+  --table-bg: #1a1a1a;
+  --table-header-bg: #2d2d2d;
+  --table-header-color: #e0e0e0;
+  --table-row-bg: #1a1a1a;
+  --table-row-hover-bg: #2d2d2d;
+  --table-border-color: #444;
+  --table-text-color: #e0e0e0;
+  --pagination-bg: #2d2d2d;
+  --pagination-active-bg: #8ec543;
+  --pagination-active-color: #1a1a1a;
+  --pagination-disabled-bg: #444;
+  --search-input-bg: #2d2d2d;
+  --search-input-color: #e0e0e0;
+  --search-input-border: #444;
+  --action-btn-edit: #8ec543;
+  --action-btn-delete: #ff6b6b;
+}
+
+/* Aplicando os estilos ao componente */
+.complex-table .card {
+  background-color: var(--table-bg);
+  color: var(--table-text-color);
+  border-color: var(--table-border-color);
+}
+
+.complex-table .card-header {
+  background-color: var(--table-header-bg);
+  border-bottom-color: var(--table-border-color);
+}
+
+.complex-table .card-title {
+  color: var(--table-header-color);
+}
+
+.complex-table .table {
+  color: var(--table-text-color);
+  background-color: var(--table-bg);
+}
+
+.complex-table .table th {
+  background-color: var(--table-header-bg);
+  color: var(--table-header-color);
+  border-color: var(--table-border-color);
+}
+
+.complex-table .table td {
+  border-color: var(--table-border-color);
+}
+
+.complex-table .table-hover tbody tr:hover {
+  background-color: var(--table-row-hover-bg);
+}
+
+.complex-table .form-control {
+  background-color: var(--search-input-bg);
+  color: var(--search-input-color);
+  border-color: var(--search-input-border);
+}
+
+.complex-table .pagination {
+  background-color: var(--pagination-bg);
+}
+
+.complex-table .page-item.active .page-link {
+  background-color: var(--pagination-active-bg);
+  color: var(--pagination-active-color);
+  border-color: var(--pagination-active-bg);
+}
+
+.complex-table .page-item.disabled .page-link {
+  background-color: var(--pagination-disabled-bg);
+  color: var(--table-text-color);
+}
+
+.complex-table .page-link {
+  background-color: var(--pagination-bg);
+  color: var(--table-text-color);
+  border-color: var(--table-border-color);
+}
+
+.complex-table .btn-primary {
+  background-color: var(--action-btn-edit);
+  border-color: var(--action-btn-edit);
+}
+
+.complex-table .btn-danger {
+  background-color: var(--action-btn-delete);
+  border-color: var(--action-btn-delete);
+}
+
+.complex-table .card-footer {
+  background-color: var(--table-header-bg);
+  border-top-color: var(--table-border-color);
+}

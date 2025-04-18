@@ -1,92 +1,105 @@
 <template>
-  <div class="card">
-    <!-- Cabeçalho e pesquisa (mantido igual) -->
-    <div class="card-header">
-      <h3 class="card-title">{{ tableName }}</h3>
-      <div class="card-tools">
-        <input
-          v-model="searchQuery"
-          type="text"
-          class="form-control"
-          placeholder="Pesquisar..."
-          @input="handleSearch"
-        />
+  <div class="complex-table">
+    <div class="card">
+      <!-- Cabeçalho e pesquisa (mantido igual) -->
+      <div class="card-header">
+        <h3 class="card-title">{{ tableName }}</h3>
+        <div class="card-tools">
+          <input
+            v-model="searchQuery"
+            type="text"
+            class="form-control"
+            placeholder="Pesquisar..."
+            @input="handleSearch"
+          />
+        </div>
       </div>
-    </div>
 
-    <!-- Corpo da tabela -->
-    <div class="card-body table-responsive p-0">
-      <table class="table table-hover">
-        <!-- Cabeçalhos (mantido igual) -->
-        <thead style="text-align: center">
-          <tr>
-            <th v-for="(header, index) in headers" :key="index">
-              {{ header.text }}
-            </th>
-            <th>Ações</th>
-          </tr>
-        </thead>
+      <!-- Corpo da tabela -->
+      <div class="card-body table-responsive p-0">
+        <table class="table table-hover">
+          <!-- Cabeçalhos (mantido igual) -->
+          <thead style="text-align: center">
+            <tr>
+              <th v-for="(header, index) in headers" :key="index">
+                {{ header.text }}
+              </th>
+              <th>Ações</th>
+            </tr>
+          </thead>
 
-        <!-- Corpo da tabela - agora mostrando apenas os registros da página atual -->
-        <tbody style="text-align: center">
-          <tr v-for="(item, index) in paginatedRecords" :key="index">
-            <td v-for="(header, headerIndex) in headers" :key="headerIndex">
-              {{ getNestedValue(item, header.value) }}
-            </td>
-            <td>
-              <button
-                class="btn btn-sm btn-primary"
-                @click="editarItem(item)"
-                style="margin-right: 5px"
-              >
-                Editar
-              </button>
-              <button class="btn btn-sm btn-danger" @click="excluirItem(item)">
-                Excluir
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Rodapé com paginação melhorada -->
-    <div class="card-footer clearfix">
-      <div class="float-left">
-        Mostrando {{ showingStart }} a {{ showingEnd }} de
-        {{ tableData.totalRecords }} registros
+          <!-- Corpo da tabela - agora mostrando apenas os registros da página atual -->
+          <tbody style="text-align: center">
+            <tr v-for="(item, index) in paginatedRecords" :key="index">
+              <td v-for="(header, headerIndex) in headers" :key="headerIndex">
+                {{ getNestedValue(item, header.value) }}
+              </td>
+              <td>
+                <button
+                  class="btn btn-sm btn-primary"
+                  @click="editarItem(item)"
+                  style="margin-right: 5px"
+                >
+                  Editar
+                </button>
+                <button
+                  class="btn btn-sm btn-danger"
+                  @click="excluirItem(item)"
+                >
+                  Excluir
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <ul class="pagination pagination-sm m-0 float-right">
-        <li class="page-item" :class="{ disabled: tableData.pageNumber === 1 }">
-          <button class="page-link" @click="goToPage(1)">««</button>
-        </li>
-        <li class="page-item" :class="{ disabled: tableData.pageNumber === 1 }">
-          <button class="page-link" @click="previousPage">«</button>
-        </li>
 
-        <!-- Limita a exibição de páginas -->
-        <li
-          v-for="page in visiblePages"
-          :key="page"
-          class="page-item"
-          :class="{ active: tableData.pageNumber === page }"
-        >
-          <button class="page-link" @click="goToPage(page)">{{ page }}</button>
-        </li>
+      <!-- Rodapé com paginação melhorada -->
+      <div class="card-footer clearfix">
+        <div class="float-left">
+          Mostrando {{ showingStart }} a {{ showingEnd }} de
+          {{ tableData.totalRecords }} registros
+        </div>
+        <ul class="pagination pagination-sm m-0 float-right">
+          <li
+            class="page-item"
+            :class="{ disabled: tableData.pageNumber === 1 }"
+          >
+            <button class="page-link" @click="goToPage(1)">««</button>
+          </li>
+          <li
+            class="page-item"
+            :class="{ disabled: tableData.pageNumber === 1 }"
+          >
+            <button class="page-link" @click="previousPage">«</button>
+          </li>
 
-        <li
-          class="page-item"
-          :class="{ disabled: tableData.pageNumber === totalPages }"
-        >
-          <button class="page-link" @click="nextPage">»</button>
-        </li>
-        <li
-          class="page-item"
-          :class="{ disabled: tableData.pageNumber === totalPages }"
-        >
-          <button class="page-link" @click="goToPage(totalPages)">»»</button>
-        </li>
-      </ul>
+          <!-- Limita a exibição de páginas -->
+          <li
+            v-for="page in visiblePages"
+            :key="page"
+            class="page-item"
+            :class="{ active: tableData.pageNumber === page }"
+          >
+            <button class="page-link" @click="goToPage(page)">
+              {{ page }}
+            </button>
+          </li>
+
+          <li
+            class="page-item"
+            :class="{ disabled: tableData.pageNumber === totalPages }"
+          >
+            <button class="page-link" @click="nextPage">»</button>
+          </li>
+          <li
+            class="page-item"
+            :class="{ disabled: tableData.pageNumber === totalPages }"
+          >
+            <button class="page-link" @click="goToPage(totalPages)">»»</button>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -216,8 +229,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.card {
-  margin: 20px;
-}
-</style>
+<style scoped></style>
