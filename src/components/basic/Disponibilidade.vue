@@ -1,18 +1,25 @@
 <template>
-  <div class="modal-overlay" v-if="show" @click.self="closeModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>
-          {{ editando ? "Editar Disponibilidade" : "Nova Disponibilidade" }}
-        </h3>
-        <button class="close-btn" @click="closeModal">&times;</button>
+  <div class="card card-color" :class="{ 'collapsed-card': !expandido }">
+    <div class="card-header">
+      <h3 class="card-title">Disponibilidades</h3>
+      <div class="card-tools">
+        <button
+          type="button"
+          class="btn btn-tool"
+          @click="expandido = !expandido"
+        >
+          <i class="fas" :class="expandido ? 'fa-minus' : 'fa-plus'"></i>
+        </button>
       </div>
+    </div>
 
-      <!-- Formulário de disponibilidade -->
-      <div class="form-container">
-        <div class="form-group">
-          <label>Dia da Semana</label>
-          <select v-model="disponibilidade.diaSemana" class="form-input">
+    <div class="card-body" v-show="expandido">
+      <div class="d-flex align-items-end gap-2">
+        <!-- Dia da Semana -->
+        <div class="flex-grow-1 pe-2">
+          <!-- padding-right -->
+          <label class="form-label">Dia da Semana</label>
+          <select v-model="disponibilidade.diaSemana" class="form-control">
             <option
               v-for="dia in diasSemana"
               :key="dia.value"
@@ -23,35 +30,38 @@
           </select>
         </div>
 
-        <div class="form-group">
-          <label>Hora Início</label>
+        <!-- Hora Início -->
+        <div class="flex-grow-1 pe-2">
+          <!-- padding-right -->
+          <label class="form-label">Hora Início</label>
           <input
             type="time"
             v-model="disponibilidade.horaInicio"
-            class="form-input"
+            class="form-control"
             step="1800"
           />
         </div>
 
-        <div class="form-group">
-          <label>Hora Fim</label>
+        <!-- Hora Fim -->
+        <div class="flex-grow-1 pe-2">
+          <!-- padding-right -->
+          <label class="form-label">Hora Fim</label>
           <input
             type="time"
             v-model="disponibilidade.horaFim"
-            class="form-input"
+            class="form-control"
             step="1800"
           />
         </div>
-
-        <div class="form-actions">
+        <!-- Hora Fim -->
+        <div class="">
           <button class="btn btn-primary" @click="salvarDisponibilidade">
             {{ editando ? "Atualizar" : "Adicionar" }}
           </button>
         </div>
       </div>
-
       <!-- Tabela de disponibilidades existentes -->
-      <div class="table-container">
+      <div class="table-container mt-3">
         <ComplexTable
           :headers="headers"
           :table-name="'Disponibilidades Cadastradas'"
@@ -60,10 +70,6 @@
           @excluir="confirmarRemocao"
           @pagina-alterada="carregarDisponibilidades"
         />
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-secondary" @click="closeModal">Fechar</button>
       </div>
     </div>
   </div>
@@ -89,10 +95,10 @@ export default {
     disponibilidadeEditando: Object,
   },
 
-  emits: ["close", "refresh"],
-
+  emits: ["atualizado"],
   setup(props, { emit }) {
     const toast = useToast();
+    const expandido = ref(false);
     const editando = ref(false);
     const disponibilidade = ref({
       diaSemana: 1,
@@ -165,11 +171,6 @@ export default {
       disponibilidade.value = { ...props.disponibilidadeEditando };
       editando.value = true;
     }
-
-    const closeModal = () => {
-      emit("close");
-    };
-
     const salvarDisponibilidade = async () => {
       try {
         if (disponibilidade.value.horaInicio >= disponibilidade.value.horaFim) {
@@ -190,7 +191,7 @@ export default {
 
         // Recarrega a tabela e emite evento para atualizar calendário
         await carregarDisponibilidades(tableData.value.pageNumber);
-        emit("refresh");
+        emit("atualizado");
 
         // Limpa o formulário se não estiver editando
         if (!editando.value) {
@@ -227,19 +228,19 @@ export default {
         await deleteDisponibilidade(id);
         toast.success("Disponibilidade removida!");
         await carregarDisponibilidades(tableData.value.pageNumber);
-        emit("refresh");
+        emit("atualizado");
       } catch (error) {
         toast.error("Erro ao remover disponibilidade");
       }
     };
 
     return {
+      expandido,
       headers,
       tableData,
       diasSemana,
       disponibilidade,
       editando,
-      closeModal,
       salvarDisponibilidade,
       editarDisponibilidadeTabela,
       confirmarRemocao,
@@ -248,43 +249,15 @@ export default {
   },
 };
 </script>
-
 <style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+.card-color {
+  color: white;
+  background-color: #317b3c;
 }
 
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 800px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
+.card-body {
+  color: black;
+  background-color: #d1edb7;
 }
 
 .form-container {
@@ -309,27 +282,9 @@ export default {
   margin: 20px 0;
 }
 
-.btn {
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-left: 10px;
-}
-
 .btn-primary {
   background-color: #3788d8;
   color: white;
   border: none;
-}
-
-.btn-secondary {
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
 }
 </style>

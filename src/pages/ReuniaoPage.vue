@@ -1,19 +1,9 @@
 <template>
-  <div>
-    <!-- Seu conteúdo existente -->
-
-    <button @click="abrirModalDisponibilidade">
-      Gerenciar Disponibilidades
-    </button>
-
+  <div class="calendar-container">
     <DisponibilidadeModal
-      :show="showDisponibilidadeModal"
       :disponibilidade-editando="disponibilidadeEditando"
-      @close="fecharModalDisponibilidade"
-      @refresh="carregarDisponibilidades"
+      @atualizado="carregarDisponibilidades"
     />
-  </div>
-  <div>
     <CalendarComponent ref="calendar" :available-days="availableDays" />
   </div>
 </template>
