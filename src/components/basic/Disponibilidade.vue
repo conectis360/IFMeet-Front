@@ -75,8 +75,9 @@ import { useToast } from "vue-toastification";
 import ComplexTable from "./ComplexTable.vue";
 import {
   buscarConfiguracoesDisponibilidade,
-  salvarDisponibilidade as apiSalvar,
-  atualizarDisponibilidade,
+  saveDisponibilidade as apiSalvar,
+  updateDisponibilidade,
+  deleteDisponibilidade,
 } from "@/services/disponibilidadeService";
 
 export default {
@@ -177,7 +178,7 @@ export default {
         }
 
         if (editando.value) {
-          await atualizarDisponibilidade(
+          await updateDisponibilidade(
             disponibilidade.value.id,
             disponibilidade.value
           );
@@ -223,7 +224,7 @@ export default {
 
     const removerDisponibilidade = async (id) => {
       try {
-        await removerDisponibilidade(id);
+        await deleteDisponibilidade(id);
         toast.success("Disponibilidade removida!");
         await carregarDisponibilidades(tableData.value.pageNumber);
         emit("refresh");
