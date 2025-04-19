@@ -1,13 +1,21 @@
-/* theme.css */
+/* ==============================================
+   VARIÁVEIS GLOBAIS E CONFIGURAÇÕES DE TEMA
+   ============================================== */
 
 :root {
-  /* Tema Claro (Padrão) - Mantendo as cores originais */
-  --body-bg: #f4f6f9;
-  --content-bg: #ffffff;
-  --text-color: #333;
-  --primary-color: #007bff;
-  --secondary-color: #6c757d;
-  /* Cores do calendário para o tema claro */
+  /* 
+     * TEMA CLARO (PADRÃO)
+     * Define todas as variáveis de cores e estilos para o tema claro
+     */
+
+  /* Cores básicas */
+  --body-bg: #f4f6f9; /* Cor de fundo do body */
+  --content-bg: #ffffff; /* Cor de fundo do conteúdo */
+  --text-color: #333; /* Cor padrão do texto */
+  --primary-color: #007bff; /* Cor primária (azul) */
+  --secondary-color: #6c757d; /* Cor secundária (cinza) */
+
+  /* Cores específicas para o calendário */
   --calendar-day-number-color: #317b3c;
   --calendar-header-color: #317b3c;
   --calendar-button-bg: #8dc643;
@@ -18,18 +26,20 @@
   --calendar-time-text-color: #000;
   --calendar-bg-color: #f0fff0;
 
+  /* Cores da navbar */
   --navbar-bg-color: #d1edb7;
   --navbar-text-color: #777777;
   --navbar-link-text-color: #777777;
 
-  --sidebar-bg-color: #d1edb7; /* Exemplo de cor de fundo clara */
-  --sidebar-color: #333; /* Exemplo de cor do texto clara */
+  /* Cores da sidebar */
+  --sidebar-bg-color: #d1edb7;
+  --sidebar-color: #333;
   --usuario-color: #333;
-
   --sidebar-nav-color: #d1edb7;
   --item-menu-bg: #d1edb7;
   --item-menu-color: #333;
 
+  /* Cores para tabelas */
   --table-bg: #ffffff;
   --table-header-bg: #f8f9fa;
   --table-header-color: #495057;
@@ -49,36 +59,43 @@
 }
 
 body.dark-mode {
-  /* Tema Escuro Futurista */
-  --body-bg: #18230f; /* Fundo mais escuro */
-  --content-bg: #18230f; /* Fundo do conteúdo um pouco mais claro que o body */
-  --text-color: #dcdcdc; /* Texto em tons de cinza claro */
-  --primary-color: #8ec543; /* Usando o verde claro como destaque */
-  --secondary-color: #317d3d; /* Usando o verde escuro como cor secundária */
+  /* 
+     * TEMA ESCURO
+     * Sobrescreve as variáveis para o tema escuro
+     */
 
-  /* Cores do calendário para o tema escuro */
+  /* Cores básicas */
+  --body-bg: #18230f;
+  --content-bg: #18230f;
+  --text-color: #dcdcdc;
+  --primary-color: #8ec543; /* Verde claro como cor primária */
+  --secondary-color: #317d3d; /* Verde escuro como secundária */
+
+  /* Cores do calendário para tema escuro */
   --calendar-day-number-color: #1e201e;
-  --calendar-header-color: #1e201e; /* Destaque com o verde claro */
-  --calendar-button-bg: #317d3d; /* Verde escuro para botões */
-  --calendar-button-active-bg: #8ec543; /* Verde claro para botão ativo */
-  --calendar-title-color: #1e201e; /* Título com o verde claro */
-  --calendar-button-disabled-bg: #555; /* Um tom de cinza para desabilitado */
+  --calendar-header-color: #1e201e;
+  --calendar-button-bg: #317d3d;
+  --calendar-button-active-bg: #8ec543;
+  --calendar-title-color: #1e201e;
+  --calendar-button-disabled-bg: #555;
   --calendar-event-text-color: #1e201e;
   --calendar-time-text-color: #1e201e;
-  --calendar-bg-color: #ecdfcc; /* Cor de fundo do calendário igual ao conteúdo */
+  --calendar-bg-color: #ecdfcc;
 
+  /* Navbar no tema escuro */
   --navbar-bg-color: #255f38;
   --navbar-text-color: #ffffff;
   --navbar-link-text-color: #ffffff;
 
-  --sidebar-bg-color: #255f38; /* Exemplo de cor de fundo clara */
-  --sidebar-color: #333; /* Exemplo de cor do texto clara */
+  /* Sidebar no tema escuro */
+  --sidebar-bg-color: #255f38;
+  --sidebar-color: #333;
   --usuario-color: #ffffff;
-
   --sidebar-nav-color: #255f38;
   --item-menu-bg: #255f38;
   --item-menu-color: #ffffff;
 
+  /* Tabelas no tema escuro */
   --table-bg: #8ec543;
   --table-header-bg: #255f38;
   --table-header-color: #e0e0e0;
@@ -97,10 +114,9 @@ body.dark-mode {
   --action-btn-delete: #ff6b6b;
 }
 
-.custom-calendar {
-  background-color: var(--calendar-bg-color) !important;
-  color: var(--calendar-time-text-color);
-}
+/* ==============================================
+     ESTILOS GLOBAIS
+     ============================================== */
 
 .dark-mode {
   background-color: var(--body-bg) !important;
@@ -114,6 +130,32 @@ body.dark-mode {
   background-color: var(--body-bg) !important;
 }
 
+/* ==============================================
+     COMPONENTE: NAVBAR
+     ============================================== */
+
+.navbar-white {
+  background-color: var(--navbar-bg-color) !important;
+  color: var(--navbar-text-color) !important;
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: var(--navbar-link-text-color) !important;
+}
+
+/* ==============================================
+     COMPONENTE: SIDEBAR
+     ============================================== */
+
+.main-sidebar.sidebar-dark-primary {
+  background-color: var(--sidebar-bg-color);
+  color: var(--sidebar-color);
+}
+
+.nav-sidebar > .nav-item {
+  background-color: var(--sidebar-nav-color);
+}
+
 .nav-link {
   color: var(--item-menu-color) !important;
 }
@@ -123,33 +165,29 @@ body.dark-mode {
   color: var(--item-menu-color) !important;
 }
 
-.nav-sidebar > .nav-item {
-  background-color: var(--sidebar-nav-color);
-}
-
 #nomeUsuarioSideBar {
   color: var(--usuario-color);
 }
 
-.main-sidebar.sidebar-dark-primary {
-  background-color: var(--sidebar-bg-color);
-  color: var(--sidebar-color);
-}
-
-.navbar-white {
-  background-color: var(--navbar-bg-color) !important;
-  color: var(--navbar-text-color) !important;
-}
+/* ==============================================
+     COMPONENTE: FOOTER
+     ============================================== */
 
 .main-footer {
   background-color: var(--navbar-bg-color) !important;
   color: var(--navbar-text-color) !important;
 }
 
-.navbar-light .navbar-nav .nav-link {
-  color: var(--navbar-link-text-color) !important;
+/* ==============================================
+     COMPONENTE: CALENDÁRIO
+     ============================================== */
+
+.custom-calendar {
+  background-color: var(--calendar-bg-color) !important;
+  color: var(--calendar-time-text-color);
 }
 
+/* Estilos específicos para FullCalendar no tema escuro */
 .dark-theme-active .fc .fc-daygrid-day-number {
   color: var(--calendar-day-number-color) !important;
 }
@@ -161,85 +199,101 @@ body.dark-mode {
 .dark-theme-active
   .fc-direction-ltr
   .fc-button-group
-  > .fc-button:not(:first-child) {
-  background-color: var(--calendar-button-bg) !important;
-  font-weight: bold !important;
-}
-
+  > .fc-button:not(:first-child),
 .dark-theme-active
   .fc-direction-ltr
   .fc-button-group
   > .fc-button:not(:last-child) {
-  font-weight: bold !important;
   background-color: var(--calendar-button-bg) !important;
+  font-weight: bold !important;
 }
 
 .dark-theme-active .fc .fc-button-group > .fc-button.fc-button-active,
 .dark-theme-active .fc .fc-button-group > .fc-button:active,
 .dark-theme-active .fc .fc-button-group > .fc-button:focus,
 .dark-theme-active .fc .fc-button-group > .fc-button:hover {
-  font-weight: bold !important;
   background-color: var(--calendar-button-active-bg) !important;
 }
 
 .dark-theme-active .fc-toolbar-title {
   color: var(--calendar-title-color) !important;
-}
-
-.dark-theme-active .fc .fc-button-primary:disabled {
-  font-weight: bold !important;
-  background-color: var(--calendar-button-disabled-bg) !important;
-}
-
-.dark-theme-active .fc-toolbar-title {
   text-transform: uppercase !important;
 }
 
-.dark-theme-active .fc-h-event .fc-event-main {
-  color: var(--calendar-event-text-color) !important;
+.dark-theme-active .fc .fc-button-primary:disabled {
+  background-color: var(--calendar-button-disabled-bg) !important;
 }
 
+.dark-theme-active .fc-h-event .fc-event-main,
 .dark-theme-active .fc-v-event .fc-event-title {
   color: var(--calendar-event-text-color) !important;
 }
 
 .dark-theme-active .fc-timegrid-event .fc-event-time {
-  font-weight: bold !important;
   color: var(--calendar-time-text-color) !important;
+  font-weight: bold !important;
 }
 
-.dark-theme-active .custom-calendar {
-  background-color: var(--calendar-bg-color) !important;
+/* ==============================================
+     COMPONENTE: COMPLEX TABLE
+     ============================================== */
+
+/* Variáveis específicas para a tabela */
+.complex-table {
+  --table-border-radius: 0.375rem;
+  --table-header-height: 3.5rem;
+  --table-row-padding: 0.75rem;
+  --table-action-btn-size: 1.75rem;
 }
 
-/* Aplicando os estilos ao componente */
+/* Container principal */
 .complex-table .card {
+  border-radius: var(--table-border-radius);
+  overflow: hidden;
+  transition: all 0.3s ease;
   background-color: var(--table-bg);
   color: var(--table-text-color);
   border-color: var(--table-border-color);
 }
 
+/* Cabeçalho da tabela */
 .complex-table .card-header {
+  height: var(--table-header-height);
+  padding: 0 1.25rem;
+  border-bottom-width: 1px;
+  display: flex;
+  align-items: center;
   background-color: var(--table-header-bg);
   border-bottom-color: var(--table-border-color);
 }
 
 .complex-table .card-title {
+  font-size: 1.1rem;
+  font-weight: 500;
   color: var(--table-header-color);
 }
 
+/* Estilos da tabela */
 .complex-table .table {
+  margin-bottom: 0;
   color: var(--table-text-color) !important;
   background-color: var(--table-bg) !important;
 }
 
 .complex-table .table th {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  padding: 0.75rem 0.5rem;
+  border-top: none;
   background-color: var(--table-header-bg) !important;
   color: var(--table-header-color) !important;
   border-color: var(--table-border-color) !important;
 }
 
 .complex-table .table td {
+  padding: var(--table-row-padding) 0.5rem;
+  vertical-align: middle;
   border-color: var(--table-border-color) !important;
 }
 
@@ -247,12 +301,36 @@ body.dark-mode {
   background-color: var(--table-row-hover-bg);
 }
 
+/* Campo de pesquisa */
 .complex-table .form-control {
   background-color: var(--search-input-bg);
   color: var(--search-input-color);
   border-color: var(--search-input-border);
 }
 
+/* Botões de ação */
+.complex-table .btn-action {
+  width: var(--table-action-btn-size);
+  height: var(--table-action-btn-size);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin: 0 2px;
+}
+
+.complex-table .btn-edit {
+  background-color: var(--action-btn-edit);
+  color: white;
+}
+
+.complex-table .btn-delete {
+  background-color: var(--action-btn-delete);
+  color: white;
+}
+
+/* Paginação */
 .complex-table .pagination {
   background-color: var(--pagination-bg);
 }
@@ -269,22 +347,50 @@ body.dark-mode {
 }
 
 .complex-table .page-link {
+  min-width: 2rem;
+  text-align: center;
   background-color: var(--pagination-bg);
   color: var(--table-text-color);
   border-color: var(--table-border-color);
 }
 
-.complex-table .btn-primary {
-  background-color: var(--action-btn-edit);
-  border-color: var(--action-btn-edit);
-}
-
-.complex-table .btn-danger {
-  background-color: var(--action-btn-delete);
-  border-color: var(--action-btn-delete);
-}
-
+/* Rodapé */
 .complex-table .card-footer {
+  padding: 0.75rem 1.25rem;
   background-color: var(--table-header-bg);
   border-top-color: var(--table-border-color);
+}
+
+/* Efeitos de hover */
+.complex-table .btn-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Mensagem de tabela vazia */
+.complex-table .table-empty-message {
+  color: var(--secondary-color);
+  font-style: italic;
+}
+
+/* Ícones */
+.complex-table .page-link i {
+  font-size: 0.8rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .complex-table .card-header {
+    flex-direction: column;
+    height: auto;
+    padding: 0.75rem;
+  }
+
+  .complex-table .card-title {
+    margin-bottom: 0.5rem;
+  }
+
+  .complex-table .card-tools {
+    width: 100%;
+  }
 }
