@@ -41,21 +41,19 @@
 
   /* Cores para tabelas */
   --table-bg: #ffffff;
-  --table-header-bg: #f8f9fa;
-  --table-header-color: #495057;
-  --table-row-bg: #ffffff;
-  --table-row-hover-bg: #f1f1f1;
-  --table-border-color: #dee2e6;
-  --table-text-color: #212529;
+  --table-header-bg: #d1edb7;
+  --table-header-color: #317b3c;
+  --table-row-bg: #f8fff0;
+  --table-row-hover-bg: #e3f5d4;
+  --table-border-color: #8dc643;
+  --table-text-color: #333;
   --pagination-bg: #ffffff;
-  --pagination-active-bg: #007bff;
-  --pagination-active-color: #ffffff;
-  --pagination-disabled-bg: #e9ecef;
-  --search-input-bg: #ffffff;
-  --search-input-color: #495057;
-  --search-input-border: #ced4da;
-  --action-btn-edit: #007bff;
-  --action-btn-delete: #dc3545;
+  --pagination-active-bg: #317b3c;
+  --pagination-active-color: #fff;
+  --search-input-bg: #f0f7e9;
+  --search-input-color: #555;
+  --action-btn-edit: #8dc643;
+  --action-btn-delete: #c6554d;
 }
 
 body.dark-mode {
@@ -96,22 +94,20 @@ body.dark-mode {
   --item-menu-color: #ffffff;
 
   /* Tabelas no tema escuro */
-  --table-bg: #8ec543;
-  --table-header-bg: #255f38;
-  --table-header-color: #e0e0e0;
-  --table-row-bg: #d1edb7;
-  --table-row-hover-bg: #d1edb7;
-  --table-border-color: #444;
-  --table-text-color: #e0e0e0;
-  --pagination-bg: #2d2d2d;
-  --pagination-active-bg: #8ec543;
-  --pagination-active-color: #612d2d;
-  --pagination-disabled-bg: #444;
-  --search-input-bg: #8ec543;
-  --search-input-color: #e0e0e0;
-  --search-input-border: #444;
-  --action-btn-edit: #8ec543;
-  --action-btn-delete: #ff6b6b;
+  --table-bg: #1a2a1f;
+  --table-header-bg: #317b3c;
+  --table-header-color: #d1edb7;
+  --table-row-bg: #223328;
+  --table-row-hover-bg: #2d4533;
+  --table-border-color: #8dc643;
+  --table-text-color: #e0ead7;
+  --pagination-bg: #1a2a1f;
+  --pagination-active-bg: #8dc643;
+  --pagination-active-color: #1a2a1f;
+  --search-input-bg: #2d4533;
+  --search-input-color: #d1edb7;
+  --action-btn-edit: #8dc643;
+  --action-btn-delete: #d17a73;
 }
 
 /* ==============================================
