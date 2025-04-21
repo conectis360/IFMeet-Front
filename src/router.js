@@ -7,7 +7,7 @@ const Profile = () => import("./components/Profile.vue")
 const BoardUser = () => import("./components/BoardUser.vue")
 const FormularioRegistrarUsuario = () => import("./components/formularios/FormularioRegistrarUsuario.vue")
 const TrabalhoPage = () => import("./pages/TrabalhoPage.vue")
-const VisualizarTarefas = () => import("./components/orientador/VisualizarTarefas.vue")
+const TarefasPage = () => import("./pages/TarefasPage.vue")
 const NotificacoesPage = () => import("./pages/NotificationPage.vue")
 const AtaPage = () => import("./pages/AtaPage.vue")
 const Teste = () => import("./teste.vue")
@@ -46,7 +46,7 @@ const routes = [
     {
         path: "/IFMeet/tarefas",
         name: "Tarefas",
-        component: VisualizarTarefas,
+        component: TarefasPage,
     },
     {
         path: "/IFMeet/atas",

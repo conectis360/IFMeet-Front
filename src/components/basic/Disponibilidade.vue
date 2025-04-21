@@ -154,9 +154,7 @@ export default {
           toast.error("Usuário não autenticado");
           return;
         }
-        console.log("aqui");
         const response = await buscarConfiguracoesDisponibilidade(usuario.id);
-        console.log(response);
 
         tableData.value = {
           ...response.data,

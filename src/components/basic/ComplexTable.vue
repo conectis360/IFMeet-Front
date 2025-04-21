@@ -153,129 +153,122 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "ComplexTable",
-  props: {
-    headers: {
-      type: Array,
-      required: true,
-      validator: (headers) =>
-        headers.every((header) => "text" in header && "value" in header),
-    },
-    tableName: {
-      type: String,
-      default: "Nome da tabela",
-    },
-    tableData: {
-      type: Object,
-      required: true,
-      default: () => ({
-        totalPages: 1,
-        totalRecords: 0,
-        pageNumber: 1,
-        pageSize: 10,
-        records: [],
-      }),
-    },
-  },
-  data() {
-    return {
-      searchQuery: "",
-      maxVisiblePages: 5, // Número máximo de páginas visíveis na paginação
-    };
-  },
-  computed: {
-    // Registros paginados e filtrados
-    paginatedRecords() {
-      // Se não houver termo de pesquisa, retorna todos os registros da página atual
-      if (!this.searchQuery) return this.tableData.records;
+<script setup>
+import { computed, ref } from "vue";
+import { defineProps, defineEmits } from "vue"; // Adicione esta linha
 
-      // Aplica o filtro de pesquisa
-      return this.tableData.records.filter((item) =>
-        this.headers.some((header) => {
-          const value = this.getNestedValue(item, header.value);
-          // Verifica se o valor existe e contém o termo de pesquisa
-          return (
-            value !== undefined &&
-            value !== null &&
-            String(value).toLowerCase().includes(this.searchQuery.toLowerCase())
-          );
-        })
+const props = defineProps({
+  headers: {
+    type: Array,
+    required: true,
+    validator: (headers) =>
+      headers.every((header) => "text" in header && "value" in header),
+  },
+  tableName: {
+    type: String,
+    default: "Nome da tabela",
+  },
+  tableData: {
+    type: Object,
+    required: true,
+    default: () => ({
+      totalPages: 1,
+      totalRecords: 0,
+      pageNumber: 1,
+      pageSize: 3,
+      records: [],
+    }),
+  },
+});
+
+const emit = defineEmits(["pagina-alterada", "editar", "excluir"]);
+
+const searchQuery = ref("");
+const maxVisiblePages = ref(5);
+
+// Computed properties
+const paginatedRecords = computed(() => {
+  if (!searchQuery.value) return props.tableData.records;
+
+  return props.tableData.records.filter((item) =>
+    props.headers.some((header) => {
+      const value = getNestedValue(item, header.value);
+      return (
+        value !== undefined &&
+        value !== null &&
+        String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
       );
-    },
+    })
+  );
+});
 
-    totalPages() {
-      return this.tableData.totalPages;
-    },
+const totalPages = computed(() => props.tableData.totalPages);
 
-    showingStart() {
-      return (this.tableData.pageNumber - 1) * this.tableData.pageSize + 1;
-    },
+const showingStart = computed(
+  () => (props.tableData.pageNumber - 1) * props.tableData.pageSize + 1
+);
 
-    showingEnd() {
-      const end = this.tableData.pageNumber * this.tableData.pageSize;
-      return end > this.tableData.totalRecords
-        ? this.tableData.totalRecords
-        : end;
-    },
+const showingEnd = computed(() => {
+  const end = props.tableData.pageNumber * props.tableData.pageSize;
+  return end > props.tableData.totalRecords
+    ? props.tableData.totalRecords
+    : end;
+});
 
-    // Calcula as páginas visíveis na paginação
-    visiblePages() {
-      const half = Math.floor(this.maxVisiblePages / 2);
-      let start = this.tableData.pageNumber - half;
-      let end = this.tableData.pageNumber + half;
+const visiblePages = computed(() => {
+  const half = Math.floor(maxVisiblePages.value / 2);
+  let start = props.tableData.pageNumber - half;
+  let end = props.tableData.pageNumber + half;
 
-      if (start < 1) {
-        start = 1;
-        end = this.maxVisiblePages;
-      }
+  if (start < 1) {
+    start = 1;
+    end = maxVisiblePages.value;
+  }
 
-      if (end > this.totalPages) {
-        end = this.totalPages;
-        start = Math.max(1, end - this.maxVisiblePages + 1);
-      }
+  if (end > totalPages.value) {
+    end = totalPages.value;
+    start = Math.max(1, end - maxVisiblePages.value + 1);
+  }
 
-      return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-    },
-  },
-  methods: {
-    getNestedValue(obj, path) {
-      return path.split(".").reduce((acc, part) => acc && acc[part], obj);
-    },
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+});
 
-    handleSearch() {
-      // Quando pesquisa, volta para a primeira página
-      this.$emit("pagina-alterada", 1);
-    },
+// Methods
+const getNestedValue = (obj, path) => {
+  return path.split(".").reduce((acc, part) => acc && acc[part], obj);
+};
 
-    previousPage() {
-      if (this.tableData.pageNumber > 1) {
-        this.$emit("pagina-alterada", this.tableData.pageNumber - 1);
-      }
-    },
+const handleSearch = () => {
+  emit("pagina-alterada", 1);
+};
 
-    nextPage() {
-      if (this.tableData.pageNumber < this.totalPages) {
-        this.$emit("pagina-alterada", this.tableData.pageNumber + 1);
-      }
-    },
+const previousPage = () => {
+  if (props.tableData.pageNumber > 1) {
+    emit("pagina-alterada", props.tableData.pageNumber - 1);
+  }
+};
 
-    goToPage(page) {
-      if (page !== this.tableData.pageNumber) {
-        this.$emit("pagina-alterada", page);
-      }
-    },
+const nextPage = () => {
+  if (props.tableData.pageNumber < totalPages.value) {
+    emit("pagina-alterada", props.tableData.pageNumber + 1);
+  }
+};
 
-    editarItem(item) {
-      this.$emit("editar", item);
-    },
+const goToPage = (page) => {
+  if (page !== props.tableData.pageNumber) {
+    emit("pagina-alterada", page);
+  }
+};
 
-    excluirItem(item) {
-      this.$emit("excluir", item);
-    },
-  },
+const editarItem = (item) => {
+  emit("editar", item);
+};
+
+const excluirItem = (item) => {
+  emit("excluir", item);
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Seus estilos aqui */
+</style>

@@ -39,7 +39,14 @@
   --item-menu-bg: #d1edb7;
   --item-menu-color: #333;
 
-  /* Cores para tabelas */
+  /* ===== CORES BASE ===== */
+  --color-primary: #317b3c; /* Verde principal */
+  --color-secondary: #8dc643; /* Verde secundário */
+  --color-accent: #d1edb7; /* Destaques suaves */
+  --color-dark: #333; /* Textos escuros */
+  --color-muted: #777777; /* Textos secundários */
+
+  /* ===== TABELAS ===== */
   --table-bg: #ffffff;
   --table-header-bg: #d1edb7;
   --table-header-color: #317b3c;
@@ -47,13 +54,22 @@
   --table-row-hover-bg: #e3f5d4;
   --table-border-color: #8dc643;
   --table-text-color: #333;
+
+  /* ===== PAGINAÇÃO ===== */
   --pagination-bg: #ffffff;
   --pagination-active-bg: #317b3c;
   --pagination-active-color: #fff;
+  --pagination-disabled-bg: #e9ecef;
+
+  /* ===== FORMULÁRIOS ===== */
   --search-input-bg: #f0f7e9;
   --search-input-color: #555;
+  --search-input-border: #8dc643;
+
+  /* ===== BOTÕES ===== */
   --action-btn-edit: #8dc643;
   --action-btn-delete: #c6554d;
+  --action-btn-hover: #7bb53a;
 }
 
 body.dark-mode {
@@ -93,7 +109,12 @@ body.dark-mode {
   --item-menu-bg: #255f38;
   --item-menu-color: #ffffff;
 
-  /* Tabelas no tema escuro */
+  /* ===== CORES BASE (DARK) ===== */
+  --color-primary: #8dc643;
+  --color-secondary: #317b3c;
+  --color-accent: #223328;
+
+  /* ===== TABELAS (DARK) ===== */
   --table-bg: #1a2a1f;
   --table-header-bg: #317b3c;
   --table-header-color: #d1edb7;
@@ -101,11 +122,17 @@ body.dark-mode {
   --table-row-hover-bg: #2d4533;
   --table-border-color: #8dc643;
   --table-text-color: #e0ead7;
+
+  /* ===== PAGINAÇÃO (DARK) ===== */
   --pagination-bg: #1a2a1f;
   --pagination-active-bg: #8dc643;
   --pagination-active-color: #1a2a1f;
+
+  /* ===== FORMULÁRIOS (DARK) ===== */
   --search-input-bg: #2d4533;
   --search-input-color: #d1edb7;
+
+  /* ===== BOTÕES (DARK) ===== */
   --action-btn-edit: #8dc643;
   --action-btn-delete: #d17a73;
 }

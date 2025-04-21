@@ -11,137 +11,103 @@
       titulo="Cadastrar Trabalho"
       @confirmar="cadastrarTrabalho"
     >
-      <CadastrarTrabalho ref="formularioCadastro" :trabalhoProp="TrabalhoDTO" />
+      <CadastrarTrabalho ref="formularioCadastro" :trabalhoProp="trabalhoDTO" />
     </ModalComponent>
   </div>
-  <div>
+  <div v-if="trabalhos">
     <ComplexTable
       :headers="headers"
-      :tableData="trabalhosDTO"
-      :tableName="tableName"
+      :table-name="tableName"
+      :tableData="trabalhos"
       @editar="handleEditar"
       @excluir="handleExcluir"
+      @pagina-alterada="handlePaginaAlterada"
     />
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from "vue";
+import { useToast } from "vue-toastification";
 import ModalComponent from "../components/basic/ModalComponent.vue";
 import CadastrarTrabalho from "../components/orientador/CadastrarTrabalho.vue";
 import ComplexTable from "../components/basic/ComplexTable.vue";
-import {
-  buscarTrabalho,
-  buscarTrabalhos,
-} from "@/services/cadastrarTrabalho.js";
-import { useToast } from "vue-toastification";
+import { buscarTrabalhos } from "@/services/cadastrarTrabalho.js";
 
 const toast = useToast();
 
-export default {
-  name: "TrabalhoPage",
-  components: {
-    ModalComponent,
-    CadastrarTrabalho,
-    ComplexTable,
-  },
-  data() {
-    return {
-      tableName: "Trabalhos",
-      trabalhosDTO: [],
-      TrabalhoDTO: {
-        aluno: {
-          codigoUsuario: null,
-        },
-        orientador: {
-          codigoUsuario: null,
-        },
-        curso: {
-          codigoCurso: null,
-        },
-      },
-      headers: [
-        { text: "Titulo", value: "titulo" },
-        { text: "Aluno", value: "aluno.nome" },
-        { text: "Orientador", value: "orientador.nome" },
-        { text: "Curso", value: "curso.nomeCurso" },
-        { text: "Problema", value: "problema" },
-        { text: "Justificativa", value: "justificativa" },
-        { text: "Hipotese", value: "hipotese" },
-        { text: "Solucao", value: "solucao" },
-      ],
-    };
-  },
-  mounted() {
-    this.retornarTrabalhos();
-  },
-  methods: {
-    handleEditar(codigoTrabalho) {
-      this.retornarTrabalho(codigoTrabalho);
-      this.$refs.modalCadastro.abrirModal();
-    },
-    abrirModalCadastro() {
-      this.TrabalhoDTO = {};
-      this.$refs.modalCadastro.abrirModal();
-    },
-    cadastrarTrabalho() {
-      this.$refs.formularioCadastro.cadastrarTrabalho();
-    },
-    retornarTrabalhos() {
-      let loader = this.$loading.show({
-        container: this.fullPage ? null : this.$refs.formContainer,
-      });
-      buscarTrabalhos(
-        (response) => {
-          if (response) {
-            loader.hide();
-            this.trabalhosDTO = response.data;
-          }
-        },
-        (error) => {
-          loader.hide();
-          toast.error(error);
-        },
-        () => {}
-      );
-    },
-    retornarTrabalho(trabalhoDTO) {
-      let codigoTrabalho = trabalhoDTO.codigoTrabalho;
-      let loader = this.$loading.show({
-        container: this.fullPage ? null : this.$refs.formContainer,
-      });
-      buscarTrabalho(
-        codigoTrabalho,
-        (response) => {
-          if (response) {
-            loader.hide();
-            this.TrabalhoDTO = response.data?.records[0];
-          }
-        },
-        (error) => {
-          loader.hide();
-          toast.error(error);
-        },
-        () => {}
-      );
-    },
-    limparTrabalhoDTO() {
-      this.TrabalhoDTO = {
-        titulo: "",
-        problema: "",
-        justificativa: "",
-        hipotese: "",
-        solucao: "",
-        aluno: {
-          codigoUsuario: null,
-        },
-        orientador: {
-          codigoUsuario: null,
-        },
-        curso: {
-          codigoCurso: null,
-        },
-      };
-    },
-  },
+// Refs
+const modalCadastro = ref(null);
+const formularioCadastro = ref(null);
+const tableName = ref("Trabalhos");
+const trabalhos = ref(null); // Inicializa como array vazio
+const trabalhoDTO = ref({
+  aluno: { codigoUsuario: null },
+  orientador: { codigoUsuario: null },
+  curso: { codigoCurso: null },
+});
+
+// Objeto reativo para os dados da tabela
+
+const headers = ref([
+  { text: "Titulo", value: "titulo" },
+  { text: "Aluno", value: "aluno.nome" },
+  { text: "Orientador", value: "orientador.nome" },
+  { text: "Curso", value: "curso.nomeCurso" },
+  { text: "Problema", value: "problema" },
+  { text: "Justificativa", value: "justificativa" },
+  { text: "Hipotese", value: "hipotese" },
+  { text: "Solucao", value: "solucao" },
+]);
+
+// Métodos
+const handleEditar = (trabalho) => {
+  trabalhoDTO.value = { ...trabalho };
+  modalCadastro.value.abrirModal();
 };
+
+const abrirModalCadastro = () => {
+  limparTrabalhoDTO();
+  modalCadastro.value.abrirModal();
+};
+
+const cadastrarTrabalho = () => {
+  formularioCadastro.value.cadastrarTrabalho();
+};
+
+const handlePaginaAlterada = (page) => {
+  // Lógica para mudar de página se necessário
+  console.log("Página alterada:", page);
+};
+
+const retornarTrabalhos = async () => {
+  try {
+    const response = await buscarTrabalhos();
+    if (response?.data) {
+      console.log(response.data);
+      trabalhos.value = response.data;
+    }
+  } catch (error) {
+    toast.error(error.message || "Erro ao buscar trabalhos");
+    trabalhos.value = []; // Garante que tenha um array vazio em caso de erro
+  }
+};
+
+const limparTrabalhoDTO = () => {
+  trabalhoDTO.value = {
+    titulo: "",
+    problema: "",
+    justificativa: "",
+    hipotese: "",
+    solucao: "",
+    aluno: { codigoUsuario: null },
+    orientador: { codigoUsuario: null },
+    curso: { codigoCurso: null },
+  };
+};
+
+// Lifecycle hooks
+onMounted(async () => {
+  await retornarTrabalhos();
+});
 </script>
