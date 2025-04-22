@@ -1,18 +1,6 @@
 <template>
   <div>
-    <h1>Página de Trabalhos</h1>
-    <button type="button" class="btn btn-success" @click="abrirModalCadastro">
-      Cadastrar Trabalho
-    </button>
-
-    <!-- Modal de Cadastro -->
-    <ModalComponent
-      ref="modalCadastro"
-      titulo="Cadastrar Trabalho"
-      @confirmar="cadastrarTrabalho"
-    >
-      <CadastrarTrabalho ref="formularioCadastro" :trabalhoProp="trabalhoDTO" />
-    </ModalComponent>
+    <CadastrarTrabalho ref="formularioCadastro" :trabalhoProp="trabalhoDTO" />
   </div>
   <div v-if="trabalhos">
     <ComplexTable
@@ -29,7 +17,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useToast } from "vue-toastification";
-import ModalComponent from "../components/basic/ModalComponent.vue";
 import CadastrarTrabalho from "../components/orientador/CadastrarTrabalho.vue";
 import ComplexTable from "../components/basic/ComplexTable.vue";
 import { buscarTrabalhos } from "@/services/cadastrarTrabalho.js";
@@ -66,15 +53,6 @@ const handleEditar = (trabalho) => {
   modalCadastro.value.abrirModal();
 };
 
-const abrirModalCadastro = () => {
-  limparTrabalhoDTO();
-  modalCadastro.value.abrirModal();
-};
-
-const cadastrarTrabalho = () => {
-  formularioCadastro.value.cadastrarTrabalho();
-};
-
 const handlePaginaAlterada = (page) => {
   // Lógica para mudar de página se necessário
   console.log("Página alterada:", page);
@@ -91,19 +69,6 @@ const retornarTrabalhos = async () => {
     toast.error(error.message || "Erro ao buscar trabalhos");
     trabalhos.value = []; // Garante que tenha um array vazio em caso de erro
   }
-};
-
-const limparTrabalhoDTO = () => {
-  trabalhoDTO.value = {
-    titulo: "",
-    problema: "",
-    justificativa: "",
-    hipotese: "",
-    solucao: "",
-    aluno: { codigoUsuario: null },
-    orientador: { codigoUsuario: null },
-    curso: { codigoCurso: null },
-  };
 };
 
 // Lifecycle hooks

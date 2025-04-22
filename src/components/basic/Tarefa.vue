@@ -93,7 +93,7 @@ import {
 } from "@/services/cadastrarTarefa.js";
 
 const toast = useToast();
-const expandido = ref(true);
+const expandido = ref(false);
 const editando = ref(false);
 const trabalhos = ref([]);
 const tarefaDTO = ref({

@@ -1,23 +1,16 @@
 <template>
-  <div class="tarefas-container">
-    <div class="row mb-4">
-      <div class="col-md-6">
-        <h1>Tarefas</h1>
-      </div>
-      <div>
-        <Tarefa></Tarefa>
-        <!-- Tabela de Tarefas -->
-        <div class="table-container mt-3">
-          <ComplexTable
-            :headers="headers"
-            :table-name="'Tarefas Cadastradas'"
-            :table-data="tableData"
-            @editar="editarTarefaTabela"
-            @excluir="confirmarRemocao"
-            @pagina-alterada="carregarTarefas"
-          />
-        </div>
-      </div>
+  <div>
+    <Tarefa></Tarefa>
+    <!-- Tabela de Tarefas -->
+    <div class="table-container mt-3">
+      <ComplexTable
+        :headers="headers"
+        :table-name="'Tarefas Cadastradas'"
+        :table-data="tableData"
+        @editar="editarTarefaTabela"
+        @excluir="confirmarRemocao"
+        @pagina-alterada="carregarTarefas"
+      />
     </div>
   </div>
 </template>

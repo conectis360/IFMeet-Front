@@ -1,327 +1,355 @@
 <template>
-  <div class="container" style="background-color: #f4f6f9">
-    <form>
-      <div class="form-group">
-        <label for="exampleFormControlInput1">Titulo Trabalho</label>
-        <input
-          type="text"
-          class="form-control"
-          id="exampleFormControlInput1"
-          placeholder=""
-          @change="handleChangeTitulo"
-          :value="trabalhoProp?.titulo"
-        />
+  <div class="card card-color" :class="{ 'collapsed-card': !expandido }">
+    <div class="card-header">
+      <h3 class="card-title">Trabalhos</h3>
+      <div class="card-tools">
+        <button
+          type="button"
+          class="btn btn-tool"
+          @click="expandido = !expandido"
+        >
+          <i class="fas" :class="expandido ? 'fa-minus' : 'fa-plus'"></i>
+        </button>
       </div>
-      <div class="form-group">
-        <label for="exampleFormControlInput2">Problema</label>
-        <textarea
-          type="text"
-          rows="2"
-          class="form-control"
-          id="exampleFormControlInput2"
-          placeholder=""
-          @change="handleChangeProblema"
-          :value="trabalhoProp?.problema"
-        ></textarea>
-      </div>
+    </div>
 
-      <div class="form-group">
-        <label for="exampleFormControlTextarea1">Justificativa</label>
-        <textarea
-          class="form-control"
-          id="exampleFormControlTextarea1"
-          rows="2"
-          @change="handleChangeJustificativa"
-          :value="trabalhoProp?.justificativa"
-        ></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="exampleFormControlInput3">Hipótese</label>
-        <textarea
-          type="text"
-          class="form-control"
-          rows="2"
-          id="exampleFormControlInput3"
-          placeholder=""
-          @change="handleChangeHipotese"
-          :value="trabalhoProp?.hipotese"
-        ></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="exampleFormControlTextarea2">Solução</label>
-        <textarea
-          class="form-control"
-          id="exampleFormControlTextarea2"
-          rows="2"
-          @change="handleChangeSolucao"
-          :value="trabalhoProp?.solucao"
-        ></textarea>
-      </div>
-      <div class="form-group">
-        <div class="form-group">
-          <label for="exampleFormControlSelect1">Aluno</label>
-          <MySelect2
-            :value="trabalhoProp.aluno?.codigoUsuario"
-            :options="AlunosDTO"
-            id="exampleFormControlSelect1"
-            label="Escolha uma opção"
-            placeholder="Selecione..."
-            @change="handleChangeAluno"
-            keyName="codigoUsuario"
-            valueName="nome"
+    <div class="card-body" v-show="expandido">
+      <!-- Formulário de Trabalho -->
+      <div class="d-flex flex-column gap-3">
+        <!-- Título -->
+        <div class="flex-grow-1">
+          <label class="form-label">Título do Trabalho *</label>
+          <input
+            type="text"
+            class="form-control"
+            v-model="TrabalhoDTO.titulo"
+            required
           />
         </div>
-      </div>
-      <div class="form-group">
-        <div class="form-group">
-          <label for="exampleFormControlSelect1">Curso</label>
-          <MySelect2
-            :value="trabalhoProp.curso?.codigoCurso"
-            :options="CursosDTO"
-            id="exampleFormControlSelect1"
-            label="Escolha uma opção"
-            placeholder="Selecione..."
-            @change="handleChangeCurso"
-            keyName="codigoCurso"
-            valueName="nomeCurso"
-          />
+
+        <!-- Problema e Justificativa -->
+        <div class="row">
+          <div class="col-md-6">
+            <label class="form-label">Problema *</label>
+            <textarea
+              class="form-control"
+              rows="3"
+              v-model="TrabalhoDTO.problema"
+              required
+            ></textarea>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Justificativa *</label>
+            <textarea
+              class="form-control"
+              rows="3"
+              v-model="TrabalhoDTO.justificativa"
+              required
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Hipótese e Solução -->
+        <div class="row">
+          <div class="col-md-6">
+            <label class="form-label">Hipótese</label>
+            <textarea
+              class="form-control"
+              rows="2"
+              v-model="TrabalhoDTO.hipotese"
+            ></textarea>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Solução Proposta</label>
+            <textarea
+              class="form-control"
+              rows="2"
+              v-model="TrabalhoDTO.solucao"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Aluno, Curso e Orientador -->
+        <div class="row">
+          <div class="col-md-4">
+            <label class="form-label">Aluno *</label>
+            <select
+              class="form-control"
+              v-model="TrabalhoDTO.aluno.codigoUsuario"
+              required
+            >
+              <option value="">Selecione um aluno</option>
+              <option
+                v-for="aluno in AlunosDTO"
+                :key="aluno.codigoUsuario"
+                :value="aluno.codigoUsuario"
+              >
+                {{ aluno.nome }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Curso *</label>
+            <select
+              class="form-control"
+              v-model="TrabalhoDTO.curso.codigoCurso"
+              required
+            >
+              <option value="">Selecione um curso</option>
+              <option
+                v-for="curso in CursosDTO"
+                :key="curso.codigoCurso"
+                :value="curso.codigoCurso"
+              >
+                {{ curso.nomeCurso }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Orientador *</label>
+            <select
+              class="form-control"
+              v-model="TrabalhoDTO.orientador.codigoUsuario"
+              required
+            >
+              <option value="">Selecione um orientador</option>
+              <option
+                v-for="orientador in OrientadoresDTO"
+                :key="orientador.codigoUsuario"
+                :value="orientador.codigoUsuario"
+              >
+                {{ orientador.nome }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Botões -->
+        <div class="d-flex justify-content-end gap-2 mt-3">
+          <button class="btn btn-danger" @click="limparTrabalhoDTO">
+            Limpar
+          </button>
+          <button class="btn btn-primary" @click="cadastrarTrabalhoFunction">
+            {{ trabalhoProp.codigoTrabalho ? "Atualizar" : "Salvar" }}
+          </button>
         </div>
       </div>
-      <div class="form-group">
-        <label for="exampleFormControlSelect1">Orientador</label>
-        <MySelect2
-          :value="trabalhoProp.orientador?.codigoUsuario"
-          :options="OrientadoresDTO"
-          id="exampleFormControlSelect1"
-          label="Escolha uma opção"
-          placeholder="Selecione..."
-          @change="handleChangeOrientador"
-          keyName="codigoUsuario"
-          valueName="nome"
-        />
-      </div>
-    </form>
+    </div>
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted, watch } from "vue";
+import { useToast } from "vue-toastification";
 import {
   buscarCursos,
   cadastrarTrabalho,
   buscarAlunos,
   buscarOrientadores,
 } from "@/services/cadastrarTrabalho.js";
-import { useToast } from "vue-toastification";
-import MySelect2 from "../formularios/MySelect2.vue";
+import { defineProps, defineEmits } from "vue"; // Adicione esta linha
 
 const toast = useToast();
+const expandido = ref(false);
+const editando = ref(false);
 
-export default {
-  name: "CadastrarTrabalho",
-  components: {
-    MySelect2,
+// Dados do formulário
+const TrabalhoDTO = ref({
+  titulo: "",
+  problema: "",
+  justificativa: "",
+  hipotese: "",
+  solucao: "",
+  aluno: {
+    codigoUsuario: null,
   },
-  props: {
-    trabalhoProp: {
-      type: Object,
-      default: () => ({
-        codigoTrabalho: "",
-        titulo: "",
-        problema: "",
-        justificativa: "",
-        hipotese: "",
-        solucao: "",
-        aluno: {
-          codigoUsuario: null,
-        },
-        orientador: {
-          codigoUsuario: null,
-        },
-        curso: {
-          codigoCurso: null,
-        },
-      }),
-    },
+  orientador: {
+    codigoUsuario: null,
   },
-  data() {
-    return {
-      content: "",
-      TrabalhoDTO: {
-        titulo: "",
-        problema: "",
-        justificativa: "",
-        hipotese: "",
-        solucao: "",
-        aluno: {
-          codigoUsuario: null,
-        },
-        orientador: {
-          codigoUsuario: null,
-        },
-        curso: {
-          codigoCurso: null,
-        },
-      },
-      CursosDTO: {},
-      AlunosDTO: {},
-      OrientadoresDTO: [],
-    };
+  curso: {
+    codigoCurso: null,
   },
-  mounted() {
-    this.retornarAlunos();
-    this.retornarOrientadores();
-    this.retornarCursos();
-  },
-  methods: {
-    handleChangeOrientador(value) {
-      this.TrabalhoDTO.orientador.codigoUsuario = value;
-    },
-    handleChangeCurso(value) {
-      this.TrabalhoDTO.curso.codigoCurso = value;
-    },
-    handleChangeAluno(value) {
-      this.TrabalhoDTO.aluno.codigoUsuario = value;
-    },
-    handleChangeTitulo(value) {
-      this.TrabalhoDTO.titulo = value;
-    },
-    retornarCursos() {
-      let loader = this.$loading.show({
-        container: this.fullPage ? null : this.$refs.formContainer,
-      });
-      buscarCursos(
-        (response) => {
-          if (response) {
-            loader.hide();
-            this.CursosDTO = response.data;
-          }
-        },
-        (error) => {
-          loader.hide();
-          toast.error(error);
-        },
-        () => {}
-      );
-    },
-    retornarAlunos() {
-      let loader = this.$loading.show({
-        container: this.fullPage ? null : this.$refs.formContainer,
-      });
-      buscarAlunos(
-        (response) => {
-          if (response) {
-            loader.hide();
-            this.AlunosDTO = response.data.records;
-          }
-        },
-        (error) => {
-          loader.hide();
-          toast.error(error);
-        },
-        () => {}
-      );
-    },
-    retornarOrientadores() {
-      let loader = this.$loading.show({
-        container: this.fullPage ? null : this.$refs.formContainer,
-      });
-      buscarOrientadores(
-        (response) => {
-          if (response) {
-            loader.hide();
-            this.OrientadoresDTO = response.data.records;
-          }
-        },
-        (error) => {
-          loader.hide();
-          toast.error(error);
-        },
-        () => {}
-      );
-    },
-    atualizarTrabalhoDTO(trabalhoProp, TrabalhoDTO) {
-      if (trabalhoProp?.codigoTrabalho != null) {
-        const {
-          codigoTrabalho,
-          titulo,
-          problema,
-          justificativa,
-          hipotese,
-          solucao,
-          aluno,
-          orientador,
-          curso,
-        } = trabalhoProp;
+});
 
-        return {
-          ...TrabalhoDTO, // Mantém as propriedades existentes
-          codigoTrabalho,
-          titulo,
-          problema,
-          justificativa,
-          hipotese,
-          solucao,
-          aluno: {
-            codigoUsuario: aluno?.codigoUsuario ?? null,
-          },
-          orientador: {
-            codigoUsuario: orientador?.codigoUsuario ?? null,
-          },
-          curso: {
-            codigoCurso: curso?.codigoCurso ?? null,
-          },
-        };
-      }
-      return TrabalhoDTO; // Retorna o objeto original se a condição não for atendida
-    },
-    limparTrabalhoDTO() {
-      this.TrabalhoDTO = {
-        titulo: "",
-        problema: "",
-        justificativa: "",
-        hipotese: "",
-        solucao: "",
+// Listas para selects
+const CursosDTO = ref([]);
+const AlunosDTO = ref([]);
+const OrientadoresDTO = ref([]);
+
+// Props
+const props = defineProps({
+  trabalhoProp: {
+    type: Object,
+    default: () => ({}),
+  },
+});
+
+// Watcher para atualizar o formulário quando a prop mudar
+watch(
+  () => props.trabalhoProp,
+  (newVal) => {
+    if (newVal?.codigoTrabalho) {
+      TrabalhoDTO.value = {
+        ...newVal,
         aluno: {
-          codigoUsuario: null,
+          codigoUsuario: newVal.aluno?.codigoUsuario || null,
         },
         orientador: {
-          codigoUsuario: null,
+          codigoUsuario: newVal.orientador?.codigoUsuario || null,
         },
         curso: {
-          codigoCurso: null,
+          codigoCurso: newVal.curso?.codigoCurso || null,
         },
       };
-    },
-    cadastrarTrabalho() {
-      if (this.trabalhoProp.codigoTrabalho != null) {
-        this.TrabalhoDTO = this.atualizarTrabalhoDTO(
-          this.trabalhoProp,
-          this.TrabalhoDTO
-        );
-      }
-      let loader = this.$loading.show({
-        container: this.fullPage ? null : this.$refs.formContainer,
-      });
-      cadastrarTrabalho(
-        this.TrabalhoDTO,
-        (response) => {
-          if (response) {
-            loader.hide();
-            toast.success("Trabalho Cadastrado com Sucesso!");
-          }
-        },
-        (error) => {
-          loader.hide();
-          toast.error(error);
-        },
-        () => {
-          this.limparTrabalhoDTO();
-        }
-      );
-    },
+      editando.value = true;
+      expandido.value = true;
+    }
   },
-  expose: ["cadastrarTrabalho", "limparTrabalhoDTO"],
+  { deep: true, immediate: true }
+);
+
+// Carregar dados iniciais
+onMounted(async () => {
+  await Promise.all([
+    retornarCursos(),
+    retornarAlunos(),
+    retornarOrientadores(),
+  ]);
+});
+
+// Métodos
+const retornarCursos = async () => {
+  try {
+    const response = await buscarCursos();
+    CursosDTO.value = response.data;
+  } catch (error) {
+    toast.error("Erro ao carregar cursos: " + error.message);
+  }
 };
+
+const retornarAlunos = async () => {
+  try {
+    const response = await buscarAlunos();
+    AlunosDTO.value = response.data.records;
+  } catch (error) {
+    toast.error("Erro ao carregar alunos: " + error.message);
+  }
+};
+
+const retornarOrientadores = async () => {
+  try {
+    const response = await buscarOrientadores();
+    OrientadoresDTO.value = response.data.records;
+  } catch (error) {
+    toast.error("Erro ao carregar orientadores: " + error.message);
+  }
+};
+
+const limparTrabalhoDTO = () => {
+  TrabalhoDTO.value = {
+    titulo: "",
+    problema: "",
+    justificativa: "",
+    hipotese: "",
+    solucao: "",
+    aluno: {
+      codigoUsuario: null,
+    },
+    orientador: {
+      codigoUsuario: null,
+    },
+    curso: {
+      codigoCurso: null,
+    },
+  };
+  editando.value = false;
+  emit("limpo");
+};
+
+const cadastrarTrabalhoFunction = async () => {
+  try {
+    // Validações básicas
+    if (!TrabalhoDTO.value.titulo) {
+      toast.error("Informe o título do trabalho");
+      return;
+    }
+
+    if (!TrabalhoDTO.value.problema) {
+      toast.error("Descreva o problema");
+      return;
+    }
+
+    if (!TrabalhoDTO.value.justificativa) {
+      toast.error("Informe a justificativa");
+      return;
+    }
+
+    if (!TrabalhoDTO.value.aluno.codigoUsuario) {
+      toast.error("Selecione um aluno");
+      return;
+    }
+
+    if (!TrabalhoDTO.value.curso.codigoCurso) {
+      toast.error("Selecione um curso");
+      return;
+    }
+
+    if (!TrabalhoDTO.value.orientador.codigoUsuario) {
+      toast.error("Selecione um orientador");
+      return;
+    }
+
+    let response;
+    if (props.trabalhoProp.codigoTrabalho) {
+      response = await cadastrarTrabalho({
+        ...TrabalhoDTO.value,
+        codigoTrabalho: props.trabalhoProp.codigoTrabalho,
+      });
+      toast.success("Trabalho atualizado com sucesso!");
+    } else {
+      response = await cadastrarTrabalho(TrabalhoDTO.value);
+      toast.success("Trabalho cadastrado com sucesso!");
+    }
+
+    emit("salvo", response.data);
+    limparTrabalhoDTO();
+  } catch (error) {
+    toast.error(error.message || "Erro ao salvar trabalho");
+  }
+};
+
+// Emits
+const emit = defineEmits(["salvo", "limpo"]);
 </script>
+
+<style scoped>
+.card-color {
+  color: white;
+  background-color: #317b3c;
+}
+
+.card-body {
+  color: black;
+  background-color: #d1edb7;
+}
+
+.table-container {
+  margin: 20px 0;
+}
+
+.btn-primary {
+  background-color: #317b3c;
+  color: white;
+  border: none;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+}
+
+.form-control {
+  margin-bottom: 0.5rem;
+}
+</style>

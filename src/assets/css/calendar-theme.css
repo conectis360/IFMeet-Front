@@ -1,12 +1,58 @@
-/* unified-theme.css */
+/* unified-theme.css (versão otimizada) */
 
+/* =============== VARIÁVEIS GLOBAIS =============== */
 :root {
-  /* Tema Claro (Padrão) - Cores do sistema */
+  /* ---------- Cores Base ---------- */
   --body-bg: #f4f6f9;
-  --content-bg: #ffff;
-  --text-color: #333;
-  --primary-color: #007bff;
-  --secondary-color: #6c757d;
+  --content-bg: #ffffff;
+  --text-color: #2c3e50;
+  --primary-color: #3498db;
+  --danger-color: #e74c3c;
+  --border-color: #e0e0e0;
+
+  /* Novas variáveis para o tema verde */
+  --primary-green: #317b3c;
+  --light-green: #d1edb7;
+  --green-hover: #255f38;
+  --green-text: #1a3d1f;
+
+  /* ---------- Modal ---------- */
+  --modal-overlay-bg: rgba(0, 0, 0, 0.5);
+  --modal-content-bg: var(--content-bg);
+  --modal-border-radius: 16px;
+  --modal-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --modal-close-color: #7f8c8d;
+
+  /* ---------- Espaçamento ---------- */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+
+  /* ---------- Bordas ---------- */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 16px;
+
+  --primary-color: #317b3c;
+  --secondary-color: #d1edb7;
+  --text-primary: #2c3e50;
+  --text-secondary: #34495e;
+  --border-color: #e0e0e0;
+  --error-color: #e74c3c;
+  --background-light: #f8f9fa;
+  --spacing-md: 1.5rem;
+  --spacing-sm: 0.75rem;
+  --radius-md: 8px;
+  --transition: all 0.2s ease;
+
+  --success-color: #4caf50;
+  --warning-color: #ffc107;
+  --danger-color: #f44336;
+  --text-disabled: #adb5bd;
+  --disabled-bg: #f8f9fa;
+  --disabled-bg-rgb: 248, 249, 250;
+  --box-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   /* Cores de navegação */
   --navbar-bg-color: #d1edb7;
@@ -22,7 +68,7 @@
   /* Cores do calendário - Tema Claro */
   --calendar-bg-color: #f0fff0;
   --calendar-controls-bg: #f5f5f5;
-  --calendar-day-available-bg: #e8f5e9;
+  --calendar-day-available-bg: #cdf5d0;
   --calendar-day-blocked-bg: #ffebee;
   --calendar-modal-overlay-bg: rgba(0, 0, 0, 0.5);
 
@@ -66,6 +112,7 @@
   --calendar-modal-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
+/* =============== TEMA ESCURO =============== */
 /* Tema Escuro */
 body.dark-mode {
   /* Tema Escuro Futurista - Cores do sistema */
@@ -89,9 +136,9 @@ body.dark-mode {
   /* Cores do calendário - Tema Escuro */
   --calendar-bg-color: #ecdfcc;
   --calendar-controls-bg: #2d2d2d;
-  --calendar-day-available-bg: rgba(76, 175, 80, 0.2);
-  --calendar-day-blocked-bg: rgba(244, 67, 54, 0.2);
-  --calendar-modal-overlay-bg: rgba(0, 0, 0, 0.7);
+  --calendar-day-available-bg: #56c45a33;
+  --calendar-day-blocked-bg: #f4433633;
+  --calendar-modal-overlay-bg: #000000b3;
 
   /* Cores de texto do calendário */
   --calendar-text-color: #e0e0e0;
@@ -121,7 +168,6 @@ body.dark-mode {
   --calendar-input-focus-border: #5c9ce6;
 }
 
-/* Estilos do calendário */
 .calendar-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -132,28 +178,6 @@ body.dark-mode {
   background: var(--calendar-bg-color);
   border-radius: var(--calendar-border-radius);
   box-shadow: var(--calendar-box-shadow);
-}
-
-/* Estilos dos controles de disponibilidade */
-.availability-controls {
-  margin-bottom: var(--calendar-spacing-xl);
-  padding: var(--calendar-spacing-lg);
-  background: var(--calendar-controls-bg);
-  border-radius: var(--calendar-border-radius);
-}
-
-.days-checkbox {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--calendar-spacing-md);
-  margin-top: var(--calendar-spacing-md);
-}
-
-.days-checkbox label {
-  display: flex;
-  align-items: center;
-  gap: var(--calendar-spacing-xs);
-  cursor: pointer;
 }
 
 /* Estilos para os dias do calendário */
@@ -176,157 +200,6 @@ body.dark-mode {
   opacity: 0.7;
 }
 
-/* Estilos do modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--calendar-modal-overlay-bg);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: var(--content-bg);
-  border-radius: var(--calendar-border-radius);
-  width: 100%;
-  max-width: 500px;
-  box-shadow: var(--calendar-modal-shadow);
-  overflow: hidden;
-}
-
-.modal-header {
-  padding: var(--calendar-spacing-xl);
-  border-bottom: 1px solid var(--calendar-border-color);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-header h3 {
-  margin: 0;
-  color: var(--calendar-text-color);
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: var(--calendar-text-secondary);
-}
-
-/* Estilos do formulário */
-.form-group {
-  padding: 0 var(--calendar-spacing-xl) var(--calendar-spacing-lg);
-  text-align: left;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: var(--calendar-spacing-sm);
-  font-weight: 500;
-  color: var(--calendar-text-color);
-}
-
-.form-input,
-.form-textarea {
-  width: 100%;
-  padding: var(--calendar-spacing-md);
-  border: 1px solid var(--calendar-input-border);
-  border-radius: 4px;
-  font-size: 16px;
-  background-color: var(--content-bg);
-  color: var(--text-color);
-}
-
-.form-input:focus,
-.form-textarea:focus {
-  border-color: var(--calendar-input-focus-border);
-  outline: none;
-}
-
-.form-textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-
-/* Seletor de cores */
-.color-picker {
-  display: flex;
-  gap: var(--calendar-spacing-md);
-  margin-top: var(--calendar-spacing-sm);
-}
-
-.color-option {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-}
-
-.color-option.selected {
-  border-color: var(--calendar-text-color);
-}
-
-/* Estilos do rodapé do modal */
-.modal-footer {
-  padding: var(--calendar-spacing-lg) var(--calendar-spacing-xl);
-  border-top: 1px solid var(--calendar-border-color);
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--calendar-spacing-md);
-}
-
-/* Estilos dos botões */
-.btn {
-  padding: var(--calendar-spacing-sm) var(--calendar-spacing-xl);
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.btn-primary {
-  background-color: var(--calendar-primary-color);
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: var(--calendar-primary-hover);
-}
-
-.btn-primary:disabled {
-  background-color: var(--calendar-primary-disabled);
-  cursor: not-allowed;
-}
-
-.btn-secondary {
-  background-color: var(--calendar-btn-secondary-bg);
-  color: var(--calendar-btn-secondary-text);
-}
-
-.btn-secondary:hover {
-  background-color: var(--calendar-btn-secondary-hover);
-}
-
-.btn-danger {
-  background-color: var(--calendar-btn-danger-bg);
-  color: white;
-  margin-right: auto;
-}
-
-.btn-danger:hover {
-  background-color: var(--calendar-btn-danger-hover);
-}
-
-/* Estilos específicos do FullCalendar */
 .fc .fc-daygrid-day-number {
   color: var(--calendar-day-number-color);
 }
@@ -372,51 +245,542 @@ body.dark-mode {
   color: var(--calendar-time-text-color);
 }
 
-/* Estilos gerais do sistema */
-.dark-mode {
-  background-color: var(--body-bg) !important;
+/* =============== COMPONENTES =============== */
+/* ---------- Modal ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-overlay-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  z-index: 9999 !important;
+  padding: var(--spacing-md); /* Adiciona padding para telas pequenas */
 }
 
-.light-mode {
-  background-color: var(--body-bg) !important;
+.sidebar {
+  z-index: 100 !important; /* Valor menor que o do modal */
 }
 
-.content-wrapper {
-  background-color: var(--body-bg) !important;
+.modal-content {
+  background: var(--modal-content-bg);
+  border-radius: var(--modal-border-radius);
+  box-shadow: var(--modal-shadow);
+  width: 90%;
+  max-width: 1000px;
+  max-height: 90vh; /* Limita a altura máxima */
+  animation: slideIn 0.3s ease;
+  margin: auto; /* Centraliza em telas muito grandes */
+  overflow-y: visible !important;
+  max-height: none !important;
+
+  /* Estilos para telas pequenas (até 576px) */
+  @media (max-width: 576px) {
+    width: 95%;
+    max-height: 95vh;
+    border-radius: var(--border-radius-md); /* Raio menor em telas pequenas */
+  }
+
+  /* Estilos para telas médias (576px - 992px) */
+  @media (min-width: 576px) and (max-width: 992px) {
+    width: 85%;
+  }
 }
 
-.nav-link {
-  color: var(--item-menu-color) !important;
+/* Ajustes para o conteúdo interno do modal */
+.modal-header,
+.modal-footer {
+  position: sticky;
+  z-index: 10;
 }
 
-.menu-item {
-  background-color: var(--item-menu-bg) !important;
-  color: var(--item-menu-color) !important;
+.modal-header {
+  top: 0;
 }
 
-.nav-sidebar > .nav-item {
-  background-color: var(--sidebar-nav-color);
+.modal-footer {
+  bottom: 0;
 }
 
-#nomeUsuarioSideBar {
-  color: var(--usuario-color);
+/* ---------- Formulários ---------- */
+.form-input {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background: var(--content-bg);
+  color: var(--text-color);
+  transition: all 0.2s ease;
 }
 
-.main-sidebar.sidebar-dark-primary {
-  background-color: var(--sidebar-bg-color);
-  color: var(--sidebar-color);
+.form-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
-.navbar-white {
-  background-color: var(--navbar-bg-color) !important;
-  color: var(--navbar-text-color) !important;
+/* ---------- Botões ---------- */
+.btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
 }
 
-.main-footer {
-  background-color: var(--navbar-bg-color) !important;
-  color: var(--navbar-text-color) !important;
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
 }
 
-.navbar-light .navbar-nav .nav-link {
-  color: var(--navbar-link-text-color) !important;
+.btn-danger {
+  background: var(--danger-color);
+  color: white;
+}
+
+/* =============== ANIMAÇÕES =============== */
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* === novo ==== */
+
+.modal-header {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--primary-color);
+}
+
+.modal-title {
+  font-size: 1.4rem;
+  color: white;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Ajustes para o formulário em telas pequenas */
+.form-grid {
+  display: grid;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+
+  @media (max-width: 576px) {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr; /* Coluna única em telas pequenas */
+  }
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.form-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(49, 123, 60, 0.1);
+}
+
+.input-error {
+  border-color: var(--error-color) !important;
+  background: #fff5f5;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+}
+
+/* Melhorias para elementos de seleção em telas pequenas */
+.select-wrapper,
+.date-picker {
+  @media (max-width: 576px) {
+    width: 100%;
+  }
+}
+
+.date-icon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+}
+
+.color-picker {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.color-option {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  border: 2px solid var(--border-color);
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-check {
+  color: white;
+  font-size: 0.8rem;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+}
+
+.status-badges {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--primary-color);
+  border-radius: var(--radius-md);
+  background: var(--secondary-color);
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-primary);
+}
+
+.status-badge.active {
+  background: var(--primary-color);
+  color: white;
+}
+
+.modal-footer {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+  background: var(--secondary-color);
+}
+
+/* Ajustes para os botões de ação no footer */
+.footer-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+
+  @media (max-width: 576px) {
+    flex-direction: column; /* Empilha os botões verticalmente */
+    gap: var(--spacing-sm);
+  }
+}
+
+.btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  transition: var(--transition);
+
+  @media (max-width: 576px) {
+    width: 100%; /* Botões ocupam toda a largura */
+    justify-content: center;
+  }
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:disabled {
+  background: #255f38 !important;
+}
+
+.btn-primary:hover {
+  background: #255f38;
+}
+
+.btn-secondary {
+  background: var(--background-light);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-danger {
+  background: var(--error-color);
+  color: white;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Estilos para o seletor de cores */
+.color-option {
+  position: relative;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.color-option.selected {
+  border: 2px solid var(--primary-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+.color-option.selected::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 1px solid var(--secondary-color);
+  border-radius: 50%;
+}
+
+.color-option:hover {
+  transform: scale(1.05);
+}
+
+.color-check {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+}
+
+/* Melhoria de acessibilidade para cores claras */
+.color-option[style*="background-color: #fff"],
+.color-option[style*="background-color: #ffffff"],
+.color-option[style*="background-color: #f8f9fa"] {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.color-option[style*="background-color: #fff"].selected,
+.color-option[style*="background-color: #ffffff"].selected,
+.color-option[style*="background-color: #f8f9fa"].selected {
+  border: 2px solid var(--primary-color);
+}
+
+.availability-info {
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--secondary-color);
+  border-radius: var(--border-radius-md);
+  border: 2px solid var(--primary-color);
+}
+
+.availability-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+  @media (max-width: 576px) {
+    flex-direction: column; /* Empilha os itens verticalmente */
+  }
+}
+
+.availability-item {
+  background: rgba(255, 255, 255, 0.9);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--box-shadow-sm);
+  border: 1px solid var(--primary-color);
+  display: flex;
+  align-items: center;
+  transition: var(--transition);
+}
+
+.availability-item:hover {
+  transform: translateY(-2px);
+}
+
+.day-name {
+  font-weight: 600;
+  margin-right: var(--spacing-xs);
+  color: var(--primary-color);
+  font-size: 0.95em;
+}
+
+.time-range {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  letter-spacing: 0.5px;
+}
+
+/* Eventos do calendário */
+:deep(.fc-event.confirmado) {
+  background-color: var(--success-color) !important;
+  border-color: var(--success-color) !important;
+  opacity: 0.9;
+}
+
+:deep(.fc-event.pendente) {
+  background-color: var(--warning-color) !important;
+  border-color: var(--warning-color) !important;
+}
+
+:deep(.fc-event.recusado) {
+  background-color: var(--danger-color) !important;
+  border-color: var(--danger-color) !important;
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+/* Ajustes gerais do FullCalendar */
+:deep(.fc-h-event) {
+  border: none !important;
+  box-shadow: var(--box-shadow-sm);
+}
+
+/* Formulários */
+.form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition);
+}
+
+/* Dias bloqueados */
+:deep(.day-blocked) {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--disabled-bg),
+    var(--disabled-bg) 10px,
+    var(--border-color) 10px,
+    var(--border-color) 20px
+  ) !important;
+  opacity: 0.6;
+}
+
+:deep(.day-blocked .fc-daygrid-day-number) {
+  color: var(--text-disabled) !important;
+}
+
+:deep(.day-blocked .fc-daygrid-day-frame) {
+  background-color: rgba(var(--disabled-bg-rgb), 0.5) !important;
+}
+
+/* =============== AJUSTES RESPONSIVOS DO MODAL =============== */
+/* (Mantendo todos os estilos originais intactos) */
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  .modal-overlay {
+    padding: var(--spacing-sm);
+    align-items: flex-start;
+  }
+
+  .modal-content {
+    width: 96%;
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-actions {
+    flex-direction: column;
+  }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) and (max-width: 767px) {
+  .modal-content {
+    width: 92%;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+  .modal-content {
+    width: 88%;
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+  .modal-content {
+    width: 85%;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  .modal-content {
+    width: 80%;
+    max-width: 1000px;
+  }
+}
+
+/* ALTERNATIVA 1: Aumentar a altura máxima quando couber */
+@media only screen and (min-height: 800px) {
+  .modal-content {
+    max-height: 95vh;
+  }
+}
+
+/* ALTERNATIVA 2: Reduzir espaçamentos internos em telas pequenas */
+@media only screen and (max-height: 700px) {
+  .modal-content {
+    --spacing-md: 0.75rem;
+  }
+}
+
+/* ALTERNATIVA 3: Remover rolagem APENAS quando o conteúdo couber */
+.modal-content {
+  overflow-y: auto; /* Mantém como está */
+}
+
+.modal-content.no-scroll {
+  overflow-y: visible; /* Classe adicional para casos específicos */
 }

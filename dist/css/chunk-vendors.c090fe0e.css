@@ -4059,7 +4059,7 @@ fieldset:disabled a.btn {
 .btn-primary.disabled,
 .btn-primary:disabled {
   color: #fff;
-  background-color: #007bff;
+  background: #255f38;
   border-color: #007bff;
 }
 .btn-primary:not(:disabled):not(.disabled).active,

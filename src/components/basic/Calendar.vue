@@ -28,114 +28,180 @@
     <!-- Modal de agendamento -->
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
+        <!-- Cabeçalho -->
         <div class="modal-header">
-          <h3>{{ eventData.id ? "Editar Evento" : "Novo Evento" }}</h3>
-          <button class="close-btn" @click="closeModal">&times;</button>
-        </div>
-        <div class="form-group">
-          <label>Título</label>
-          <input
-            v-model="eventData.title"
-            placeholder="Digite o título do evento"
-            class="form-input"
-            @keyup.enter="saveEvent"
-          />
-        </div>
-
-        <div class="form-group">
-          <label>Trabalho</label>
-          <select
-            v-model="eventData.trabalhoId"
-            class="form-input"
-            :disabled="!!eventData.id"
-          >
-            <option :value="null">Selecione um trabalho</option>
-            <option
-              v-for="trabalho in trabalhos"
-              :key="trabalho.codigoTrabalho"
-              :value="trabalho.codigoTrabalho"
-            >
-              {{ trabalho.titulo }}
-            </option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Data</label>
-          <input
-            :value="formatDateToBrazilian(eventData.date)"
-            @input="handleDateInput($event)"
-            placeholder="DD/MM/AAAA"
-            class="form-input"
-            readonly
-          />
-        </div>
-
-        <div class="form-group">
-          <label>Hora de Início</label>
-          <select
-            v-model="eventData.startTime"
-            class="form-input"
-            @change="updateEndTimeOptions"
-          >
-            <option
-              v-for="time in availableStartTimes"
-              :key="time"
-              :value="time"
-            >
-              {{ time }}
-            </option>
-          </select>
-        </div>
-
-        <div class="form-group" v-if="eventData.id">
-          <label>Status</label>
-          <select v-model="eventData.status" class="form-input">
-            <option
-              v-for="status in statusOptions"
-              :key="status.value"
-              :value="status.value"
-            >
-              {{ status.label }}
-            </option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Descrição</label>
-          <textarea
-            v-model="eventData.description"
-            placeholder="Descrição do evento (opcional)"
-            class="form-textarea"
-          ></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Cor do Evento</label>
-          <div class="color-picker">
-            <div
-              v-for="color in eventColors"
-              :key="color"
-              :style="{ backgroundColor: color }"
-              class="color-option"
-              :class="{ selected: eventData.color === color }"
-              @click="eventData.color = color"
-            ></div>
+          <div class="header-content">
+            <h3 class="modal-title">
+              <i class="bi bi-calendar-event me-2"></i>
+              {{ eventData.id ? "Editar Evento" : "Novo Evento" }}
+            </h3>
           </div>
         </div>
 
+        <!-- Corpo do Modal -->
+        <div class="modal-body">
+          <div class="form-grid">
+            <!-- Linha 1 -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="bi bi-pencil-square me-1"></i>
+                Título *
+              </label>
+              <input
+                v-model="eventData.title"
+                placeholder="Reunião de orientação"
+                class="form-input"
+                :class="{ 'input-error': !eventData.title }"
+                @keyup.enter="saveEvent"
+              />
+            </div>
+
+            <!-- Linha 2 -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="bi bi-journal-bookmark me-1"></i>
+                Trabalho *
+              </label>
+              <div class="select-wrapper">
+                <select
+                  v-model="eventData.trabalhoId"
+                  class="form-input"
+                  :disabled="!!eventData.id"
+                  :class="{ 'input-error': !eventData.trabalhoId }"
+                >
+                  <option :value="null">Selecione um trabalho...</option>
+                  <option
+                    v-for="trabalho in trabalhos"
+                    :key="trabalho.codigoTrabalho"
+                    :value="trabalho.codigoTrabalho"
+                  >
+                    {{ trabalho.titulo }}
+                  </option>
+                </select>
+                <i class="bi bi-chevron-down select-arrow"></i>
+              </div>
+            </div>
+
+            <!-- Linha 3 -->
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="bi bi-calendar-date me-1"></i>
+                  Data *
+                </label>
+                <div class="date-picker">
+                  <input
+                    :value="formatDateToBrazilian(eventData.date)"
+                    @input="handleDateInput($event)"
+                    placeholder="Selecione a data"
+                    class="form-input"
+                    :class="{ 'input-error': !eventData.date }"
+                  />
+                  <i class="bi bi-calendar3 date-icon"></i>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="bi bi-clock me-1"></i>
+                  Horário *
+                </label>
+                <div class="time-selector">
+                  <select
+                    v-model="eventData.startTime"
+                    class="form-input time-input"
+                    @change="updateEndTimeOptions"
+                  >
+                    <option
+                      v-for="time in availableStartTimes"
+                      :key="time"
+                      :value="time"
+                    >
+                      {{ time }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Linha 4 -->
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="bi bi-tag me-1"></i>
+                  Status
+                </label>
+                <div class="status-badges">
+                  <button
+                    v-for="status in statusOptions"
+                    :key="status.value"
+                    class="status-badge"
+                    :class="{ active: eventData.status === status.value }"
+                    @click="eventData.status = status.value"
+                  >
+                    {{ status.label }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="bi bi-palette me-1"></i>
+                  Cor do Evento
+                </label>
+                <div class="color-picker">
+                  <div
+                    v-for="color in eventColors"
+                    :key="color"
+                    class="color-option"
+                    :style="{ backgroundColor: color }"
+                    :class="{ selected: eventData.color === color }"
+                    @click="eventData.color = color"
+                  >
+                    <i
+                      v-if="eventData.color === color"
+                      class="bi bi-check-lg color-check"
+                    ></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Descrição -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="bi bi-text-paragraph me-1"></i>
+                Descrição
+              </label>
+              <textarea
+                v-model="eventData.description"
+                placeholder="Adicione detalhes importantes..."
+                class="form-textarea"
+                rows="3"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
         <div class="modal-footer">
-          <button
-            v-if="eventData.id"
-            class="btn btn-danger"
-            @click="deleteEvent(eventData.id)"
-          >
-            Excluir
-          </button>
-          <button class="btn btn-secondary" @click="closeModal">
-            Cancelar
-          </button>
-          <button class="btn btn-primary" @click="saveEvent">Salvar</button>
+          <div class="footer-actions">
+            <button
+              v-if="eventData.id"
+              class="btn btn-danger"
+              @click="deleteEvent(eventData.id)"
+            >
+              <i class="bi bi-trash me-2"></i>
+              Excluir
+            </button>
+            <button class="btn btn-secondary" @click="closeModal">
+              Cancelar
+            </button>
+            <button class="btn btn-primary" @click="saveEvent">
+              <i class="bi bi-save me-2"></i>
+              {{ eventData.id ? "Atualizar" : "Salvar" }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -698,90 +764,5 @@ export default {
 </script>
 
 <style>
-/* Importa o arquivo de tema externo */
 @import "@/assets/css/calendar-theme.css";
-/* Adicione ao CSS */
-:deep(.fc-event.confirmado) {
-  background-color: #4caf50 !important;
-  border-color: #4caf50 !important;
-}
-
-:deep(.fc-event.pendente) {
-  background-color: #ffc107 !important;
-  border-color: #ffc107 !important;
-}
-
-:deep(.fc-event.recusado) {
-  background-color: #f44336 !important;
-  border-color: #f44336 !important;
-  text-decoration: line-through;
-  opacity: 0.7;
-}
-/* Estilos específicos do componente que não estão no tema */
-:deep(.fc-h-event) {
-  border: none !important;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-input {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-:deep(.day-blocked) {
-  background: repeating-linear-gradient(
-    45deg,
-    #f8f9fa,
-    #f8f9fa 10px,
-    #e9ecef 10px,
-    #e9ecef 20px
-  ) !important;
-  opacity: 0.6;
-}
-
-:deep(.day-blocked .fc-daygrid-day-number) {
-  color: #adb5bd !important;
-}
-
-/* REMOVA o pointer-events: none do CSS */
-
-:deep(.day-blocked .fc-daygrid-day-frame) {
-  background-color: rgba(248, 249, 250, 0.5) !important;
-}
-
-.availability-info {
-  margin-bottom: 20px;
-  padding: 15px;
-  background: var(--calendar-controls-bg);
-  border-radius: var(--calendar-border-radius);
-}
-
-.availability-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.availability-item {
-  background: var(--content-bg);
-  padding: 8px 12px;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.day-name {
-  font-weight: bold;
-  margin-right: 8px;
-  color: var(--calendar-primary-color);
-}
-
-.time-range {
-  color: var(--text-color);
-}
 </style>
