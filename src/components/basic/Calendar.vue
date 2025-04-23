@@ -621,7 +621,7 @@ export default {
         list: "Lista",
       },
       eventDidMount: (info) => {
-        const status = info.event.extendedProps.status || "pendente";
+        const status = info.event.extendedProps.status.codigoStatus || 0;
         info.el.classList.add(status);
       },
       events: [],
