@@ -8,7 +8,7 @@ const timeoutRequests = 600000;
 
 export const apiIFMeet = axios.create({
     //baseURL: import.meta.env.VITE_API_BASE_URL, // Pega do .env
-    baseURL: "http://ifmeet.sytes.net:8443/api/",
+    baseURL: "https://ifmeet.sytes.net:8443/api/",
     //baseURL: "http://localhost:9000/v1/",
     withCredentials: true,
     timeout: timeoutRequests,
