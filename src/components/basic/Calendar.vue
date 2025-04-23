@@ -64,10 +64,10 @@
               </label>
               <div class="select-wrapper">
                 <select
-                  v-model="eventData.trabalhoId"
+                  v-model="eventData.trabalho.id"
                   class="form-input"
                   :disabled="!!eventData.id"
-                  :class="{ 'input-error': !eventData.trabalhoId }"
+                  :class="{ 'input-error': !eventData.trabalho?.id }"
                 >
                   <option :value="null">Selecione um trabalho...</option>
                   <option
@@ -134,12 +134,16 @@
                 <div class="status-badges">
                   <button
                     v-for="status in statusOptions"
-                    :key="status.value"
+                    :key="status.codigoStatus"
+                    :value="status.codigoStatus"
                     class="status-badge"
-                    :class="{ active: eventData.status === status.value }"
-                    @click="eventData.status = status.value"
+                    :class="{
+                      active:
+                        eventData.status.codigoStatus === status.codigoStatus,
+                    }"
+                    @click="eventData.status.codigoStatus = status.codigoStatus"
                   >
-                    {{ status.label }}
+                    {{ status.status }}
                   </button>
                 </div>
               </div>
@@ -223,6 +227,7 @@ import {
   buscarConfiguracoesDisponibilidade,
 } from "@/services/calendarService";
 import { buscarTrabalhosPorUsuario } from "@/services/cadastrarTrabalho.js";
+import { buscarStatus } from "@/services/statusService.js";
 
 export default {
   components: { FullCalendar },
@@ -235,12 +240,7 @@ export default {
     const availableStartTimes = ref([]);
     const availableEndTimes = ref([]);
     const trabalhos = ref([]); // Será preenchida com dados do back-end
-
-    const statusOptions = [
-      { value: "pendente", label: "Pendente" },
-      { value: "confirmado", label: "Confirmado" },
-      { value: "recusado", label: "Recusado" },
-    ];
+    const statusOptions = ref([]); // Será preenchida com dados do back-end
 
     // Dados do evento
     const eventData = ref({
@@ -250,8 +250,10 @@ export default {
       endTime: "",
       description: "",
       color: "#3788d8",
-      trabalhoId: null,
-      status: "pendente",
+      trabalho: {
+        id: 0,
+      },
+      status: { codigoStatus: 0 },
     });
 
     // Dias da semana
@@ -369,8 +371,8 @@ export default {
         endTime: event.endStr.split("T")[1]?.substring(0, 5) || "10:00",
         description: event.extendedProps?.description || "",
         color: event.backgroundColor || "#3788d8",
-        trabalhoId: event.extendedProps.trabalhoId,
-        status: event.extendedProps.status || "pendente",
+        trabalho: { id: event.extendedProps.trabalho.codigoTrabalho },
+        status: { codigoStatus: 0 },
       };
 
       // Atualiza as opções de horário disponíveis para o dia selecionado
@@ -498,7 +500,9 @@ export default {
         startTime: "",
         endTime: "",
         description: "",
+        trabalho: { id: null },
         color: "#3788d8",
+        status: { codigoStatus: 0 },
       };
 
       // Atualiza as opções de horário disponíveis para o dia selecionado
@@ -528,7 +532,7 @@ export default {
     const saveEvent = async () => {
       try {
         // Validações
-        if (!eventData.value.trabalhoId) {
+        if (!eventData.value.trabalho?.id) {
           toast.error("Selecione um trabalho");
           return;
         }
@@ -563,8 +567,8 @@ export default {
           end: `${isoDate}T${eventData.value.endTime}:00`,
           description: eventData.value.description,
           backgroundColor: eventData.value.color,
-          trabalhoId: eventData.value.trabalhoId,
-          status: eventData.value.status,
+          trabalho: { codigoTrabalho: eventData.value.trabalho?.id },
+          status: { codigoStatus: eventData.value.status?.codigoStatus },
           allDay: false,
         };
 
@@ -706,6 +710,16 @@ export default {
       }
     };
 
+    const retornarStatus = async () => {
+      try {
+        const response = await buscarStatus();
+        statusOptions.value = response.data?.records || [];
+      } catch (error) {
+        toast.error("Erro ao carregar status");
+        console.error(error);
+      }
+    };
+
     // Busca eventos do calendário
     const retornaEventosCalendario = async () => {
       const usuario = getUsuarioLogado();
@@ -728,6 +742,7 @@ export default {
       await buscarConfiguracoes();
       await retornaEventosCalendario();
       await buscarTrabalhos();
+      await retornarStatus();
 
       // Força atualização após pequeno delay
       setTimeout(updateCalendar, 100);

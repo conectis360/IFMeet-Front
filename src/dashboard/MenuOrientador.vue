@@ -11,27 +11,21 @@
       <registrar-usuario />
     </li>
     <li class="nav-item">
-      <router-link to="/reunioes" class="nav-link">
+      <router-link :to="{ name: 'Reunioes' }" class="nav-link">
         <i class="fa fa-calendar"></i>
         <p class="opcaoMenu">Reuniões</p>
       </router-link>
     </li>
     <li class="nav-item">
-      <router-link to="/trabalhos" class="nav-link">
+      <router-link :to="{ name: 'Trabalhos' }" class="nav-link">
         <i class="fa fa-book"></i>
         <p class="opcaoMenu">Trabalhos</p>
       </router-link>
     </li>
     <li class="nav-item">
-      <router-link to="/tarefas" class="nav-link">
+      <router-link :to="{ name: 'Tarefas' }" class="nav-link">
         <i class="fa fa-pen"></i>
         <p class="opcaoMenu">Tarefas</p>
-      </router-link>
-    </li>
-    <li class="nav-item">
-      <router-link to="/atas" class="nav-link">
-        <i class="fa fa-pen"></i>
-        <p class="opcaoMenu">Atas</p>
       </router-link>
     </li>
   </ul>
