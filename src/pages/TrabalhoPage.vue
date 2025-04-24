@@ -1,6 +1,10 @@
 <template>
   <div>
-    <CadastrarTrabalho ref="formularioCadastro" :trabalhoProp="trabalhoDTO" />
+    <CadastrarTrabalho
+      ref="formularioCadastro"
+      :trabalhoProp="trabalhoDTO"
+      @salvo="retornarTrabalhos"
+    />
   </div>
   <div v-if="trabalhos">
     <ComplexTable
