@@ -62,7 +62,6 @@ const retornarTrabalhos = async () => {
   try {
     const response = await buscarTrabalhos();
     if (response?.data) {
-      console.log(response.data);
       trabalhos.value = response.data;
     }
   } catch (error) {

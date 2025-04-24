@@ -314,7 +314,7 @@ const cadastrarTrabalhoFunction = async () => {
     emit("salvo", response.data);
     limparTrabalhoDTO();
   } catch (error) {
-    toast.error(error.message || "Erro ao salvar trabalho");
+    toast.error(error.message);
   }
 };
 
