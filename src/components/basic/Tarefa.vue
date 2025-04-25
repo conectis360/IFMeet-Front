@@ -16,29 +16,16 @@
     <div class="card-body" v-show="expandido">
       <!-- Formulário de Tarefa -->
       <div class="d-flex flex-wrap align-items-end gap-2 mb-4">
-        <!-- Data de Início -->
-        <div class="flex-grow-1 pe-2 col-sm-3">
-          <label class="form-label">Data de Início</label>
-          <input
-            type="date"
-            v-model="tarefaDTO.dataInicio"
-            class="form-control"
-          />
-        </div>
-
-        <!-- Data de Fim -->
-        <div class="flex-grow-1 pe-2 col-sm-3">
-          <label class="form-label">Data de Fim</label>
-          <input type="date" v-model="tarefaDTO.dataFim" class="form-control" />
-        </div>
-
         <!-- Trabalho -->
-        <div class="flex-grow-1 pe-2 col-sm-3">
-          <label class="form-label">Trabalho</label>
+        <div class="flex-grow-1 pe-2 col-sm-6">
+          <label class="form-label">Trabalho *</label>
           <select
             class="form-control"
             v-model="tarefaDTO.trabalho.codigoTrabalho"
+            :disabled="editando"
+            required
           >
+            <option value="">Selecione um trabalho</option>
             <option
               v-for="trabalho in trabalhos"
               :value="trabalho.codigoTrabalho"
@@ -49,8 +36,8 @@
           </select>
         </div>
 
-        <!-- Finalizada -->
-        <div class="flex-grow-1 pe-2 col-sm-3">
+        <!-- Status (apenas para edição) -->
+        <div class="flex-grow-1 pe-2 col-sm-6" v-if="editando">
           <label class="form-label">Status</label>
           <select class="form-control" v-model="tarefaDTO.finalizada">
             <option :value="false">Pendente</option>
@@ -60,11 +47,12 @@
 
         <!-- Descrição -->
         <div class="flex-grow-1 pe-2 col-12">
-          <label class="form-label">Descrição</label>
+          <label class="form-label">Descrição *</label>
           <textarea
             class="form-control"
             rows="3"
             v-model="tarefaDTO.descricao"
+            required
           ></textarea>
         </div>
 
@@ -85,12 +73,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch, defineProps, defineEmits } from "vue";
 import { useToast } from "vue-toastification";
 import {
-  salvarTarefa as apiSalvarTarefa,
+  cadastrarTarefa as apiSalvarTarefa,
   atualizarTarefa,
 } from "@/services/cadastrarTarefa.js";
+import { buscarTrabalhos } from "@/services/cadastrarTrabalho.js";
+
+const props = defineProps({
+  tarefaParaEdicao: {
+    type: Object,
+    default: null,
+  },
+});
+
+const emit = defineEmits(["tarefa-salva"]);
 
 const toast = useToast();
 const expandido = ref(false);
@@ -100,17 +98,37 @@ const tarefaDTO = ref({
   trabalho: {
     codigoTrabalho: null,
   },
-  dataInicio: null,
-  dataFim: null,
   descricao: null,
   finalizada: false,
 });
 
+// Watcher para observar mudanças na prop tarefaParaEdicao
+watch(
+  () => props.tarefaParaEdicao,
+  (novaTarefa) => {
+    if (novaTarefa) {
+      editarTarefa(novaTarefa);
+    }
+  },
+  { deep: true }
+);
+
+const editarTarefa = (tarefa) => {
+  tarefaDTO.value = {
+    codigoTarefa: tarefa.codigoTarefa,
+    trabalho: {
+      codigoTrabalho: tarefa.trabalho?.codigoTrabalho || null,
+    },
+    descricao: tarefa.descricao,
+    finalizada: tarefa.finalizada || false,
+  };
+  editando.value = true;
+  expandido.value = true; // Expande o card ao editar
+};
+
 const limparFormulario = () => {
   tarefaDTO.value = {
     trabalho: { codigoTrabalho: null },
-    dataInicio: null,
-    dataFim: null,
     descricao: null,
     finalizada: false,
   };
@@ -125,28 +143,45 @@ const salvarTarefa = async () => {
       return;
     }
 
-    if (!tarefaDTO.value.dataInicio) {
-      toast.error("Informe a data de início");
+    if (!tarefaDTO.value.descricao) {
+      toast.error("Informe a descrição da tarefa");
       return;
     }
 
+    const payload = { ...tarefaDTO.value };
+    let response;
+
     if (editando.value) {
-      await atualizarTarefa(tarefaDTO.value.id, tarefaDTO.value);
+      response = await atualizarTarefa(tarefaDTO.value.codigoTarefa, payload);
       toast.success("Tarefa atualizada com sucesso!");
     } else {
-      await apiSalvarTarefa(tarefaDTO.value);
+      delete payload.finalizada;
+      response = await apiSalvarTarefa(payload);
       toast.success("Tarefa cadastrada com sucesso!");
     }
 
-    //await carregarTarefas();
     limparFormulario();
+    emit("tarefa-salva", response.data);
   } catch (error) {
     toast.error(error.message || "Erro ao salvar tarefa");
   }
 };
 
-// Inicialização
-onMounted(async () => {});
+const retornarTrabalhos = async () => {
+  try {
+    const response = await buscarTrabalhos();
+    if (response?.data) {
+      trabalhos.value = response.data.records;
+    }
+  } catch (error) {
+    toast.error(error.message || "Erro ao buscar trabalhos");
+    trabalhos.value = [];
+  }
+};
+
+onMounted(async () => {
+  await retornarTrabalhos();
+});
 </script>
 
 <style scoped>
@@ -158,10 +193,6 @@ onMounted(async () => {});
 .card-body {
   color: black;
   background-color: #d1edb7;
-}
-
-.table-container {
-  margin: 20px 0;
 }
 
 .btn-primary {

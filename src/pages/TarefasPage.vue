@@ -1,6 +1,10 @@
 <template>
   <div>
-    <Tarefa></Tarefa>
+    <Tarefa
+      :tarefa-para-edicao="tarefaSelecionada"
+      @tarefa-salva="onTarefaSalva"
+    ></Tarefa>
+
     <!-- Tabela de Tarefas -->
     <div class="table-container mt-3">
       <ComplexTable
@@ -17,17 +21,13 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-
 import Tarefa from "../components/basic/Tarefa.vue";
 import ComplexTable from "../components/basic/ComplexTable.vue";
-import {
-  buscarTarefas,
-  buscarTarefa,
-  excluirTarefa,
-} from "@/services/cadastrarTarefa.js";
+import { buscarTarefas, excluirTarefa } from "@/services/cadastrarTarefa.js";
 import { useToast } from "vue-toastification";
 
 const toast = useToast();
+const tarefaSelecionada = ref(null);
 
 const headers = [
   { text: "Trabalho", value: "trabalho.titulo" },
@@ -35,18 +35,6 @@ const headers = [
   { text: "Data Fim", value: "dataFimFormatada" },
   { text: "Status", value: "statusFormatado" },
 ];
-
-const editando = ref(false);
-
-const tarefaDTO = ref({
-  trabalho: {
-    codigoTrabalho: null,
-  },
-  dataInicio: null,
-  dataFim: null,
-  descricao: null,
-  finalizada: false,
-});
 
 const tableData = ref({
   totalPages: 1,
@@ -56,19 +44,13 @@ const tableData = ref({
   records: [],
 });
 
-const editarTarefaTabela = async (tarefa) => {
-  try {
-    const response = await buscarTarefa(tarefa.codigoTarefa);
-    if (response?.data) {
-      tarefaDTO.value = {
-        ...response.data,
-        id: tarefa.codigoTarefa,
-      };
-      editando.value = true;
-    }
-  } catch (error) {
-    toast.error("Erro ao carregar tarefa para edição");
-  }
+const editarTarefaTabela = (tarefa) => {
+  tarefaSelecionada.value = { ...tarefa };
+};
+
+const onTarefaSalva = () => {
+  tarefaSelecionada.value = null;
+  carregarTarefas();
 };
 
 const confirmarRemocao = (tarefa) => {
@@ -91,7 +73,6 @@ const removerTarefa = async (id) => {
   }
 };
 
-// Carrega as tarefas
 const carregarTarefas = async () => {
   try {
     const response = await buscarTarefas();
@@ -111,24 +92,13 @@ const carregarTarefas = async () => {
   }
 };
 
-// Formata data para exibição
 const formatarData = (dataString) => {
   if (!dataString) return "";
   const date = new Date(dataString);
   return date.toLocaleDateString("pt-BR");
 };
 
-// Lifecycle hooks
 onMounted(async () => {
   await carregarTarefas();
 });
 </script>
-
-<style scoped>
-.tarefas-container {
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-</style>
