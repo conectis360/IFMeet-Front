@@ -15,7 +15,6 @@ import { apiIFMeet } from './API'
 export const buscarTrabalhosPorUsuario = async (codigoUsuario) => {
   try {
     const response = await apiRequest(apiIFMeet, 'get', 'trabalho/findAll?codigoUsuario=' + codigoUsuario + '&pageSize=999999');
-    console.log(response)
     return response;
   } catch (error) {
     throw new Error(error.message);

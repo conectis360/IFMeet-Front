@@ -4,59 +4,28 @@
       :disponibilidade-editando="disponibilidadeEditando"
       @atualizado="carregarDisponibilidades"
     />
-    <CalendarComponent ref="calendar" :available-days="availableDays" />
+    <CalendarComponent ref="calendar" />
   </div>
 </template>
 
-<script>
-import CalendarComponent from "@/components/basic/Calendar.vue";
+<script setup>
 import { ref, onMounted } from "vue";
+import CalendarComponent from "@/components/basic/Calendar.vue";
 import DisponibilidadeModal from "@/components/basic/Disponibilidade.vue";
 
-export default {
-  components: {
-    DisponibilidadeModal,
-    CalendarComponent,
-  },
+// Refs
+const disponibilidadeEditando = ref(null);
+const calendar = ref(null);
 
-  setup() {
-    const showDisponibilidadeModal = ref(false);
-    const disponibilidadeEditando = ref(null);
-    const disponibilidades = ref([]);
-
-    const diasSemana = [
-      "Domingo",
-      "Segunda-feira",
-      "Terça-feira",
-      "Quarta-feira",
-      "Quinta-feira",
-      "Sexta-feira",
-      "Sábado",
-    ];
-
-    const getDiaSemana = (dia) => diasSemana[dia];
-
-    const abrirModalDisponibilidade = () => {
-      disponibilidadeEditando.value = null;
-      showDisponibilidadeModal.value = true;
-    };
-
-    const fecharModalDisponibilidade = () => {
-      showDisponibilidadeModal.value = false;
-    };
-
-    onMounted(() => {});
-
-    return {
-      showDisponibilidadeModal,
-      disponibilidadeEditando,
-      disponibilidades,
-      abrirModalDisponibilidade,
-      fecharModalDisponibilidade,
-      getDiaSemana,
-    };
-  },
+// Métodos
+const carregarDisponibilidades = () => {
+  if (calendar.value) {
+    calendar.value.atualizarConfiguracoes();
+  }
 };
+
+// Lifecycle Hooks
+onMounted(() => {});
 </script>
 
 <style scoped>

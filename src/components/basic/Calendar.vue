@@ -212,13 +212,13 @@
   </div>
 </template>
 
-<script>
-import { ref, onMounted, nextTick } from "vue";
+<script setup>
+import { ref, onMounted, nextTick, defineExpose } from "vue";
+import { useToast } from "vue-toastification";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { useToast } from "vue-toastification";
 import {
   buscarEventosCalendario,
   saveEventoCalendario,
@@ -229,553 +229,481 @@ import {
 import { buscarTrabalhosPorUsuario } from "@/services/cadastrarTrabalho.js";
 import { buscarStatus } from "@/services/statusService.js";
 
-export default {
-  components: { FullCalendar },
-  setup() {
-    const toast = useToast();
-    const calendarRef = ref(null);
-    const showModal = ref(false);
-    const availableDays = ref([]);
-    const availabilityConfig = ref([]);
-    const availableStartTimes = ref([]);
-    const availableEndTimes = ref([]);
-    const trabalhos = ref([]); // Será preenchida com dados do back-end
-    const statusOptions = ref([]); // Será preenchida com dados do back-end
+const toast = useToast();
+const calendarRef = ref(null);
+const showModal = ref(false);
+const availabilityConfig = ref([]);
+const availableStartTimes = ref([]);
+const trabalhos = ref([]);
+const statusOptions = ref([]);
 
-    // Dados do evento
-    const eventData = ref({
-      title: "",
-      date: "",
-      startTime: "",
-      endTime: "",
-      description: "",
-      color: "#3788d8",
-      trabalho: {
-        id: 0,
-      },
-      status: { codigoStatus: 0 },
-    });
+// Dados do evento
+const eventData = ref({
+  title: "",
+  date: "",
+  startTime: "",
+  endTime: "",
+  description: "",
+  color: "#3788d8",
+  trabalho: { id: 0 },
+  status: { codigoStatus: 0 },
+});
 
-    // Dias da semana
-    const daysOfWeek = [
-      { value: 0, label: "Domingo" },
-      { value: 1, label: "Segunda" },
-      { value: 2, label: "Terça" },
-      { value: 3, label: "Quarta" },
-      { value: 4, label: "Quinta" },
-      { value: 5, label: "Sexta" },
-      { value: 6, label: "Sábado" },
-    ];
+// Dias da semana
+const daysOfWeek = [
+  { value: 0, label: "Domingo" },
+  { value: 1, label: "Segunda" },
+  { value: 2, label: "Terça" },
+  { value: 3, label: "Quarta" },
+  { value: 4, label: "Quinta" },
+  { value: 5, label: "Sexta" },
+  { value: 6, label: "Sábado" },
+];
 
-    const eventColors = [
-      "#a8c6fa",
-      "#889aa4",
-      "#a7e0c5",
-      "#ffb3b3",
-      "#fff5b3",
-      "#b9a2e8",
-    ];
+const eventColors = [
+  "#a8c6fa",
+  "#889aa4",
+  "#a7e0c5",
+  "#ffb3b3",
+  "#fff5b3",
+  "#b9a2e8",
+];
 
-    // Função para obter o nome do dia a partir do valor
-    const getDayName = (dayValue) => {
-      const day = daysOfWeek.find((d) => d.value === dayValue);
-      return day ? day.label : "";
-    };
+// Funções auxiliares
+const getDayName = (dayValue) => {
+  const day = daysOfWeek.find((d) => d.value === dayValue);
+  return day ? day.label : "";
+};
 
-    // Função para formatar hora
-    const formatTime = (timeStr) => {
-      return timeStr;
-    };
+const formatTime = (timeStr) => {
+  return timeStr;
+};
 
-    // Ajusta para o fuso horário local
-    const getToday = () => {
-      const now = new Date();
-      return new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-    };
+const getToday = () => {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+};
 
-    // Função para gerar opções de horário em intervalos de 30 minutos
-    const generateTimeOptions = (startTime, endTime) => {
-      const times = [];
-      const start = new Date(`2000-01-01T${startTime}`);
-      const end = new Date(`2000-01-01T${endTime}`);
+const generateTimeOptions = (startTime, endTime) => {
+  const times = [];
+  const start = new Date(`2000-01-01T${startTime}`);
+  const end = new Date(`2000-01-01T${endTime}`);
+  end.setMinutes(end.getMinutes() - 30);
 
-      // Subtrai 30 minutos do final para garantir que o evento tenha pelo menos 30 min
-      end.setMinutes(end.getMinutes() - 30);
+  const current = new Date(start);
 
-      const current = new Date(start);
+  while (current <= end) {
+    const hours = current.getHours().toString().padStart(2, "0");
+    const minutes = current.getMinutes().toString().padStart(2, "0");
+    times.push(`${hours}:${minutes}`);
+    current.setMinutes(current.getMinutes() + 30);
+  }
 
-      while (current <= end) {
-        const hours = current.getHours().toString().padStart(2, "0");
-        const minutes = current.getMinutes().toString().padStart(2, "0");
-        times.push(`${hours}:${minutes}`);
+  return times;
+};
 
-        // Avança 30 minutos
-        current.setMinutes(current.getMinutes() + 30);
-      }
+const updateEndTimeOptions = () => {
+  if (!eventData.value.startTime) return;
+  eventData.value.endTime = calculateEndTime(eventData.value.startTime);
 
-      return times;
-    };
+  const dayOfWeek = new Date(eventData.value.date).getDay();
+  const dayConfig = availabilityConfig.value.find(
+    (config) => config.diaSemana === dayOfWeek
+  );
 
-    // Atualiza as opções de horário de término com base no horário de início selecionado
-    const updateEndTimeOptions = () => {
-      if (!eventData.value.startTime) return;
+  if (dayConfig) {
+    const endTimeDate = new Date(`2000-01-01T${eventData.value.endTime}`);
+    const maxEndTimeDate = new Date(`2000-01-01T${dayConfig.horaFim}`);
 
-      // Calcula automaticamente o horário final (início + 30min)
-      eventData.value.endTime = calculateEndTime(eventData.value.startTime);
-
-      // Verifica se ultrapassa o horário máximo permitido
-      const dayOfWeek = new Date(eventData.value.date).getDay();
-      const dayConfig = availabilityConfig.value.find(
-        (config) => config.diaSemana === dayOfWeek
-      );
-
-      if (dayConfig) {
-        const endTimeDate = new Date(`2000-01-01T${eventData.value.endTime}`);
-        const maxEndTimeDate = new Date(`2000-01-01T${dayConfig.horaFim}`);
-
-        if (endTimeDate > maxEndTimeDate) {
-          // Ajusta para o horário máximo permitido
-          eventData.value.endTime = dayConfig.horaFim;
-          // Ajusta o horário inicial para garantir 30min de duração
-          const [hours, minutes] = dayConfig.horaFim.split(":").map(Number);
-          const adjustedStart = new Date();
-          adjustedStart.setHours(hours, minutes - 30, 0, 0);
-          eventData.value.startTime = `${adjustedStart
-            .getHours()
-            .toString()
-            .padStart(2, "0")}:${adjustedStart
-            .getMinutes()
-            .toString()
-            .padStart(2, "0")}`;
-        }
-      }
-    };
-
-    const handleEventClick = (info) => {
-      const eventDate = new Date(info.event.startStr);
-      const today = getToday();
-      today.setHours(0, 0, 0, 0);
-
-      if (eventDate < today) {
-        toast.error("Não é possível editar eventos no passado.");
-        return;
-      }
-
-      const event = info.event;
-
-      eventData.value = {
-        id: event.id,
-        title: event.title,
-        date: event.startStr.split("T")[0], // Mantém no formato YYYY-MM-DD
-        startTime: event.startStr.split("T")[1]?.substring(0, 5) || "09:00",
-        endTime: event.endStr.split("T")[1]?.substring(0, 5) || "10:00",
-        description: event.extendedProps?.description || "",
-        color: event.backgroundColor || "#3788d8",
-        trabalho: { id: event.extendedProps.trabalho.codigoTrabalho },
-        status: { codigoStatus: 0 },
-      };
-
-      // Atualiza as opções de horário disponíveis para o dia selecionado
-      updateTimeOptions(new Date(eventData.value.date));
-
-      showModal.value = true;
-      info.jsEvent.preventDefault(); // Previne comportamento padrão
-    };
-
-    const updateCalendar = () => {
-      if (!calendarRef.value) return;
-
-      const calendarApi = calendarRef.value.getApi();
-      const availableDays = availabilityConfig.value.map(
-        (config) => config.diaSemana
-      );
-
-      // Obtém o range de datas visíveis
-      const { activeStart, activeEnd } = calendarApi.view;
-      const current = new Date(activeStart);
-
-      while (current <= activeEnd) {
-        const dateStr = current.toISOString().split("T")[0];
-        const dayEls = document.querySelectorAll(
-          `.fc-day[data-date="${dateStr}"]`
-        );
-
-        const dayOfWeek = current.getDay();
-        const isAvailable = availableDays.includes(dayOfWeek);
-
-        dayEls.forEach((el) => {
-          el.classList.toggle("day-blocked", !isAvailable);
-          el.classList.toggle("day-available", isAvailable);
-          el.style.pointerEvents = isAvailable ? "" : "none";
-        });
-
-        current.setDate(current.getDate() + 1);
-      }
-    };
-
-    // Atualiza as opções de horário disponíveis para o dia selecionado
-    const updateTimeOptions = (date) => {
-      const dayOfWeek = date.getDay();
-      const dayConfig = availabilityConfig.value.find(
-        (config) => config.diaSemana === dayOfWeek
-      );
-
-      if (!dayConfig) {
-        availableStartTimes.value = [];
-        return;
-      }
-
-      // Gera opções de horário de início até 30min antes do fim
-      availableStartTimes.value = generateTimeOptions(
-        dayConfig.horaInicio,
-        dayConfig.horaFim
-      ).filter((time) => {
-        const timeDate = new Date(`2000-01-01T${time}`);
-        const endDate = new Date(`2000-01-01T${dayConfig.horaFim}`);
-        endDate.setMinutes(endDate.getMinutes() - 30); // Remove 30min do final
-        return timeDate <= endDate;
-      });
-
-      // Define o primeiro horário disponível como padrão
-      if (availableStartTimes.value.length > 0) {
-        eventData.value.startTime = availableStartTimes.value[0];
-        // Calcula automaticamente o horário final (início + 30min)
-        eventData.value.endTime = calculateEndTime(eventData.value.startTime);
-      }
-    };
-
-    //Calcula o horário final
-    const calculateEndTime = (startTime) => {
-      const [hours, minutes] = startTime.split(":").map(Number);
-      const endTime = new Date();
-      endTime.setHours(hours, minutes + 30, 0, 0);
-
-      // Formata para HH:MM
-      return `${endTime.getHours().toString().padStart(2, "0")}:${endTime
+    if (endTimeDate > maxEndTimeDate) {
+      eventData.value.endTime = dayConfig.horaFim;
+      const [hours, minutes] = dayConfig.horaFim.split(":").map(Number);
+      const adjustedStart = new Date();
+      adjustedStart.setHours(hours, minutes - 30, 0, 0);
+      eventData.value.startTime = `${adjustedStart
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${adjustedStart
         .getMinutes()
         .toString()
         .padStart(2, "0")}`;
-    };
+    }
+  }
+};
 
-    // Manipulador de clique em data
-    const handleDateClick = (info) => {
-      console.log(info);
-      const selectedDate = new Date(info.date);
-      const today = getToday();
-      today.setHours(0, 0, 0, 0); // Remove a parte de horas para comparar apenas a data
+// Funções principais
+const updateCalendar = () => {
+  if (!calendarRef.value) return;
 
-      // Verifica se a data é anterior à atual
-      if (selectedDate < today) {
-        toast.error("Não há como marcar uma reunião no passado.");
-        return false;
-      }
+  const calendarApi = calendarRef.value.getApi();
+  const availableDays = availabilityConfig.value.map(
+    (config) => config.diaSemana
+  );
 
-      console.log("Dias configurados:", availabilityConfig.value);
-      console.log("Dia clicado:", info.date.getDay());
-      const dayOfWeek = info.date.getDay();
+  const { activeStart, activeEnd } = calendarApi.view;
+  const current = new Date(activeStart);
 
-      const isAvailable = availabilityConfig.value.some(
-        (config) => config.diaSemana === dayOfWeek
-      );
+  while (current <= activeEnd) {
+    const dateStr = current.toISOString().split("T")[0];
+    const dayEls = document.querySelectorAll(`.fc-day[data-date="${dateStr}"]`);
 
-      if (!isAvailable) {
-        toast.error("Este dia não está disponível para agendamento");
-        return false;
-      }
+    const dayOfWeek = current.getDay();
+    const isAvailable = availableDays.includes(dayOfWeek);
 
-      // Verifica se o dia da semana está configurado como disponível
-      const dayConfig = availabilityConfig.value.find(
-        (config) => config.diaSemana === dayOfWeek
-      );
+    dayEls.forEach((el) => {
+      el.classList.toggle("day-blocked", !isAvailable);
+      el.classList.toggle("day-available", isAvailable);
+      el.style.pointerEvents = isAvailable ? "" : "none";
+    });
 
-      if (!dayConfig) {
-        toast.error("Este dia não está disponível para agendamento");
-        return;
-      }
+    current.setDate(current.getDate() + 1);
+  }
+};
 
-      eventData.value = {
-        id: null,
-        title: "",
-        date: info.dateStr,
-        startTime: "",
-        endTime: "",
-        description: "",
-        trabalho: { id: null },
-        color: "#3788d8",
-        status: { codigoStatus: 0 },
-      };
+const updateTimeOptions = (date) => {
+  const dayOfWeek = date.getDay();
+  const dayConfig = availabilityConfig.value.find(
+    (config) => config.diaSemana === dayOfWeek
+  );
 
-      // Atualiza as opções de horário disponíveis para o dia selecionado
-      updateTimeOptions(new Date(eventData.value.date));
+  if (!dayConfig) {
+    availableStartTimes.value = [];
+    return;
+  }
 
-      showModal.value = true;
-    };
+  availableStartTimes.value = generateTimeOptions(
+    dayConfig.horaInicio,
+    dayConfig.horaFim
+  ).filter((time) => {
+    const timeDate = new Date(`2000-01-01T${time}`);
+    const endDate = new Date(`2000-01-01T${dayConfig.horaFim}`);
+    endDate.setMinutes(endDate.getMinutes() - 30);
+    return timeDate <= endDate;
+  });
 
-    // formata a data para pt-br
-    const formatDateToBrazilian = (dateStr) => {
-      if (!dateStr) return "";
-      const [year, month, day] = dateStr.split("-");
-      return `${day}/${month}/${year}`;
-    };
+  if (availableStartTimes.value.length > 0) {
+    eventData.value.startTime = availableStartTimes.value[0];
+    eventData.value.endTime = calculateEndTime(eventData.value.startTime);
+  }
+};
 
-    // Função para converter de DD/MM/YYYY para YYYY-MM-DD
-    const parseBrazilianDate = (dateStr) => {
-      if (!dateStr) return "";
-      const [day, month, year] = dateStr.split("/");
-      return `${year}-${month}-${day}`;
-    };
+const calculateEndTime = (startTime) => {
+  const [hours, minutes] = startTime.split(":").map(Number);
+  const endTime = new Date();
+  endTime.setHours(hours, minutes + 30, 0, 0);
+  return `${endTime.getHours().toString().padStart(2, "0")}:${endTime
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}`;
+};
 
-    const handleDateInput = (event) => {
-      console.log(event);
-    };
+const handleEventClick = (info) => {
+  const selectedDate = new Date(info.event.startStr);
+  const today = getToday();
+  today.setHours(0, 0, 0, 0);
 
-    const saveEvent = async () => {
-      try {
-        // Validações
-        if (!eventData.value.trabalho?.id) {
-          toast.error("Selecione um trabalho");
-          return;
-        }
+  if (selectedDate < today) {
+    toast.error("Não é possível editar eventos no passado.");
+    return;
+  }
 
-        // Converte a data de volta para o formato ISO (YYYY-MM-DD) se necessário
-        const isoDate = eventData.value.date.includes("/")
-          ? parseBrazilianDate(eventData.value.date)
-          : eventData.value.date;
+  const event = info.event;
 
-        const eventDate = new Date(isoDate);
-        const today = getToday();
-        today.setHours(0, 0, 0, 0);
+  eventData.value = {
+    id: event.id,
+    title: event.title,
+    date: event.startStr.split("T")[0],
+    startTime: event.startStr.split("T")[1]?.substring(0, 5) || "09:00",
+    endTime: event.endStr.split("T")[1]?.substring(0, 5) || "10:00",
+    description: event.extendedProps?.description || "",
+    color: event.backgroundColor || "#3788d8",
+    trabalho: { id: event.extendedProps.trabalho.codigoTrabalho },
+    status: { codigoStatus: 0 },
+  };
 
-        if (eventDate < today) {
-          toast.error("Não é possível agendar eventos no passado.");
-          return;
-        }
+  updateTimeOptions(new Date(eventData.value.date));
+  showModal.value = true;
+  info.jsEvent.preventDefault();
+};
 
-        if (!eventData.value.title.trim()) {
-          toast.error("O título do evento é obrigatório");
-          return;
-        }
+const handleDateClick = (info) => {
+  const selectedDate = new Date(info.date);
+  const today = getToday();
+  today.setHours(0, 0, 0, 0);
 
-        // Garante que o horário final está calculado
-        if (!eventData.value.endTime) {
-          eventData.value.endTime = calculateEndTime(eventData.value.startTime);
-        }
+  if (selectedDate < today) {
+    toast.error("Não há como marcar uma reunião no passado.");
+    return;
+  }
 
-        const eventoPayload = {
-          title: eventData.value.title,
-          start: `${isoDate}T${eventData.value.startTime}:00`,
-          end: `${isoDate}T${eventData.value.endTime}:00`,
-          description: eventData.value.description,
-          backgroundColor: eventData.value.color,
-          trabalho: { codigoTrabalho: eventData.value.trabalho?.id },
-          status: { codigoStatus: eventData.value.status?.codigoStatus },
-          allDay: false,
-        };
+  const dayOfWeek = info.date.getDay();
+  const isAvailable = availabilityConfig.value.some(
+    (config) => config.diaSemana === dayOfWeek
+  );
 
-        if (eventData.value.id) {
-          await updateEventoCalendario(eventData.value.id, eventoPayload);
-          toast.success("Evento atualizado com sucesso!");
-        } else {
-          await saveEventoCalendario(eventoPayload);
-          toast.success("Evento criado com sucesso!");
-        }
+  if (!isAvailable) {
+    toast.error("Este dia não está disponível para agendamento");
+    return;
+  }
 
-        // Atualiza a lista de eventos após salvar
-        await retornaEventosCalendario();
-        closeModal();
-      } catch (error) {
-        toast.error(error.message || "Erro ao salvar evento");
-      }
-    };
+  const dayConfig = availabilityConfig.value.find(
+    (config) => config.diaSemana === dayOfWeek
+  );
 
-    async function deleteEvent(id) {
-      try {
-        await deleteEventoCalendario(id);
-        toast.success("Evento excluído com sucesso!");
-        await retornaEventosCalendario();
-        closeModal();
-      } catch (error) {
-        toast.error(error.message || "Erro ao excluir evento");
-      }
+  if (!dayConfig) {
+    toast.error("Este dia não está disponível para agendamento");
+    return;
+  }
+
+  eventData.value = {
+    id: null,
+    title: "",
+    date: info.dateStr,
+    startTime: "",
+    endTime: "",
+    description: "",
+    trabalho: { id: null },
+    color: "#3788d8",
+    status: { codigoStatus: 0 },
+  };
+
+  updateTimeOptions(new Date(eventData.value.date));
+  showModal.value = true;
+};
+
+const formatDateToBrazilian = (dateStr) => {
+  if (!dateStr) return "";
+  const [year, month, day] = dateStr.split("-");
+  return `${day}/${month}/${year}`;
+};
+
+const parseBrazilianDate = (dateStr) => {
+  if (!dateStr) return "";
+  const [day, month, year] = dateStr.split("/");
+  return `${year}-${month}-${day}`;
+};
+
+const handleDateInput = (event) => {
+  console.log(event);
+};
+
+const saveEvent = async () => {
+  try {
+    if (!eventData.value.trabalho?.id) {
+      toast.error("Selecione um trabalho");
+      return;
     }
 
-    const closeModal = () => {
-      showModal.value = false;
+    const isoDate = eventData.value.date.includes("/")
+      ? parseBrazilianDate(eventData.value.date)
+      : eventData.value.date;
+
+    const eventDate = new Date(isoDate);
+    const today = getToday();
+    today.setHours(0, 0, 0, 0);
+
+    if (eventDate < today) {
+      toast.error("Não é possível agendar eventos no passado.");
+      return;
+    }
+
+    if (!eventData.value.title.trim()) {
+      toast.error("O título do evento é obrigatório");
+      return;
+    }
+
+    if (!eventData.value.endTime) {
+      eventData.value.endTime = calculateEndTime(eventData.value.startTime);
+    }
+
+    const eventoPayload = {
+      title: eventData.value.title,
+      start: `${isoDate}T${eventData.value.startTime}:00`,
+      end: `${isoDate}T${eventData.value.endTime}:00`,
+      description: eventData.value.description,
+      backgroundColor: eventData.value.color,
+      trabalho: { codigoTrabalho: eventData.value.trabalho?.id },
+      status: { codigoStatus: eventData.value.status?.codigoStatus },
+      allDay: false,
     };
 
-    const calendarOptions = ref({
-      locale: "pt-br",
-      plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-      initialView: "dayGridMonth",
-      headerToolbar: {
-        left: "prev,next today",
-        center: "title",
-        right: "dayGridMonth,timeGridWeek,timeGridDay",
-      },
-      titleFormat: { year: "numeric", month: "long" },
-      buttonText: {
-        today: "Hoje",
-        month: "Mês",
-        week: "Semana",
-        day: "Dia",
-        list: "Lista",
-      },
-      eventDidMount: (info) => {
-        const status = info.event.extendedProps.status.codigoStatus || 0;
-        info.el.classList.add(status);
-      },
-      events: [],
-      datesSet: updateCalendar,
-      dayCellClassNames: ({ date }) => {
-        const dayOfWeek = date.getDay();
-        const isAvailable = availabilityConfig.value.some(
-          (config) => config.diaSemana === dayOfWeek
-        );
-        return isAvailable ? "day-available" : "day-blocked";
-      },
-      eventClick: handleEventClick,
-      dateClick: handleDateClick,
-      editable: true,
-      eventDisplay: "block",
-      nowIndicator: true,
-      slotMinTime: "08:00:00",
-      slotMaxTime: "24:00:00",
-      allDaySlot: true,
-      views: {
-        dayGridMonth: {
-          eventTimeFormat: {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          },
-        },
-        timeGridWeek: {
-          eventTimeFormat: {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          },
-        },
-        timeGridDay: {
-          eventTimeFormat: {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          },
-        },
-      },
-    });
+    if (eventData.value.id) {
+      await updateEventoCalendario(eventData.value.id, eventoPayload);
+      toast.success("Evento atualizado com sucesso!");
+    } else {
+      await saveEventoCalendario(eventoPayload);
+      toast.success("Evento criado com sucesso!");
+    }
 
-    // Busca usuário logado
-    const getUsuarioLogado = () => {
-      const usuario = localStorage.getItem("user");
-      return usuario ? JSON.parse(usuario) : null;
-    };
-
-    // Busca configurações de disponibilidade
-    const buscarConfiguracoes = async () => {
-      try {
-        const usuario = getUsuarioLogado();
-        if (!usuario?.id) {
-          toast.error("Usuário não autenticado");
-          return;
-        }
-
-        const response = await buscarConfiguracoesDisponibilidade(usuario.id);
-
-        if (response?.data) {
-          // Extrai apenas o array de records do Pageable
-          availabilityConfig.value = response.data.records;
-
-          // Atualiza o calendário após carregar as configurações
-          await nextTick();
-          updateCalendar();
-        }
-      } catch (error) {
-        toast.error("Erro ao carregar configurações de disponibilidade");
-        console.error(error);
-      }
-    };
-
-    const buscarTrabalhos = async () => {
-      try {
-        const usuario = getUsuarioLogado();
-        if (!usuario?.id) return;
-
-        const response = await buscarTrabalhosPorUsuario(usuario.id);
-        trabalhos.value = response.data?.records || [];
-      } catch (error) {
-        toast.error("Erro ao carregar trabalhos");
-        console.error(error);
-      }
-    };
-
-    const retornarStatus = async () => {
-      try {
-        const response = await buscarStatus();
-        statusOptions.value = response.data?.records || [];
-      } catch (error) {
-        toast.error("Erro ao carregar status");
-        console.error(error);
-      }
-    };
-
-    // Busca eventos do calendário
-    const retornaEventosCalendario = async () => {
-      const usuario = getUsuarioLogado();
-      if (!usuario?.id) {
-        toast.error("Usuário não autenticado");
-        return;
-      }
-      try {
-        const response = await buscarEventosCalendario(usuario.id);
-
-        if (response?.data) {
-          calendarOptions.value.events = [...response.data?.records];
-        }
-      } catch (error) {
-        toast.error(error.message || "Erro ao carregar eventos");
-      }
-    };
-
-    onMounted(async () => {
-      await buscarConfiguracoes();
-      await retornaEventosCalendario();
-      await buscarTrabalhos();
-      await retornarStatus();
-
-      // Força atualização após pequeno delay
-      setTimeout(updateCalendar, 100);
-    });
-
-    return {
-      showModal,
-      eventData,
-      calendarRef,
-      availableDays,
-      daysOfWeek,
-      calendarOptions,
-      availabilityConfig,
-      availableStartTimes,
-      availableEndTimes,
-      updateCalendar,
-      deleteEvent,
-      saveEvent,
-      eventColors,
-      getDayName,
-      formatTime,
-      trabalhos,
-      statusOptions,
-      formatDateToBrazilian,
-      parseBrazilianDate,
-      handleDateInput,
-      updateEndTimeOptions,
-      closeModal: () => {
-        showModal.value = false;
-      },
-    };
-  },
+    await retornaEventosCalendario();
+    closeModal();
+  } catch (error) {
+    toast.error(error.message || "Erro ao salvar evento");
+  }
 };
+
+const deleteEvent = async (id) => {
+  try {
+    await deleteEventoCalendario(id);
+    toast.success("Evento excluído com sucesso!");
+    await retornaEventosCalendario();
+    closeModal();
+  } catch (error) {
+    toast.error(error.message || "Erro ao excluir evento");
+  }
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
+
+const getUsuarioLogado = () => {
+  const usuario = localStorage.getItem("user");
+  return usuario ? JSON.parse(usuario) : null;
+};
+
+const buscarConfiguracoes = async () => {
+  try {
+    const usuario = getUsuarioLogado();
+    if (!usuario?.id) {
+      toast.error("Usuário não autenticado");
+      return;
+    }
+
+    const response = await buscarConfiguracoesDisponibilidade(usuario.id);
+
+    if (response?.data) {
+      availabilityConfig.value = response.data.records;
+      await nextTick();
+      updateCalendar();
+    }
+  } catch (error) {
+    toast.error("Erro ao carregar configurações de disponibilidade");
+    console.error(error);
+  }
+};
+
+const buscarTrabalhos = async () => {
+  try {
+    const usuario = getUsuarioLogado();
+    if (!usuario?.id) return;
+
+    const response = await buscarTrabalhosPorUsuario(usuario.id);
+    trabalhos.value = response.data?.records || [];
+  } catch (error) {
+    toast.error("Erro ao carregar trabalhos");
+    console.error(error);
+  }
+};
+
+const retornarStatus = async () => {
+  try {
+    const response = await buscarStatus();
+    statusOptions.value = response.data?.records || [];
+  } catch (error) {
+    toast.error("Erro ao carregar status");
+    console.error(error);
+  }
+};
+
+const retornaEventosCalendario = async () => {
+  const usuario = getUsuarioLogado();
+  if (!usuario?.id) {
+    toast.error("Usuário não autenticado");
+    return;
+  }
+  try {
+    const response = await buscarEventosCalendario(usuario.id);
+
+    if (response?.data) {
+      calendarOptions.value.events = [...response.data?.records];
+    }
+  } catch (error) {
+    toast.error(error.message || "Erro ao carregar eventos");
+  }
+};
+
+// Configurações do calendário
+const calendarOptions = ref({
+  locale: "pt-br",
+  plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+  initialView: "dayGridMonth",
+  headerToolbar: {
+    left: "prev,next today",
+    center: "title",
+    right: "dayGridMonth,timeGridWeek,timeGridDay",
+  },
+  titleFormat: { year: "numeric", month: "long" },
+  buttonText: {
+    today: "Hoje",
+    month: "Mês",
+    week: "Semana",
+    day: "Dia",
+    list: "Lista",
+  },
+  eventDidMount: (info) => {
+    const status = info.event.extendedProps.status.codigoStatus || 0;
+    info.el.classList.add(status);
+  },
+  events: [],
+  datesSet: updateCalendar,
+  dayCellClassNames: ({ date }) => {
+    const dayOfWeek = date.getDay();
+    const isAvailable = availabilityConfig.value.some(
+      (config) => config.diaSemana === dayOfWeek
+    );
+    return isAvailable ? "day-available" : "day-blocked";
+  },
+  eventClick: handleEventClick,
+  dateClick: handleDateClick,
+  editable: true,
+  eventDisplay: "block",
+  nowIndicator: true,
+  slotMinTime: "08:00:00",
+  slotMaxTime: "24:00:00",
+  allDaySlot: true,
+  views: {
+    dayGridMonth: {
+      eventTimeFormat: {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      },
+    },
+    timeGridWeek: {
+      eventTimeFormat: {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      },
+    },
+    timeGridDay: {
+      eventTimeFormat: {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      },
+    },
+  },
+});
+
+const atualizarConfiguracoes = async () => {
+  buscarConfiguracoes();
+  updateCalendar();
+};
+
+// Expor métodos para o componente pai
+defineExpose({
+  atualizarConfiguracoes,
+});
+
+// Lifecycle hooks
+onMounted(async () => {
+  await buscarConfiguracoes();
+  await retornaEventosCalendario();
+  await buscarTrabalhos();
+  await retornarStatus();
+});
 </script>
 
 <style>
