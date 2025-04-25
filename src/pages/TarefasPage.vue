@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 import Tarefa from "../components/basic/Tarefa.vue";
 import ComplexTable from "../components/basic/ComplexTable.vue";
@@ -117,6 +117,11 @@ const formatarData = (dataString) => {
   const date = new Date(dataString);
   return date.toLocaleDateString("pt-BR");
 };
+
+// Lifecycle hooks
+onMounted(async () => {
+  await carregarTarefas();
+});
 </script>
 
 <style scoped>
