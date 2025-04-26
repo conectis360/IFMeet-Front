@@ -79,4 +79,4 @@ export const updateEventoCalendario = async (id, evento) => {
  */
 export const deleteEventoCalendario = async (id) => {
     return apiRequest(apiIFMeet, 'delete', `/calendario/${id}`);
-}};
+};
