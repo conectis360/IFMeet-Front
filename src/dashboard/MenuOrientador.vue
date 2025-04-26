@@ -28,6 +28,12 @@
         <p class="opcaoMenu">Tarefas</p>
       </router-link>
     </li>
+    <li class="nav-item">
+      <router-link :to="{ name: 'Atas' }" class="nav-link">
+        <i class="fa fa-pen"></i>
+        <p class="opcaoMenu">Atas</p>
+      </router-link>
+    </li>
   </ul>
 </template>
 <script>
