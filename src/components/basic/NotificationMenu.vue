@@ -26,7 +26,7 @@
       </a>
       <div class="dropdown-divider"></div>
       <a href="#" class="dropdown-item dropdown-footer" @click="handleSeeAll">
-        <router-link to="/notificacoes" class="nav-link">
+        <router-link :to="{ name: 'Notificacoes' }" class="nav-link">
           <i class="far fa-bell"></i> Ver todas Notificações
         </router-link>
       </a>

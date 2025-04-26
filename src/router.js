@@ -15,7 +15,7 @@ const Teste = () => import("./teste.vue")
 const routes = [
     {
         path: "/IFMeet/notificacoes",
-        name: "Notificações",
+        name: "Notificacoes",
         component: NotificacoesPage,
     },
     {
