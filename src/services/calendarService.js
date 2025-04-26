@@ -2,24 +2,41 @@ import { requestGetComposition, apiRequest } from './request'
 import { apiIFMeet } from './API'
 
 
+/**
+ * Busca todos os eventos do calendário.
+ * @returns {Promise} Retorna uma Promise com os eventos do calendário
+ * @throws Error Caso ocorra erro ao buscar os eventos
+ */
 export const buscarEventosCalendario = async () => {
     try {
         const response = await requestGetComposition(apiIFMeet, '/calendario/findAll?pageSize=999999');
-        return response; // Certifique-se de que está retornando .data
+        return response;
     } catch (error) {
         throw new Error(error.response?.data?.message || "Erro ao buscar eventos");
     }
 };
 
+/**
+ * Busca as configurações de disponibilidade para um usuário específico.
+ * @param {number} codigoUsuario O código do usuário
+ * @returns {Promise} Retorna uma Promise com as configurações de disponibilidade
+ * @throws Error Caso ocorra erro ao buscar as configurações
+ */
 export const buscarConfiguracoesDisponibilidade = async (codigoUsuario) => {
     try {
-        const response = await requestGetComposition(apiIFMeet, '/disponibilidade/findAll?codigoUsuario=' + codigoUsuario + '&pageSize=999999');
+        const response = await requestGetComposition(apiIFMeet, `/disponibilidade/findAll?codigoUsuario=${codigoUsuario}&pageSize=999999`);
         return response;
     } catch (error) {
         throw new Error(error.response?.data?.message || "Erro ao buscar disponibilidade");
     }
 };
 
+/**
+ * Salva um novo evento no calendário.
+ * @param {Object} evento O objeto do evento a ser salvo
+ * @returns {Promise} Retorna uma Promise com a resposta da API
+ * @throws Error Caso ocorra erro ao salvar o evento
+ */
 export const saveEventoCalendario = async (evento) => {
     // Formata corretamente para o padrão ISO-8601 que o Java espera
     const eventoFormatado = {
@@ -27,10 +44,15 @@ export const saveEventoCalendario = async (evento) => {
         start: formatDateForJava(evento.start),
         end: formatDateForJava(evento.end)
     };
+
     return apiRequest(apiIFMeet, 'post', '/calendario', eventoFormatado);
 };
 
-// Função auxiliar para formatar datas para o Java
+/**
+ * Formata uma string de data/hora para o padrão ISO-8601 esperado pelo backend.
+ * @param {string} dateTimeStr A string de data/hora a ser formatada
+ * @returns {string|null} Retorna a string formatada ou null caso não haja dados
+ */
 function formatDateForJava(dateTimeStr) {
     if (!dateTimeStr) return null;
 
@@ -38,12 +60,23 @@ function formatDateForJava(dateTimeStr) {
     return dateTimeStr.replace(/(:\d{2})(?=Z|$)/, '');
 }
 
-// PUT - Atualizar evento
+/**
+ * Atualiza um evento no calendário.
+ * @param {number} id O ID do evento a ser atualizado
+ * @param {Object} evento O objeto com as novas informações do evento
+ * @returns {Promise} Retorna uma Promise com a resposta da API
+ * @throws Error Caso ocorra erro ao atualizar o evento
+ */
 export const updateEventoCalendario = async (id, evento) => {
     return apiRequest(apiIFMeet, 'put', `/calendario/${id}`, evento);
 };
 
-// DELETE - Remover evento
+/**
+ * Remove um evento do calendário.
+ * @param {number} id O ID do evento a ser removido
+ * @returns {Promise} Retorna uma Promise com a resposta da API
+ * @throws Error Caso ocorra erro ao remover o evento
+ */
 export const deleteEventoCalendario = async (id) => {
     return apiRequest(apiIFMeet, 'delete', `/calendario/${id}`);
-};
+}};
