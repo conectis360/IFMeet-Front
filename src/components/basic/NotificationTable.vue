@@ -23,6 +23,7 @@
                 <img
                   class="img-circle img-sm"
                   :src="formatarFoto(notification.fotoUsuario)"
+                  :alt="notification.nomeUsuario"
                 />
                 <span class="username">{{ notification.nomeUsuario }}</span>
               </div>
@@ -57,50 +58,47 @@
   </div>
 </template>
 
-<script>
-import data from "../../helpers/data";
+<script setup>
+import { computed, defineProps, defineEmits } from "vue";
+import dataHelpers from "../../helpers/data"; // Importa o objeto default
 
-export default {
-  name: "NotificationTable",
-  mixins: [data],
-  props: {
-    tableData: {
-      type: Object,
-      required: true,
-      default: () => ({
-        totalPages: 1,
-        totalRecords: 0,
-        pageNumber: 1,
-        pageSize: 10,
-        records: [],
-      }),
-    },
+const props = defineProps({
+  tableData: {
+    type: Object,
+    required: true,
+    default: () => ({
+      totalPages: 1,
+      totalRecords: 0,
+      pageNumber: 1,
+      pageSize: 10,
+      records: [],
+    }),
   },
-  computed: {
-    // Retorna os registros da página atual
-    paginatedRecords() {
-      return this.tableData.records;
-    },
-  },
-  methods: {
-    formatarData(data) {
-      return this.formatarDataHelper(data);
-    },
-    formatarFoto(byteArray) {
-      return `data:image/jpeg;base64,${byteArray}`;
-    },
-    // Navega para uma página específica
-    irParaPagina(pagina) {
-      if (pagina >= 1 && pagina <= this.tableData.totalPages) {
-        this.$emit("pagina-alterada", pagina); // Emite um evento para o componente pai
-      }
-    },
-  },
+});
+
+const emit = defineEmits(["pagina-alterada"]);
+
+// Computed
+const paginatedRecords = computed(() => props.tableData.records);
+
+// Métodos
+const formatarData = (data) => {
+  return dataHelpers.methods.formatarDataHelper(data);
+};
+
+const formatarFoto = (byteArray) => {
+  return byteArray ? `data:image/jpeg;base64,${byteArray}` : "";
+};
+
+const irParaPagina = (pagina) => {
+  if (pagina >= 1 && pagina <= props.tableData.totalPages) {
+    emit("pagina-alterada", pagina);
+  }
 };
 </script>
 
 <style scoped>
-/* Estilos personalizados */
+/* Seus estilos permanecem os mesmos */
 .card {
   margin: 20px;
 }
@@ -135,10 +133,9 @@ export default {
   cursor: not-allowed;
 }
 
-/* Estilo para registros visualizados */
 .registro-visualizado {
-  background-color: #f0f0f0; /* Cor de fundo cinza */
-  opacity: 0.8; /* Opacidade reduzida */
+  background-color: #f0f0f0;
+  opacity: 0.8;
 }
 
 th,

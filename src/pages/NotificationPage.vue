@@ -1,25 +1,19 @@
 <template>
   <div>
-    <ComplexTable
-      :headers="headers"
-      :table-name="'Notificações'"
-      :table-data="tableData"
-      @editar="editarDisponibilidadeTabela"
-      @excluir="confirmarRemocao"
+    <NotificationTable
+      :tableData="tableData"
       @pagina-alterada="carregarDados"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import ComplexTable from "../components/basic/ComplexTable.vue";
+import { ref, onMounted } from "vue";
+import NotificationTable from "../components/basic/NotificationTable.vue";
 import { buscarTodasNotificacoes } from "../services/notificacoes";
 import { useToast } from "vue-toastification";
-import { useLoading } from "vue-loading-overlay";
 
 const toast = useToast();
-const loadingInstance = useLoading();
 
 // Reactive state
 const tableData = ref({
@@ -35,40 +29,27 @@ const page = ref({
   pageNumber: 1,
 });
 
-// Computed properties
-const headers = computed(() => [
-  { text: "ID", value: "id" },
-  { text: "Tipo", value: "tipo" },
-  { text: "Mensagem", value: "mensagem" },
-  { text: "Data", value: "data" },
-  { text: "Ações", value: "actions", sortable: false },
-]);
-
 // Methods
 const carregarDados = async (pagina) => {
-  page.value.pageNumber = pagina;
-  const loader = loadingInstance.show();
-
   try {
+    page.value.pageNumber = pagina;
     const response = await buscarTodasNotificacoes(page.value);
-    if (response?.data) {
-      tableData.value = {
-        totalPages: response.data.totalPages,
-        totalRecords: response.data.totalRecords,
-        pageNumber: response.data.pageNumber,
-        pageSize: response.data.pageSize,
-        records: response.data.records,
-      };
-    }
+
+    // Update table data
+    tableData.value = {
+      totalPages: response.totalPages,
+      totalRecords: response.totalRecords,
+      pageNumber: response.pageNumber,
+      pageSize: response.pageSize,
+      records: response.records,
+    };
   } catch (error) {
     toast.error(error.message || "Erro ao carregar notificações");
-  } finally {
-    loader.hide();
   }
 };
 
 // Lifecycle hook
 onMounted(() => {
-  carregarDados(1);
+  carregarDados(1); // Carrega os dados pela primeira vez
 });
 </script>

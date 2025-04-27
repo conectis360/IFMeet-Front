@@ -68,19 +68,14 @@ export default {
       this.$emit("see-all");
     },
     carregarDados() {
-      let loader = this.$loading.show({
-        container: this.fullPage ? null : this.$refs.formContainer,
-      });
       buscarCountNotificacoes(
         (response) => {
           if (response) {
-            loader.hide();
             this.total = response.data?.total;
             this.notifications = response.data?.quantidadeNotificacoesDtoList;
           }
         },
         (error) => {
-          loader.hide();
           toast.error(error);
         },
         () => {}

@@ -50,7 +50,7 @@ export const buscarTodasNotificacoes = async (page) => {
       'get',
       `/notificacao/findAll?pageSize=${page.pageSize}&pageNumber=${page.pageNumber}`
     );
-    return response;
+    return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Erro ao buscar notificações");
   }
