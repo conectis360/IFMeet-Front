@@ -22,6 +22,21 @@ export const cadastrarTarefa = async (tarefaDTO) => {
 };
 
 /**
+ * Atualiza a tarefa acadêmica
+ * @param {Object} tarefaDTO - DTO contendo os dados da tarefa a ser atualizada
+ * @returns {Promise<Object>} Promise contendo a tarefa atualizada
+ * @throws {Error} Erro retornado pela API ou mensagem padrão caso ocorra falha na atualização
+ */
+export const atualizarTarefa = async (tarefaDTO) => {
+  try {
+    const response = await apiRequest(apiIFMeet, 'put', '/tarefa', tarefaDTO);
+    return response;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Erro ao atualizar tarefa");
+  }
+};
+
+/**
  * Busca todos os trabalhos associados ao orientador
  * @returns {Promise<Array>} Promise contendo a lista de trabalhos
  * @throws {Error} Erro retornado pela API ou mensagem padrão caso ocorra falha na busca

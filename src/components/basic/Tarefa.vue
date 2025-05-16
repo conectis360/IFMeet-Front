@@ -152,7 +152,7 @@ const salvarTarefa = async () => {
     let response;
 
     if (editando.value) {
-      response = await atualizarTarefa(tarefaDTO.value.codigoTarefa, payload);
+      response = await atualizarTarefa(payload);
       toast.success("Tarefa atualizada com sucesso!");
     } else {
       delete payload.finalizada;
