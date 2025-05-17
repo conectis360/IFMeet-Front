@@ -427,7 +427,7 @@ const handleEventClick = (info) => {
     description: event.extendedProps?.description || "",
     color: event.backgroundColor || "#3788d8",
     trabalho: { id: event.extendedProps.trabalho.codigoTrabalho },
-    status: { codigoStatus: 0 },
+    status: event.extendedProps.status,
   };
 
   updateTimeOptions(new Date(eventData.value.date));
@@ -526,6 +526,7 @@ const saveEvent = async () => {
     }
 
     const eventoPayload = {
+      id: null,
       title: eventData.value.title,
       start: `${isoDate}T${eventData.value.startTime}:00`,
       end: `${isoDate}T${eventData.value.endTime}:00`,
@@ -537,7 +538,8 @@ const saveEvent = async () => {
     };
 
     if (eventData.value.id) {
-      await updateEventoCalendario(eventData.value.id, eventoPayload);
+      eventoPayload.id = eventData.value.id;
+      await updateEventoCalendario(eventoPayload);
       toast.success("Evento atualizado com sucesso!");
     } else {
       await saveEventoCalendario(eventoPayload);

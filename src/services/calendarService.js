@@ -62,13 +62,12 @@ function formatDateForJava(dateTimeStr) {
 
 /**
  * Atualiza um evento no calendário.
- * @param {number} id O ID do evento a ser atualizado
  * @param {Object} evento O objeto com as novas informações do evento
  * @returns {Promise} Retorna uma Promise com a resposta da API
  * @throws Error Caso ocorra erro ao atualizar o evento
  */
-export const updateEventoCalendario = async (id, evento) => {
-    return apiRequest(apiIFMeet, 'put', `/calendario/${id}`, evento);
+export const updateEventoCalendario = async (evento) => {
+    return apiRequest(apiIFMeet, 'put', `/calendario`, evento);
 };
 
 /**
