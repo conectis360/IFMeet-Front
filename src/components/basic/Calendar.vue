@@ -361,29 +361,38 @@ const updateCalendar = () => {
 };
 
 const updateTimeOptions = (date) => {
-  const dayOfWeek = date.getDay();
+  const dayOfWeek = date.getDay() + 1;
+
   const dayConfig = availabilityConfig.value.find(
     (config) => config.diaSemana === dayOfWeek
   );
 
   if (!dayConfig) {
     availableStartTimes.value = [];
+    eventData.value.startTime = ""; // Garanta que limpe se não houver opções
+    eventData.value.endTime = "";
     return;
   }
 
-  availableStartTimes.value = generateTimeOptions(
+  const allPossibleTimes = generateTimeOptions(
     dayConfig.horaInicio,
     dayConfig.horaFim
-  ).filter((time) => {
+  );
+
+  availableStartTimes.value = allPossibleTimes.filter((time) => {
     const timeDate = new Date(`2000-01-01T${time}`);
     const endDate = new Date(`2000-01-01T${dayConfig.horaFim}`);
-    endDate.setMinutes(endDate.getMinutes() - 30);
-    return timeDate <= endDate;
+    endDate.setMinutes(endDate.getMinutes() - 30); // Regra de negócio
+    const passesFilter = timeDate <= endDate;
+    return passesFilter;
   });
 
   if (availableStartTimes.value.length > 0) {
     eventData.value.startTime = availableStartTimes.value[0];
     eventData.value.endTime = calculateEndTime(eventData.value.startTime);
+  } else {
+    eventData.value.startTime = ""; // Limpa se não houver opções
+    eventData.value.endTime = "";
   }
 };
 
@@ -467,7 +476,7 @@ const handleDateClick = (info) => {
     status: { codigoStatus: 0 },
   };
 
-  updateTimeOptions(new Date(eventData.value.date));
+  updateTimeOptions(new Date(eventData.value.date)); // A data é passada aqui
   showModal.value = true;
 };
 
@@ -567,19 +576,23 @@ const buscarConfiguracoes = async () => {
     const usuario = getUsuarioLogado();
     if (!usuario?.id) {
       toast.error("Usuário não autenticado");
+      availabilityConfig.value = []; // Garanta que seja um array em caso de erro precoce
       return;
     }
 
     const response = await buscarConfiguracoesDisponibilidade(usuario.id);
 
-    if (response?.data) {
+    if (response?.data?.records) {
+      // Verifique se 'records' existe e é um array
       availabilityConfig.value = response.data.records;
       await nextTick();
       updateCalendar();
+    } else {
+      availabilityConfig.value = []; // Defina como array vazio se os dados não vierem como esperado
     }
   } catch (error) {
     toast.error("Erro ao carregar configurações de disponibilidade");
-    console.error(error);
+    availabilityConfig.value = []; // Defina como array vazio em caso de exceção
   }
 };
 

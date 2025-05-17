@@ -17,7 +17,7 @@
       <!-- Formulário de Tarefa -->
       <div class="d-flex flex-wrap align-items-end gap-2 mb-4">
         <!-- Trabalho -->
-        <div class="flex-grow-1 pe-2 col-sm-6">
+        <div class="flex-grow-1 pe-2 col-sm-4">
           <label class="form-label">Trabalho *</label>
           <select
             class="form-control"
@@ -36,8 +36,18 @@
           </select>
         </div>
 
+        <div class="flex-grow-1 pe-2 col-sm-4" v-if="editando">
+          <label class="form-label">Data Inicial</label>
+          <input
+            type="text"
+            class="form-control"
+            v-model="dataInicialFormatada"
+            readonly
+          />
+        </div>
+
         <!-- Status (apenas para edição) -->
-        <div class="flex-grow-1 pe-2 col-sm-6" v-if="editando">
+        <div class="flex-grow-1 pe-2 col-sm-4" v-if="editando">
           <label class="form-label">Status</label>
           <select class="form-control" v-model="tarefaDTO.finalizada">
             <option :value="false">Pendente</option>
@@ -73,7 +83,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, defineProps, defineEmits } from "vue";
+import { ref, onMounted, watch, defineProps, defineEmits, computed } from "vue";
 import { useToast } from "vue-toastification";
 import {
   cadastrarTarefa as apiSalvarTarefa,
@@ -88,6 +98,16 @@ const props = defineProps({
   },
 });
 
+const dataInicialFormatada = computed(() => {
+  return formatarData(tarefaDTO.value.dataInicio);
+});
+
+const formatarData = (dataString) => {
+  if (!dataString) return "";
+  const date = new Date(dataString);
+  return date.toLocaleDateString("pt-BR");
+};
+
 const emit = defineEmits(["tarefa-salva"]);
 
 const toast = useToast();
@@ -100,6 +120,7 @@ const tarefaDTO = ref({
   },
   descricao: null,
   finalizada: false,
+  dataInicio: null,
 });
 
 // Watcher para observar mudanças na prop tarefaParaEdicao
@@ -121,9 +142,10 @@ const editarTarefa = (tarefa) => {
     },
     descricao: tarefa.descricao,
     finalizada: tarefa.finalizada || false,
+    dataInicio: tarefa.dataInicio || null,
   };
   editando.value = true;
-  expandido.value = true; // Expande o card ao editar
+  expandido.value = true;
 };
 
 const limparFormulario = () => {
@@ -131,6 +153,7 @@ const limparFormulario = () => {
     trabalho: { codigoTrabalho: null },
     descricao: null,
     finalizada: false,
+    dataInicio: null,
   };
   editando.value = false;
 };
