@@ -10,6 +10,12 @@
       <registrar-usuario />
     </li>
     <li class="nav-item">
+      <router-link :to="{ name: 'Cadastro' }" class="nav-link">
+        <i class="fa fa-pen"></i>
+        <p class="opcaoMenu">Cadastro de Usuários</p>
+      </router-link>
+    </li>
+    <li class="nav-item">
       <router-link :to="{ name: 'Reunioes' }" class="nav-link">
         <i class="fa fa-calendar"></i>
         <p class="opcaoMenu">Reuniões</p>

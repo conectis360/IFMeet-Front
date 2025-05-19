@@ -3,6 +3,7 @@ const Home = () => import("./components/Home.vue");
 const Login = () => import("./components/Login.vue");
 const PaletasCores = () => import("./paletasCores.vue");
 const ReuniaoPage = () => import("./pages/ReuniaoPage.vue");
+const CadastroPage = () => import("./pages/CadastroPage.vue");
 const Profile = () => import("./components/Profile.vue")
 const BoardUser = () => import("./components/BoardUser.vue")
 const FormularioRegistrarUsuario = () => import("./components/formularios/FormularioRegistrarUsuario.vue")
@@ -74,6 +75,11 @@ const routes = [
         path: "/IFMeet/paleta",
         name: "paleta",
         component: PaletasCores,
+    },
+    {
+        path: "/IFMeet/cadastro",
+        name: "Cadastro",
+        component: CadastroPage,
     },
 ];
 
