@@ -10,7 +10,6 @@ const TrabalhoPage = () => import("./pages/TrabalhoPage.vue")
 const TarefasPage = () => import("./pages/TarefasPage.vue")
 const NotificacoesPage = () => import("./pages/NotificationPage.vue")
 const AtaPage = () => import("./pages/AtaPage.vue")
-const Teste = () => import("./teste.vue")
 
 const routes = [
     {
@@ -72,12 +71,6 @@ const routes = [
         component: FormularioRegistrarUsuario,
     },
     {
-        path: "/IFMeet/teste",
-        name: "teste",
-        // lazy-loaded
-        component: Teste,
-    },
-    {
         path: "/IFMeet/paleta",
         name: "paleta",
         component: PaletasCores,
@@ -97,7 +90,7 @@ router.beforeEach((to, from, next) => {
     // caso tente logar numa página sem login
     // vai direcionar para login
     if (authRequired && !loggedIn) {
-        next('/IFMeet/login');
+        //next('/IFMeet/login');
     } else {
         next();
     }

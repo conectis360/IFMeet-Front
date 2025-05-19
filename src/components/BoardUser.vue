@@ -25,6 +25,18 @@
           </template>
         </InfoBox>
       </div>
+
+      <div class="">
+        <TableWidget
+          header="Lista de Usuários"
+          :columns="userColumns"
+          :data="userData"
+          :actions="userActions"
+          emptyText="Nenhum usuário cadastrado."
+          footer="Última atualização: ontem"
+          @action="handleUserAction"
+        />
+      </div>
     </header>
   </div>
 </template>
@@ -34,6 +46,7 @@ import { ref, onMounted } from "vue";
 import UserService from "../services/user.service";
 import InfoBox from "./basic/InfoBox.vue";
 import Relogio from "./basic/Relogio.vue";
+import TableWidget from "./basic/TableWidget.vue";
 
 const content = ref("");
 
@@ -51,6 +64,42 @@ onMounted(() => {
         error.toString();
     });
 });
+
+const userColumns = ref([
+  { label: "ID", key: "id" },
+  { label: "Nome", key: "name" },
+  { label: "Email", key: "email" },
+]);
+
+const userData = ref([
+  { id: 1, name: "João Silva", email: "joao.silva@email.com" },
+  { id: 2, name: "Maria Souza", email: "maria.souza@email.com" },
+]);
+
+const userActions = ref([
+  {
+    label: "Editar",
+    class: "btn-primary",
+    icon: "fas fa-edit",
+    handler: "editUser",
+  },
+  {
+    label: "Excluir",
+    class: "btn-danger",
+    icon: "fas fa-trash",
+    handler: "deleteUser",
+  },
+]);
+
+const handleUserAction = (actionInfo) => {
+  console.log("Ação de Usuário:", actionInfo.handler, actionInfo.data);
+  // Implemente a lógica para editar ou excluir o usuário com base no actionInfo
+  if (actionInfo.handler === "editUser") {
+    // Lógica de edição
+  } else if (actionInfo.handler === "deleteUser") {
+    // Lógica de exclusão
+  }
+};
 </script>
 
 <style scoped>

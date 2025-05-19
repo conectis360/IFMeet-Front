@@ -21,15 +21,15 @@
           <label class="form-label">Evento/Reunião *</label>
           <select
             class="form-control"
-            v-model="ataDTO.evento.codigoEvento"
+            v-model="ataDTO.evento.id"
             :disabled="editando"
             required
           >
             <option value="">Selecione um evento</option>
             <option
               v-for="evento in eventos"
-              :value="evento.codigoEvento"
-              :key="evento.codigoEvento"
+              :value="evento.id"
+              :key="evento.id"
             >
               {{ evento.title }} - {{ evento.trabalho.titulo }}
             </option>
@@ -141,8 +141,9 @@ const limparFormulario = () => {
 
 const salvarAta = async () => {
   try {
+    console.log(ataDTO);
     // Validações básicas
-    if (!ataDTO.value.evento.codigoEvento) {
+    if (!ataDTO.value.evento.id) {
       toast.error("Selecione um evento/reunião");
       return;
     }

@@ -14,7 +14,7 @@ import { apiIFMeet } from './API'
  */
 export const cadastrarAta = async (ataDTO) => {
   try {
-    const response = await apiRequest(apiIFMeet, 'post', '/ata/cadastrarAta', ataDTO);
+    const response = await apiRequest(apiIFMeet, 'post', '/ata', ataDTO);
     return response;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Erro ao cadastrar ata");
