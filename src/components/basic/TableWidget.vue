@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="">
     <div class="card-header" v-if="header">
       <h5 class="card-title">{{ header }}</h5>
     </div>
@@ -97,5 +97,15 @@ const emitAction = (handlerName, rowData) => {
 </script>
 
 <style scoped>
-/* Estilos adicionais específicos do componente, se necessário */
+@import "@/assets/css/calendar-theme.css";
+.table-responsive {
+  text-align: center !important;
+}
+
+.btn {
+  margin-left: 1%;
+}
+.card-footer {
+  margin-top: 10%;
+}
 </style>

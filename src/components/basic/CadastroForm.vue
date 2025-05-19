@@ -4,7 +4,6 @@
       <div class="col-md-8 col-lg-6">
         <div class="card shadow">
           <div class="card-body p-4">
-            <h2 class="card-title text-center mb-4">Cadastro de Usuário</h2>
             <form @submit.prevent="handleSubmit">
               <div class="mb-3">
                 <label for="usuario" class="form-label">Nome de Usuário</label>
@@ -66,7 +65,7 @@
                   />
                   <button
                     type="button"
-                    class="btn btn-outline-secondary"
+                    class="btn btn-secondary btn-outline-secondary password"
                     @click="showPassword = !showPassword"
                   >
                     {{ showPassword ? "👁️" : "👁️‍🗨️" }}
@@ -84,7 +83,7 @@
                 <select
                   id="tipoUsuario"
                   v-model="formData.tipoUsuario"
-                  class="form-select"
+                  class="form-control"
                   :class="{ 'is-invalid': errors.tipoUsuario }"
                   required
                 >
@@ -114,7 +113,7 @@
                 </button>
                 <button
                   type="button"
-                  class="btn btn-outline-secondary"
+                  class="btn btn-secondary btn-outline-secondary"
                   @click="resetForm"
                 >
                   Limpar
@@ -251,13 +250,43 @@ export default {
 </script>
 
 <style scoped>
+@import "@/assets/css/theme.css";
 /* Estilos opcionais para ajustes específicos */
+.btn {
+  margin: auto;
+}
+
+.password {
+  height: 2.3rem;
+  text-align: center;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-secondary {
+  background-color: #c53030;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
 .card {
   border-radius: 15px;
 }
 
 .form-select {
   cursor: pointer;
+}
+
+.card-body {
+  background-color: var(--registro-color);
+  color: white;
 }
 
 .toggle-password {

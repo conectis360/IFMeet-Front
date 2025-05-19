@@ -1,48 +1,67 @@
 <template>
-  <div class="container">
-    <header class="jumbotron">
-      <h3>{{ content }}</h3>
-      <Relogio :inline="true"></Relogio>
-      <div>
-        <InfoBox
-          icon="fas fa-users"
-          title="Usuários"
-          subtitle="1,250"
-          background="info"
-        />
-
-        <InfoBox
-          icon="fas fa-check-circle"
-          title="Tarefas Concluídas"
-          subtitle="250"
-          background="success"
+  <div class="container-fluid py-4 bg">
+    <!-- Header Section -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div
+          class="d-flex justify-content-between align-items-center bg-light p-4 rounded-3"
         >
-        </InfoBox>
-
-        <InfoBox title="Avisos" subtitle="3" background="warning">
-          <template #icon-content>
-            <span style="font-size: 24px; color: white">!</span>
-          </template>
-        </InfoBox>
+          <h3 class="mb-0">SEJA BEM-VINDO {{ currentUser.nome }}</h3>
+          <Relogio :inline="true" class="fs-5"></Relogio>
+        </div>
       </div>
+    </div>
 
-      <div class="">
-        <TableWidget
-          header="Lista de Usuários"
-          :columns="userColumns"
-          :data="userData"
-          :actions="userActions"
-          emptyText="Nenhum usuário cadastrado."
-          footer="Última atualização: ontem"
-          @action="handleUserAction"
-        />
+    <!-- Info Boxes -->
+    <div class="row mb-4 g-3 info-box">
+      <InfoBox
+        icon="fas fa-users"
+        title="Usuários"
+        subtitle="1,250"
+        background="info"
+        class="h-100"
+      />
+      <InfoBox
+        icon="fas fa-check-circle"
+        title="Tarefas Concluídas"
+        subtitle="250"
+        background="success"
+        class="h-100"
+      />
+      <InfoBox title="Avisos" subtitle="3" background="warning" class="h-100">
+        <template #icon-content>
+          <span style="font-size: 24px; color: white">!</span>
+        </template>
+      </InfoBox>
+      <InfoBox title="Avisos" subtitle="3" background="warning" class="h-100">
+        <template #icon-content>
+          <span style="font-size: 24px; color: white">!</span>
+        </template>
+      </InfoBox>
+    </div>
+
+    <!-- Table Section -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <TableWidget
+            header="Lista de Usuários"
+            :columns="userColumns"
+            :data="userData"
+            :actions="userActions"
+            emptyText="Nenhum usuário cadastrado."
+            footer="Última atualização: ontem"
+            @action="handleUserAction"
+          />
+        </div>
       </div>
-    </header>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
+import { useStore } from "vuex";
 import UserService from "../services/user.service";
 import InfoBox from "./basic/InfoBox.vue";
 import Relogio from "./basic/Relogio.vue";
@@ -65,6 +84,10 @@ onMounted(() => {
     });
 });
 
+const store = useStore();
+const currentUser = computed(() => {
+  return store.state.auth.user;
+});
 const userColumns = ref([
   { label: "ID", key: "id" },
   { label: "Nome", key: "name" },
@@ -78,57 +101,58 @@ const userData = ref([
 
 const userActions = ref([
   {
-    label: "Editar",
-    class: "btn-primary",
-    icon: "fas fa-edit",
-    handler: "editUser",
+    label: "Aceitar",
+    class: "btn-aceitar",
+    icon: "",
+    handler: "aceitar",
   },
   {
-    label: "Excluir",
-    class: "btn-danger",
-    icon: "fas fa-trash",
-    handler: "deleteUser",
+    label: "Recusar",
+    class: "btn-recusar",
+    icon: "",
+    handler: "recusar",
   },
 ]);
 
 const handleUserAction = (actionInfo) => {
-  console.log("Ação de Usuário:", actionInfo.handler, actionInfo.data);
-  // Implemente a lógica para editar ou excluir o usuário com base no actionInfo
-  if (actionInfo.handler === "editUser") {
-    // Lógica de edição
-  } else if (actionInfo.handler === "deleteUser") {
-    // Lógica de exclusão
+  if (actionInfo.handler === "aceitar") {
+    console.log("aceitar");
+  } else if (actionInfo.handler === "recusar") {
+    console.log("recusar");
   }
 };
 </script>
 
 <style scoped>
-/* Estilos específicos para este componente (opcional) */
-.container {
-  margin-top: 20px;
+/* Estilos opcionais para ajustes finos */
+
+.card {
+  border: none;
 }
 
-.jumbotron {
-  padding: 2rem;
-  background-color: #e9ecef;
-  border-radius: 0.3rem;
+.table-responsive {
+  overflow-x: auto;
 }
 
-h3 {
-  color: #333;
-  margin-bottom: 1rem;
+/* Ajuste de altura máxima para a tabela */
+.card-body {
+  max-height: 500px;
+  overflow-y: auto;
 }
 
-.jumbotron > div {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem; /* Espaçamento entre os InfoBox */
-}
-
-/* Estilos para telas menores (opcional) */
-@media (max-width: 768px) {
-  .jumbotron > div {
-    flex-direction: column; /* Empilha os InfoBox em telas menores */
+/* Espaçamento para telas grandes */
+@media (min-width: 1200px) {
+  .container-fluid {
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
+}
+
+.bg {
+  background-color: #d1edb7;
+}
+
+.info-box {
+  text-align: center;
 }
 </style>

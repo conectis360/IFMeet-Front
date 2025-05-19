@@ -60,9 +60,8 @@ const routes = [
         component: Profile,
     },
     {
-        path: "/IFMeet/user",
-        name: "user",
-        // lazy-loaded
+        path: "/IFMeet/dashboard",
+        name: "Dashboard",
         component: BoardUser,
     },
     {
