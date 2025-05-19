@@ -57,9 +57,9 @@ export const buscarAta = async (codigoAta) => {
  * @returns {Promise<Object>} Promise contendo a ata atualizada
  * @throws {Error} Erro retornado pela API ou mensagem padrão caso ocorra falha na atualização
  */
-export const atualizarAta = async (codigoAta, ataDTO) => {
+export const atualizarAta = async (ataDTO) => {
   try {
-    const response = await apiRequest(apiIFMeet, 'put', `/ata/${codigoAta}`, ataDTO);
+    const response = await apiRequest(apiIFMeet, 'put', `/ata/`, ataDTO);
     return response;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Erro ao atualizar ata");

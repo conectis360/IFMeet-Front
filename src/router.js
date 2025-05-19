@@ -90,7 +90,7 @@ router.beforeEach((to, from, next) => {
     // caso tente logar numa página sem login
     // vai direcionar para login
     if (authRequired && !loggedIn) {
-        //next('/IFMeet/login');
+        next('/IFMeet/login');
     } else {
         next();
     }

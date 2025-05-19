@@ -118,10 +118,11 @@ watch(
 );
 
 const editarAta = (ata) => {
+  console.log(ata);
   ataDTO.value = {
     codigoAta: ata.codigoAta,
     evento: {
-      codigoEvento: ata.evento?.codigoEvento || null,
+      id: ata.evento?.id || null,
     },
     pauta: ata.pauta,
     resumo: ata.resumo,
@@ -162,7 +163,7 @@ const salvarAta = async () => {
     let response;
 
     if (editando.value) {
-      response = await atualizarAta(ataDTO.value.codigoAta, payload);
+      response = await atualizarAta(payload);
       toast.success("Ata atualizada com sucesso!");
     } else {
       response = await apiSalvarAta(payload);
