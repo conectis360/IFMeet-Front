@@ -45,7 +45,7 @@
             <MenuOrietandor></MenuOrietandor>
           </li>
           <li
-            v-if="this.currentUser['roles'].includes('ROLE_ALUNO')"
+            v-if="this.currentUser['roles'].includes('ROLE_ORIENTANDO')"
             class="nav-item menu"
           >
             <MenuAluno></MenuAluno>

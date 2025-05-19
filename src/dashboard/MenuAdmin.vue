@@ -1,8 +1,7 @@
 <template>
   <a href="#" class="menu-item nav-link active">
-    <i class="nav-icon fas fa-tachometer-alt"></i>
     <p>
-      Menu Admin
+      🖥️ Menu Admin
       <i class="right fas fa-angle-left"></i>
     </p>
   </a>
@@ -26,6 +25,12 @@
       <router-link :to="{ name: 'Tarefas' }" class="nav-link">
         <i class="fa fa-pen"></i>
         <p class="opcaoMenu">Tarefas</p>
+      </router-link>
+    </li>
+    <li class="nav-item">
+      <router-link :to="{ name: 'Atas' }" class="nav-link">
+        <i class="fa fa-pen"></i>
+        <p class="opcaoMenu">Atas</p>
       </router-link>
     </li>
   </ul>

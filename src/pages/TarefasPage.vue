@@ -32,6 +32,7 @@ const tarefaSelecionada = ref(null);
 const headers = [
   { text: "Trabalho", value: "trabalho.titulo" },
   { text: "Data Início", value: "dataInicioFormatada" },
+  { text: "Descrição", value: "descricao" },
   { text: "Data Fim", value: "dataFimFormatada" },
   { text: "Status", value: "statusFormatado" },
 ];
@@ -83,7 +84,7 @@ const carregarTarefas = async () => {
           ...tarefa,
           dataInicioFormatada: formatarData(tarefa.dataInicio),
           dataFimFormatada: formatarData(tarefa.dataFim),
-          statusFormatado: tarefa.finalizada ? "Finalizada" : "Pendente",
+          statusFormatado: tarefa.finalizada ? "✅" : "❌",
         })),
       };
     }

@@ -1,8 +1,7 @@
 <template>
   <a href="#" class="menu-item nav-link active">
-    <i class="nav-icon fas fa-tachometer-alt"></i>
     <p>
-      Menu Orientador
+      👨‍🏫 Menu Orientador
       <i class="right fas fa-angle-left"></i>
     </p>
   </a>
