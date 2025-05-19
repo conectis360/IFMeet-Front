@@ -25,8 +25,8 @@ const toast = useToast();
 const ataSelecionada = ref(null);
 
 const headers = [
-  { text: "Trabalho", value: "reuniao.trabalho.titulo" },
-  { text: "Aluno", value: "reuniao.trabalho.aluno.nome" },
+  { text: "Trabalho", value: "evento.trabalho.titulo" },
+  { text: "Reunião", value: "evento.title" },
   { text: "Resumo", value: "resumo" },
   { text: "Data", value: "dataFormatada" },
 ];
