@@ -79,3 +79,17 @@ export const updateEventoCalendario = async (evento) => {
 export const deleteEventoCalendario = async (id) => {
     return apiRequest(apiIFMeet, 'delete', `/calendario/${id}`);
 };
+
+/**
+ * Busca todos os eventos do calendário View.
+ * @returns {Promise} Retorna uma Promise com os eventos do calendário
+ * @throws Error Caso ocorra erro ao buscar os eventos
+ */
+export const buscarReunioesView = async () => {
+    try {
+        const response = await requestGetComposition(apiIFMeet, '/calendario/findAllView?pageSize=999999');
+        return response;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || "Erro ao buscar reuniões");
+    }
+};

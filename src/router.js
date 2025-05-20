@@ -5,7 +5,7 @@ const PaletasCores = () => import("./paletasCores.vue");
 const ReuniaoPage = () => import("./pages/ReuniaoPage.vue");
 const CadastroPage = () => import("./pages/CadastroPage.vue");
 const Profile = () => import("./components/Profile.vue")
-const BoardUser = () => import("./components/BoardUser.vue")
+const DashboardPage = () => import("./pages/DashboardPage.vue")
 const FormularioRegistrarUsuario = () => import("./components/formularios/FormularioRegistrarUsuario.vue")
 const TrabalhoPage = () => import("./pages/TrabalhoPage.vue")
 const TarefasPage = () => import("./pages/TarefasPage.vue")
@@ -62,7 +62,7 @@ const routes = [
     {
         path: "/IFMeet/dashboard",
         name: "Dashboard",
-        component: BoardUser,
+        component: DashboardPage,
     },
     {
         path: "/IFMeet/registrar",
