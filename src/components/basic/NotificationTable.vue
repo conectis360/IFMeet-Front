@@ -8,7 +8,6 @@
             <th>Autor</th>
             <th>Conteúdo</th>
             <th>Data</th>
-            <th>Visualizado</th>
           </tr>
         </thead>
         <tbody>
@@ -19,18 +18,16 @@
           >
             <td>{{ notification.tipoNotificacao }}</td>
             <td>
-              <div class="user-info">
+              <!--<div class="user-info">
                 <img
                   class="img-circle img-sm"
                   :src="formatarFoto(notification.fotoUsuario)"
                   :alt="notification.nomeUsuario"
-                />
-                <span class="username">{{ notification.nomeUsuario }}</span>
-              </div>
+                /></div>-->
+              <span class="username">{{ notification.nomeUsuario }}</span>
             </td>
             <td>{{ notification.conteudoNotificacao }}</td>
             <td>{{ formatarData(notification.dataNotificacao) }}</td>
-            <td>{{ notification.visualizada ? "SIM" : "NÃO" }}</td>
           </tr>
         </tbody>
       </table>
@@ -86,6 +83,7 @@ const formatarData = (data) => {
   return dataHelpers.methods.formatarDataHelper(data);
 };
 
+// eslint-disable-next-line no-unused-vars
 const formatarFoto = (byteArray) => {
   return byteArray ? `data:image/jpeg;base64,${byteArray}` : "";
 };

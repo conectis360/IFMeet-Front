@@ -29,7 +29,7 @@ export const cadastrarTrabalho = async (trabalhoDTO) => {
 export const buscarCountNotificacoes = async () => {
   try {
     const response = await apiRequest(apiIFMeet, 'get', '/notificacao/count');
-    return response;
+    return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Erro ao buscar contagem de notificações");
   }
