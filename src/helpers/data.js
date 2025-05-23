@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 export default {
   methods: {
     formatarDataBackendHelper: function converterData(dataString) {
@@ -11,74 +12,93 @@ export default {
       // Retorna um objeto Date
       return new Date(dataISO);
     },
+
     formatarDataHelper: function (data) {
-      data = this.formatarDataBackendHelper(data)
+      data = this.formatarDataBackendHelper(data);
 
-      const hoje = new Date();
-      const ontem = new Date();
-      ontem.setDate(hoje.getDate() - 1);
-
+      const timeZone = 'America/Sao_Paulo';
       const dataEntrada = new Date(data);
+      const agora = new Date();
+
+      // Configurações de localização para o Brasil
+      const localeOpts = {
+        timeZone,
+        hour12: false,
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+
+      // Formata datas para comparações
+      const formatarParaComparacao = (date) => {
+        return new Date(date).toLocaleDateString('pt-BR', {
+          timeZone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
+      };
+
+      // Formata horas no padrão brasileiro (24h)
+      const formatarHoraBrasil = (date) => {
+        return date.toLocaleTimeString('pt-BR', {
+          timeZone,
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        });
+      };
+
+      // Datas formatadas para comparação
+      const hojeStr = formatarParaComparacao(agora);
+      const ontem = new Date(agora);
+      ontem.setDate(agora.getDate() - 1);
+      const ontemStr = formatarParaComparacao(ontem);
+      const dataEntradaStr = formatarParaComparacao(dataEntrada);
+
+      // Diferença de dias
+      const diffTempo = agora.getTime() - dataEntrada.getTime();
+      const diffDias = Math.floor(diffTempo / (1000 * 3600 * 24));
 
       // Verifica se é hoje
-      if (dataEntrada.toDateString() === hoje.toDateString()) {
-        const horas = String(dataEntrada.getHours()).padStart(2, "0");
-        const minutos = String(dataEntrada.getMinutes()).padStart(2, "0");
-        return `Hoje às ${horas}:${minutos}`;
+      if (dataEntradaStr === hojeStr) {
+        return `Hoje às ${formatarHoraBrasil(dataEntrada)}`;
       }
 
       // Verifica se é ontem
-      if (dataEntrada.toDateString() === ontem.toDateString()) {
-        const horas = String(dataEntrada.getHours()).padStart(2, "0");
-        const minutos = String(dataEntrada.getMinutes()).padStart(2, "0");
-        return `Ontem às ${horas}:${minutos}`;
+      if (dataEntradaStr === ontemStr) {
+        return `Ontem às ${formatarHoraBrasil(dataEntrada)}`;
       }
 
-      // Verifica se é antes de ontem, mas na mesma semana
-      const diffDias = Math.floor((hoje - dataEntrada) / (1000 * 60 * 60 * 24));
+      // Verifica se é na mesma semana
       if (diffDias <= 7) {
-        const diasSemana = [
-          "Domingo",
-          "Segunda-feira",
-          "Terça-feira",
-          "Quarta-feira",
-          "Quinta-feira",
-          "Sexta-feira",
-          "Sábado",
-        ];
-        const diaSemana = diasSemana[dataEntrada.getDay()];
-        const horas = String(dataEntrada.getHours()).padStart(2, "0");
-        const minutos = String(dataEntrada.getMinutes()).padStart(2, "0");
-        return `${diaSemana} às ${horas}:${minutos}`;
+        const diaSemana = dataEntrada.toLocaleDateString('pt-BR', {
+          timeZone,
+          weekday: 'long'
+        });
+        return `${diaSemana} às ${formatarHoraBrasil(dataEntrada)}`;
       }
 
-      // Se for de uma semana diferente, exibe o dia e o mês
-      const meses = [
-        "Jan",
-        "Fev",
-        "Mar",
-        "Abr",
-        "Mai",
-        "Jun",
-        "Jul",
-        "Ago",
-        "Set",
-        "Out",
-        "Nov",
-        "Dez",
-      ];
-      const dia = dataEntrada.getDate();
-      const mes = meses[dataEntrada.getMonth()];
-      const horas = String(dataEntrada.getHours()).padStart(2, "0");
-      const minutos = String(dataEntrada.getMinutes()).padStart(2, "0");
+      // Formatação para datas mais antigas
+      const mes = dataEntrada.toLocaleDateString('pt-BR', {
+        timeZone,
+        month: 'short'
+      }).replace('.', '');
 
-      // Verifica se o ano é diferente
-      if (dataEntrada.getFullYear() !== hoje.getFullYear()) {
-        const ano = dataEntrada.getFullYear();
-        return `${dia} de ${mes} de ${ano} às ${horas}:${minutos}`;
+      let dataFormatada = dataEntrada.toLocaleDateString('pt-BR', {
+        timeZone,
+        day: '2-digit',
+        month: 'short'
+      });
+
+      // Adiciona o ano se for diferente
+      if (dataEntrada.getFullYear() !== agora.getFullYear()) {
+        dataFormatada += ` de ${dataEntrada.getFullYear()}`;
       }
 
-      return `${dia} de ${mes} às ${horas}:${minutos}`;
-    },
-  },
+      return `${dataFormatada} às ${formatarHoraBrasil(dataEntrada)}`;
+    }
+  }
 }

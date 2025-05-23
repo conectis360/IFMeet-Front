@@ -18,89 +18,101 @@
         class="dropdown-item"
         @click="handleNotificationClick(notification)"
       >
-        <i :class="notification.icone + ' mr-2'"></i>
+        {{ notification.icone }}
         {{ notification.tipoNotificacao }}
         <span class="float-right text-muted text-sm">{{
           notification.quantidadeNotificacoes
         }}</span>
       </a>
       <div class="dropdown-divider"></div>
-      <a href="#" class="dropdown-item dropdown-footer" @click="handleSeeAll">
-        <router-link :to="{ name: 'Notificacoes' }" class="nav-link">
-          <i class="far fa-bell"></i> Ver todas Notificações
-        </router-link>
-      </a>
+      <router-link
+        :to="{ name: 'Notificacoes' }"
+        class="dropdown-item dropdown-footer"
+        @click="handleSeeAll"
+      >
+        <i class="far fa-bell"></i> Ver todas Notificações
+      </router-link>
     </div>
   </li>
 </template>
 
 <script>
-import { buscarCountNotificacoes } from "../../services/notificacoes";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useToast } from "vue-toastification";
-
-const toast = useToast();
+import { buscarCountNotificacoes } from "../../services/notificacoes";
 
 export default {
   name: "NotificationMenu",
-  props: {},
-  data() {
-    return {
-      notifications: [], // Estado inicial das notificações
-    };
-  },
-  mounted() {
-    this.carregarDados(); // Carrega os dados pela primeira vez
-    this.iniciarAtualizacaoAutomatica(); // Inicia a atualização automática
-  },
-  beforeUnmount() {
-    this.pararAtualizacaoAutomatica(); // Para a atualização automática ao destruir o componente
-  },
-  methods: {
-    // Executa a ação da notificação e emite um evento
-    handleNotificationClick(notification) {
+  emits: ["notification-click", "see-all"],
+  setup(_, { emit }) {
+    const toast = useToast();
+    const notifications = ref([]);
+    const total = ref(0);
+    const intervalo = ref(null);
+
+    const handleNotificationClick = (notification) => {
       if (notification.action && typeof notification.action === "function") {
         notification.action();
       }
-      this.$emit("notification-click", notification);
-    },
-    // Ação para "Ver todas as notificações"
-    handleSeeAll() {
-      this.$emit("see-all");
-    },
-    carregarDados() {
-      buscarCountNotificacoes(
-        (response) => {
-          if (response) {
-            this.total = response.data?.total;
-            this.notifications = response.data?.quantidadeNotificacoesDtoList;
-          }
-        },
-        (error) => {
-          toast.error(error);
-        },
-        () => {}
-      );
-    },
-    // Método para iniciar a atualização automática
-    iniciarAtualizacaoAutomatica() {
-      this.intervalo = setInterval(() => {
-        this.carregarDados();
-      }, 300000); // 5 minutos (300.000 milissegundos)
-    },
-    // Método para parar a atualização automática
-    pararAtualizacaoAutomatica() {
-      if (this.intervalo) {
-        clearInterval(this.intervalo); // Limpa o intervalo
-        this.intervalo = null;
+      emit("notification-click", notification);
+    };
+
+    const handleSeeAll = () => {
+      emit("see-all");
+    };
+
+    const carregarDados = async () => {
+      try {
+        const response = await buscarCountNotificacoes();
+
+        if (response) {
+          total.value = response.total || 0;
+          notifications.value = response.quantidadeNotificacoesDtoList || [];
+        }
+      } catch (error) {
+        toast.error(error.message || "Erro ao carregar notificações");
       }
-    },
+    };
+
+    const iniciarAtualizacaoAutomatica = () => {
+      intervalo.value = setInterval(carregarDados, 300000);
+    };
+
+    const pararAtualizacaoAutomatica = () => {
+      if (intervalo.value) {
+        clearInterval(intervalo.value);
+        intervalo.value = null;
+      }
+    };
+
+    onMounted(() => {
+      carregarDados();
+      iniciarAtualizacaoAutomatica();
+    });
+
+    onUnmounted(pararAtualizacaoAutomatica);
+
+    return {
+      notifications,
+      total,
+      handleNotificationClick,
+      handleSeeAll,
+    };
   },
 };
 </script>
 
 <style scoped>
-/* Estilos personalizados (opcional) */
 .nav-item.dropdown {
   cursor: pointer;
+}
+
+.dropdown-item.dropdown-footer {
+  padding: 0;
+}
+
+.dropdown-item.dropdown-footer .nav-link {
+  color: inherit;
+  padding: 0.5rem 1.5rem;
 }
 </style>

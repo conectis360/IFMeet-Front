@@ -528,8 +528,8 @@ const saveEvent = async () => {
     const eventoPayload = {
       id: null,
       title: eventData.value.title,
-      start: `${isoDate}T${eventData.value.startTime}:00`,
-      end: `${isoDate}T${eventData.value.endTime}:00`,
+      start: `${isoDate}T${eventData.value.startTime}:00:00`,
+      end: `${isoDate}T${eventData.value.endTime}:00:00`,
       description: eventData.value.description,
       backgroundColor: eventData.value.color,
       trabalho: { codigoTrabalho: eventData.value.trabalho?.id },
