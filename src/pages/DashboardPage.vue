@@ -36,7 +36,6 @@
       </InfoBox>
     </div>
 
-    <!-- Table Section -->
     <div class="row">
       <div class="col-12">
         <div class="card shadow-sm">
